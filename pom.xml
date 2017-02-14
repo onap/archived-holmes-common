@@ -17,7 +17,7 @@
         <relativePath>../oparent</relativePath>
     </parent>
 
-    <groupId>org.openo.holmes</groupId>
+    <groupId>org.openo.holmes.actions</groupId>
     <artifactId>holmes-actions-parent</artifactId>
     <packaging>pom</packaging>
     <name>holmes-actions-parent</name>
