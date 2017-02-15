@@ -95,11 +95,11 @@
                 <artifactId>dropwizard-ioc-container</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <!--<dependency>-->
-                <!--<groupId>org.openo.common-services.common-utilities</groupId>-->
-                <!--<artifactId>baseservice-i18n</artifactId>-->
-                <!--<version>${project.version}</version>-->
-            <!--</dependency>-->
+            <dependency>
+                <groupId>org.openo.common-services.common-utilities</groupId>
+                <artifactId>baseservice-i18n</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.quartz-scheduler</groupId>
                 <artifactId>quartz</artifactId>
