@@ -16,6 +16,7 @@
 
 package org.openo.holmes.common.api.stat;
 
+import java.io.Serializable;
 import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.util.Date;
@@ -34,7 +35,7 @@ import org.jdom.output.XMLOutputter;
 
 @Getter
 @Setter
-public class Alarm implements AplusData, Cloneable {
+public class Alarm implements AplusData, Cloneable, Serializable {
 
     public static final byte EVENT_CLEARED_ALARM = 3;
 

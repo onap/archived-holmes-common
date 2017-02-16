@@ -16,6 +16,7 @@
 package org.openo.holmes.common.api.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
 import org.openo.holmes.common.api.stat.Alarm;
 
 import lombok.Getter;
@@ -27,7 +28,7 @@ import lombok.ToString;
 @Getter
 @NoArgsConstructor
 @ToString
-public class CorrelationResult {
+public class CorrelationResult implements Serializable{
 
   @JsonProperty
   private String ruleId;
