@@ -18,10 +18,10 @@ package org.openo.holmes.common.utils;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.setup.Environment;
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
-import org.glassfish.hk2.api.IterableProvider;
 import org.jvnet.hk2.annotations.Service;
 import org.skife.jdbi.v2.DBI;
 import org.skife.jdbi.v2.Handle;
@@ -32,20 +32,19 @@ import org.skife.jdbi.v2.Handle;
 public class DbDaoUtil {
 
     private static DBI jdbi;
-
     @Inject
-    private static IterableProvider<Environment> environmentProvider;
-
+    private Environment environmentProvider;
     @Inject
-    private static IterableProvider<DataSourceFactory> dataSourceFactoryProvider;
+    private DataSourceFactory dataSourceFactoryProvider;
 
-    static {
+    @PostConstruct
+    public void init() {
         if (jdbi == null) {
             synchronized (DbDaoUtil.class) {
                 if (jdbi == null) {
                     final DBIFactory factory = new DBIFactory();
                     jdbi = factory
-                        .build(environmentProvider.get(), dataSourceFactoryProvider.get(), "mysql");
+                            .build(environmentProvider, dataSourceFactoryProvider, "mysql");
                 }
             }
         }
