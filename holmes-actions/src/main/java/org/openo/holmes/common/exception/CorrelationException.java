@@ -15,12 +15,13 @@
  */
 package org.openo.holmes.common.exception;
 
-public class DataFormatException extends Exception {
-    public DataFormatException(String msg, Exception e ) {
-        super( msg, e );
+public class CorrelationException extends Exception {
+
+    public CorrelationException(String msg, Exception e) {
+        super(msg, e);
     }
 
-    public DataFormatException(String msg ) {
-        super( msg );
+    public CorrelationException(String msg) {
+        super(msg);
     }
 }
