@@ -51,6 +51,7 @@ public class I18nProxy {
     public static final String RULE_MANAGEMENT_REPEAT_RULE_NAME = "RULE_MANAGEMENT_REPEAT_RULE_NAME";
     public static final String RULE_MANAGEMENT_DATA_FORMAT_ERROR = "RULE_MANAGEMENT_DATA_FORMAT_ERROR";
     public static final String RULE_MANAGEMENT_PARAMETER_ENABLED_ERROR = "RULE_MANAGEMENT_PARAMETER_ENABLED_ERROR";
+    public static final String RULE_MANAGEMENT_DB_ERROR = "RULE_MANAGEMENT_DB_ERROR";
 
     private Optional<I18n> optional = null;
 
