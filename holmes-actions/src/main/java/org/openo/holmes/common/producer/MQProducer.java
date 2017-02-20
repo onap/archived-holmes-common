@@ -39,7 +39,7 @@ import org.openo.holmes.common.constant.AlarmConst;
 public class MQProducer {
 
     @Inject
-    private static IterableProvider<MQConfig> mqConfigProvider;
+    private IterableProvider<MQConfig> mqConfigProvider;
     private ConnectionFactory connectionFactory;
 
     @PostConstruct
