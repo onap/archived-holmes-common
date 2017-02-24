@@ -25,54 +25,15 @@ public class MQConfig {
 
     @JsonProperty
     @NotNull
-    public String brokerIp = "localhost";
+    public String brokerIp;
 
     @JsonProperty
     @NotNull
-    public int brokerPort = 5672;
-
+    public int brokerPort;
 
     @JsonProperty
     public String brokerUsername;
 
     @JsonProperty
     public String brokerPassword;
-
-    @JsonProperty
-    public boolean autoDiscover = false;
-
-    @JsonProperty
-    public String mqServiceName = "mqService";
-
-    @JsonProperty
-    public String mqServiceVersion = "v1";
-
-
-    @JsonProperty
-    public long healthCheckMillisecondsToWait = 2000; // 2 seconds
-
-    @JsonProperty
-    public int shutdownWaitInSeconds = 20;
-
-    @JsonProperty
-    public int timeToLiveInSeconds = -1; // Default no TTL. Jackson does not support java.util.Optional yet.
-
-    @JsonProperty
-    public Map<String, String> extConsumerConfMap = new HashMap<>();
-
-    @JsonProperty
-    public Map<String, String> extProducerConfMap = new HashMap<>();
-
-
-    @Override
-    public String toString() {
-        return "MQConfig [brokerIp=" + brokerIp + ", brokerPort=" + brokerPort + ", brokerUsername="
-            + brokerUsername + ", brokerPassword=" + brokerPassword + ", autoDiscover="
-            + autoDiscover + ", mqServiceName=" + mqServiceName + ", mqServiceVersion="
-            + mqServiceVersion + ", healthCheckMillisecondsToWait=" + healthCheckMillisecondsToWait
-            + ", shutdownWaitInSeconds=" + shutdownWaitInSeconds + ", timeToLiveInSeconds="
-            + timeToLiveInSeconds + "]";
-    }
-
-
 }
