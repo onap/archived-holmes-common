@@ -16,15 +16,14 @@
   "RULE_MANAGEMENT__CALL_CHECK_RULE_REST_FAILED": "From the rules engine calls the check of interface failure",
   "RULE_MANAGEMENT_CREATE_QUERY_SQL_FAILED": "Create query exception",
   "RULE_MANAGEMENT_QUERY_RULE_FAILED": "Query rule failed",
-  "RULE_MANAGEMENT_CREATE_RULE_FAILED": "Failed to create rule",
-  "RULE_MANAGEMENT_DELETE_RULE_FAILED": "Delete rule failed",
-  "RULE_MANAGEMENT_UPDATE_RULE_FAILED": "Update rule failed",
   "RULE_MANAGEMENT_REQUEST_OBJECT_IS_EMPTY": "Request object is empty",
   "RULE_MANAGEMENT_RULE_NOT_EXIST_DATABASE": "Rule does not exist",
-  "RULE_MANAGEMENT_UNKNOWN_EXCEPTION": "Unknown exception",
   "RULE_MANAGEMENT_REPEAT_RULE_NAME": "Rule name repetition",
-  "RULE_MANAGEMENT_RULE_NAME_IS_EMPTY": "Rule name is empty",
+  "RULE_MANAGEMENT_RULE_NAME_CANNOT_BE_EMPTY": "Rule name cannot be empty",
   "RULE_MANAGEMENT_DATA_FORMAT_ERROR": "Data format error",
   "RULE_MANAGEMENT_PARAMETER_ENABLED_ERROR": "Parameter enabled can only be 0 (not enabled) and 1 (enabled)",
-  "RULE_MANAGEMENT_DB_ERROR": "db error"
+  "RULE_MANAGEMENT_DB_ERROR": "db error",
+  "RULE_MANAGEMENT_PARSE_DEPLOY_RESULT_ERROR":"Parsing call deployment rule return the result of the failure",
+  "RULE_MANAGEMENT_CHECK_NO_PASS":"Content inspection not by rule",
+  "RULE_MANAGEMENT_CONTENT_CANNOT_BE_EMPTY":"Content cannot be empty"
 }

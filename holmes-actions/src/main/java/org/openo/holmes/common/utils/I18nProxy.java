@@ -41,18 +41,16 @@ public class I18nProxy {
     public static final String RULE_MANAGEMENT__CALL_CHECK_RULE_REST_FAILED = "RULE_MANAGEMENT__CALL_CHECK_RULE_REST_FAILED";
     public static final String RULE_MANAGEMENT_CREATE_QUERY_SQL_FAILED = "RULE_MANAGEMENT_CREATE_QUERY_SQL_FAILED";
     public static final String RULE_MANAGEMENT_QUERY_RULE_FAILED = "RULE_MANAGEMENT_QUERY_RULE_FAILED";
-    public static final String RULE_MANAGEMENT_CREATE_RULE_FAILED = "RULE_MANAGEMENT_CREATE_RULE_FAILED";
-    public static final String RULE_MANAGEMENT_DELETE_RULE_FAILED = "RULE_MANAGEMENT_DELETE_RULE_FAILED";
-    public static final String RULE_MANAGEMENT_UPDATE_RULE_FAILED = "RULE_MANAGEMENT_UPDATE_RULE_FAILED";
     public static final String RULE_MANAGEMENT_REQUEST_OBJECT_IS_EMPTY = "RULE_MANAGEMENT_REQUEST_OBJECT_IS_EMPTY";
-    public static final String RULE_MANAGEMENT_RULE_NAME_IS_EMPTY = "RULE_MANAGEMENT_RULE_NAME_IS_EMPTY";
+    public static final String RULE_MANAGEMENT_RULE_NAME_CANNOT_BE_EMPTY = "RULE_MANAGEMENT_RULE_NAME_CANNOT_BE_EMPTY";
     public static final String RULE_MANAGEMENT_RULE_NOT_EXIST_DATABASE = "RULE_MANAGEMENT_RULE_NOT_EXIST_DATABASE";
-    public static final String RULE_MANAGEMENT_UNKNOWN_EXCEPTION = "RULE_MANAGEMENT_UNKNOWN_EXCEPTION";
     public static final String RULE_MANAGEMENT_REPEAT_RULE_NAME = "RULE_MANAGEMENT_REPEAT_RULE_NAME";
     public static final String RULE_MANAGEMENT_DATA_FORMAT_ERROR = "RULE_MANAGEMENT_DATA_FORMAT_ERROR";
     public static final String RULE_MANAGEMENT_PARAMETER_ENABLED_ERROR = "RULE_MANAGEMENT_PARAMETER_ENABLED_ERROR";
     public static final String RULE_MANAGEMENT_DB_ERROR = "RULE_MANAGEMENT_DB_ERROR";
-
+    public static final String RULE_MANAGEMENT_PARSE_DEPLOY_RESULT_ERROR = "RULE_MANAGEMENT_PARSE_DEPLOY_RESULT_ERROR";
+    public static final String RULE_MANAGEMENT_CHECK_NO_PASS = "RULE_MANAGEMENT_CHECK_NO_PASS";
+    public static final String RULE_MANAGEMENT_CONTENT_CANNOT_BE_EMPTY = "RULE_MANAGEMENT_CONTENT_CANNOT_BE_EMPTY";
     private Optional<I18n> optional = null;
 
     private I18nProxy() {
@@ -94,9 +92,9 @@ public class I18nProxy {
         try {
             value = JacksonUtil.beanToJson(optional.get().getLabelValues(key, args));
         } catch (JsonProcessingException e) {
-            log.info("get i18n error, key is :" + key, e);
+            log.warn("get i18n error, key is :" + key, e);
         } catch (IllegalArgumentException e) {
-            log.info("get i18n error IllegalArgumentException, key is :" + key + ",args is :  " + Arrays.toString(args),
+            log.warn("get i18n error IllegalArgumentException, key is :" + key + ",args is :  " + Arrays.toString(args),
                     e);
         }
 
