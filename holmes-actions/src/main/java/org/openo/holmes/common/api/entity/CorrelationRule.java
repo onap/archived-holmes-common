@@ -35,7 +35,7 @@ public class CorrelationRule {
     private int enabled;
     @JsonProperty
     private int templateID;
-    private String engineId;
+    private String engineID;
     @JsonProperty
     private String engineType;
     @JsonProperty
