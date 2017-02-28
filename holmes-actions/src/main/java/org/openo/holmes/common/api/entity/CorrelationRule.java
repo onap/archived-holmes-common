@@ -45,11 +45,7 @@ public class CorrelationRule {
     @JsonProperty
     private Properties params;
     @JsonProperty
-    private String domain;
-    @JsonProperty
     private String content;
-    @JsonProperty
-    private int isManual;
     @JsonProperty
     private String vendor;
     @JsonProperty(value = "createtime")

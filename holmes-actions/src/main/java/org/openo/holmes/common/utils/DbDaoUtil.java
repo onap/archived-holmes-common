@@ -31,20 +31,20 @@ import org.skife.jdbi.v2.Handle;
 @Slf4j
 public class DbDaoUtil {
 
-    private static DBI jdbi;
+    private DBI jdbi;
     @Inject
     private Environment environmentProvider;
     @Inject
     private DataSourceFactory dataSourceFactoryProvider;
+
+    private DBIFactory factory = new DBIFactory();
 
     @PostConstruct
     public void init() {
         if (jdbi == null) {
             synchronized (DbDaoUtil.class) {
                 if (jdbi == null) {
-                    final DBIFactory factory = new DBIFactory();
-                    jdbi = factory
-                            .build(environmentProvider, dataSourceFactoryProvider, "mysql");
+                    jdbi = factory.build(environmentProvider, dataSourceFactoryProvider, "mysql");
                 }
             }
         }

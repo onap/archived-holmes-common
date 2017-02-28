@@ -15,7 +15,6 @@
  */
 package org.openo.holmes.common.producer;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
@@ -25,7 +24,6 @@ import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.activemq.ActiveMQConnectionFactory;
 import org.glassfish.hk2.api.IterableProvider;
 import org.jvnet.hk2.annotations.Service;
 import org.openo.holmes.common.api.entity.CorrelationResult;
@@ -42,24 +40,13 @@ public class MQProducer {
     private IterableProvider<MQConfig> mqConfigProvider;
     private ConnectionFactory connectionFactory;
 
-    @PostConstruct
-    public void init() {
-
-        String brokerURL =
-            "tcp://" + mqConfigProvider.get().brokerIp + ":" + mqConfigProvider.get().brokerPort;
-        connectionFactory = new ActiveMQConnectionFactory(mqConfigProvider.get().brokerUsername,
-            mqConfigProvider.get().brokerPassword, brokerURL);
-    }
-
     public void sendAlarmMQTopicMsg(Alarm alarm) {
 
         Connection connection = null;
         Session session;
         Destination destination;
         MessageProducer messageProducer;
-
         try {
-
             connection = connectionFactory.createConnection();
             connection.start();
             session = connection.createSession(true, Session.AUTO_ACKNOWLEDGE);
@@ -68,7 +55,6 @@ public class MQProducer {
             ObjectMessage message = session.createObjectMessage(alarm);
             messageProducer.send(message);
             session.commit();
-
         } catch (Exception e) {
             log.error("Failed send alarm." + e.getMessage(), e);
         } finally {
@@ -83,7 +69,7 @@ public class MQProducer {
     }
 
     public void sendCorrelationMQTopicMsg(String ruleId, long createTimeL, Alarm parentAlarm,
-        Alarm childAlarm) {
+            Alarm childAlarm) {
 
         CorrelationResult correlationResult = new CorrelationResult();
         correlationResult.setRuleId(ruleId);
@@ -97,7 +83,6 @@ public class MQProducer {
         MessageProducer messageProducer;
 
         try {
-
             connection = connectionFactory.createConnection();
             connection.start();
             session = connection.createSession(true, Session.AUTO_ACKNOWLEDGE);
@@ -106,7 +91,6 @@ public class MQProducer {
             ObjectMessage message = session.createObjectMessage(correlationResult);
             messageProducer.send(message);
             session.commit();
-
         } catch (Exception e) {
             log.error("Failed send correlation." + e.getMessage(), e);
         } finally {

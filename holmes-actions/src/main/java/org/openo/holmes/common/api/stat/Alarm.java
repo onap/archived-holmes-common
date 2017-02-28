@@ -145,10 +145,6 @@ public class Alarm implements AplusData, Cloneable, Serializable {
         return 999;
     }
 
-    public Map<Integer, Integer> getLinkIdNodeIdx() {
-        return this.linkIdNodeIdxMap;
-    }
-
     public boolean containNode(int linkId, int index) {
         if (linkIdNodeIdxMap.containsKey(linkId) && linkIdNodeIdxMap.get(linkId) == index) {
             return true;

@@ -15,7 +15,6 @@
  */
 package org.openo.holmes.common.utils;
 
-import java.util.Locale;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -26,14 +25,6 @@ public class ExceptionUtil {
 
     private ExceptionUtil() {
 
-    }
-
-    public static String getExceptionMsg(Locale locale, Exception e) {
-        return I18nProxy.getInstance().getValue(locale, e.getMessage());
-    }
-
-    public static String getExceptionMsgByArgs(Locale locale, Exception e, String[] obj) {
-        return I18nProxy.getInstance().getValueByArgs(locale, e.getMessage(), obj);
     }
 
     public static WebApplicationException buildExceptionResponse(String message) {

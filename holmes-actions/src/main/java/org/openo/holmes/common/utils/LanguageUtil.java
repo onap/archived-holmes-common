@@ -40,7 +40,7 @@ public class LanguageUtil {
     public static Locale getLocale(HttpServletRequest servletRequest) {
         String language = (String) servletRequest.getHeader("language-option");
         if (JudgeNullUtil.isEmpty(language)) {
-            language = AlarmConst.ZH_CN;
+            language = AlarmConst.I18N_EN;
         }
         if (language.startsWith(AlarmConst.I18N_ZH)) {
             language = AlarmConst.I18N_ZH;
