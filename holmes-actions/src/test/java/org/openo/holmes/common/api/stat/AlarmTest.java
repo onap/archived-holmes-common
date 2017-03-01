@@ -16,6 +16,7 @@
 
 package org.openo.holmes.common.api.stat;
 
+import java.util.Date;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -84,8 +85,16 @@ public class AlarmTest {
 
     @Test
     public void testToString() throws Exception {
-        final Alarm alarmTemp = new Alarm();
-        assertThat(alarmTemp.toString(), equalTo(alarm.toString()));
+        Alarm alarmTempA = new Alarm();
+        Alarm alarmTempB = new Alarm();
+        Date date = new Date();
+        alarmTempA.setClearedTime(date);
+        alarmTempA.setRaisedTime(date);
+        alarmTempA.setRaisedServerTime(date);
+        alarmTempB.setClearedTime(date);
+        alarmTempB.setRaisedTime(date);
+        alarmTempB.setRaisedServerTime(date);
+        assertThat(alarmTempA.toString(),equalTo(alarmTempB.toString()));
     }
 
     @Test

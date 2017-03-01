@@ -55,14 +55,18 @@ public class MQProducer {
         Serializable msgEntity = (Serializable) t;
         Connection connection = null;
         Session session;
-        Destination destination;
+        Destination destination = null;
         MessageProducer messageProducer;
 
         try {
             connection = connectionFactory.createConnection();
             connection.start();
             session = connection.createSession(true, Session.AUTO_ACKNOWLEDGE);
-            destination = session.createTopic(AlarmConst.MQ_TOPIC_NAME_ALARMS_CORRELATION);
+            if (t instanceof CorrelationResult) {
+                destination = session.createTopic(AlarmConst.MQ_TOPIC_NAME_ALARMS_CORRELATION);
+            } else if (t instanceof Alarm) {
+                destination = session.createTopic(AlarmConst.MQ_TOPIC_NAME_ALARM);
+            }
             messageProducer = session.createProducer(destination);
             ObjectMessage message = session.createObjectMessage(msgEntity);
             messageProducer.send(message);
