@@ -25,7 +25,7 @@ public class LanguageUtil {
     }
 
     public static String getLanguage(HttpServletRequest servletRequest) {
-        String language = (String) servletRequest.getHeader("language-option");
+        String language = servletRequest.getHeader("language-option");
         if (JudgeNullUtil.isEmpty(language)) {
             language = AlarmConst.I18N_EN;
         }
@@ -38,7 +38,7 @@ public class LanguageUtil {
     }
 
     public static Locale getLocale(HttpServletRequest servletRequest) {
-        String language = (String) servletRequest.getHeader("language-option");
+        String language = servletRequest.getHeader("language-option");
         if (JudgeNullUtil.isEmpty(language)) {
             language = AlarmConst.I18N_EN;
         }

@@ -18,10 +18,13 @@ package org.openo.holmes.common.utils;
 
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.expect;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertThat;
 
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.setup.Environment;
+import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -81,7 +84,7 @@ public class DbDaoUtilTest {
     }
 
     @Test
-    public void getDao() throws Exception {
+    public void getDao_normal() throws Exception {
         Whitebox.setInternalState(dbDaoUtil, "jdbi", jdbi);
         expect(jdbi.open(anyObject(Class.class))).andReturn(Class.class);
 
@@ -93,7 +96,22 @@ public class DbDaoUtilTest {
     }
 
     @Test
-    public void testGetHandle() throws Exception {
+    public void getDao_exception() throws Exception {
+        Whitebox.setInternalState(dbDaoUtil, "jdbi", jdbi);
+
+        expect(jdbi.open(anyObject(Class.class))).andThrow(new RuntimeException(""));
+
+        PowerMock.replayAll();
+
+        Object o = dbDaoUtil.getDao(String.class);
+
+        PowerMock.verifyAll();
+
+        assertThat(o, equalTo(null));
+    }
+
+    @Test
+    public void getHandle_normal() throws Exception {
         Handle handle = PowerMock.createMock(Handle.class);
 
         Whitebox.setInternalState(dbDaoUtil, "jdbi", jdbi);
@@ -105,9 +123,24 @@ public class DbDaoUtilTest {
 
         PowerMock.verifyAll();
     }
+    @Test
+    public void getHandle_exception() throws Exception {
+        Handle handle = PowerMock.createMock(Handle.class);
+
+        Whitebox.setInternalState(dbDaoUtil, "jdbi", jdbi);
+        expect(jdbi.open()).andThrow(new RuntimeException(""));
+
+        PowerMock.replayAll();
+
+        Handle handle1 = dbDaoUtil.getHandle();
+
+        PowerMock.verifyAll();
+
+        assertThat(handle1, equalTo(null));
+    }
 
     @Test
-    public void testClose() throws Exception {
+    public void close_normal() throws Exception {
         Whitebox.setInternalState(dbDaoUtil, "jdbi", jdbi);
         jdbi.close(anyObject());
 
@@ -118,6 +151,17 @@ public class DbDaoUtilTest {
         PowerMock.verifyAll();
     }
 
+    @Test
+    public void close_exception() throws Exception {
+        Whitebox.setInternalState(dbDaoUtil, "jdbi", jdbi);
+        jdbi.close(anyObject());
+        EasyMock.expectLastCall().andThrow(new RuntimeException(""));
+        PowerMock.replayAll();
+
+        dbDaoUtil.close(new Object());
+
+        PowerMock.verifyAll();
+    }
     @Test
     public void testGetJdbiDaoByOnDemand() throws Exception {
         Whitebox.setInternalState(dbDaoUtil, "jdbi", jdbi);

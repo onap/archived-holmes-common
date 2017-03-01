@@ -26,7 +26,7 @@ import org.junit.Test;
 public class JudgeNullUtilTest {
 
     @Test
-    public void isEmpty_array() {
+    public void isEmpty_array_length_zero() {
         boolean resultShorts = JudgeNullUtil.isEmpty(new short[]{});
         boolean resultInts = JudgeNullUtil.isEmpty(new int[]{});
         boolean resultLongs = JudgeNullUtil.isEmpty(new long[]{});
@@ -40,5 +40,4 @@ public class JudgeNullUtilTest {
         assertThat(true, equalTo(resultStrings));
         assertThat(true, equalTo(resultLists));
     }
-
 }

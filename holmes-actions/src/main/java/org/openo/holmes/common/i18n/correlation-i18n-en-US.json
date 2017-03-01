@@ -13,7 +13,7 @@
   "EXCEPTION_REQUEST_IS_EMPTY": "The request object is empty",
   "RULE_MANAGEMENT_CALL_DELETE_RULE_REST_FAILED": "Delete rules from engine call interface failure ",
   "RULE_MANAGEMENT_CALL_DEPLOY_RULE_REST_FAILED": "From the rules engine calls the deployment of interface failure",
-  "RULE_MANAGEMENT__CALL_CHECK_RULE_REST_FAILED": "From the rules engine calls the check of interface failure",
+  "RULE_MANAGEMENT_CALL_CHECK_RULE_REST_FAILED": "From the rules engine calls the check of interface failure",
   "RULE_MANAGEMENT_CREATE_QUERY_SQL_FAILED": "Create query exception",
   "RULE_MANAGEMENT_QUERY_RULE_FAILED": "Query rule failed",
   "RULE_MANAGEMENT_REQUEST_OBJECT_IS_EMPTY": "Request object is empty",

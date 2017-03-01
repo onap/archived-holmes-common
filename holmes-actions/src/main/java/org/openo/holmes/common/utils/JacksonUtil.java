@@ -15,10 +15,7 @@
  */
 package org.openo.holmes.common.utils;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 
@@ -40,16 +37,4 @@ public class JacksonUtil {
         }
         return objectMapper.readValue(json, cls);
     }
-
-    public static <T> T jsonToBeanByMatchAttribute(String json, Class<T> cls)
-        throws JsonParseException,
-        JsonMappingException, IOException {
-        if (JudgeNullUtil.isEmpty(json)) {
-            return null;
-        }
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        return objectMapper.readValue(json, cls);
-    }
-
 }

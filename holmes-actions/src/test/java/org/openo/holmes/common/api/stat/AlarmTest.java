@@ -170,9 +170,9 @@ public class AlarmTest {
     @Test
     public void testGetAlarmTypeRuleId_notNull() throws Exception {
         final String ruleId = "ruleId";
-        final int rootAlarmTyep = 2;
-        alarm.getRootAlarmTypeMap().put(ruleId, rootAlarmTyep);
-        assertThat(rootAlarmTyep, equalTo(alarm.getRootAlarmType(ruleId)));
+        final int rootAlarmType = 2;
+        alarm.getRootAlarmTypeMap().put(ruleId, rootAlarmType);
+        assertThat(rootAlarmType, equalTo(alarm.getRootAlarmType(ruleId)));
     }
 
     @Test

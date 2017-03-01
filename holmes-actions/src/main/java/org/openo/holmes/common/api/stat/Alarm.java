@@ -46,78 +46,83 @@ public class Alarm implements AplusData, Cloneable, Serializable {
     public static final byte EVENT_RAISED = 0;
 
     private static final long serialVersionUID = 4520003737132012000L;
-
+    private final static Date clearedServerTime = null;
+    private final Map<Integer, Integer> linkIdNodeIdxMap = new HashMap<Integer, Integer>();
     private byte eventType = EVENT_RAISED;
-
     private long id = 0L;
-
     private String alarmKey = "";
-
     private String network = "";
-
     private String neType = "";
-
     private String equipType = "";
-
     private String position1 = "";
-
     private String subPosition1 = null;
-
     private String position2 = null;
-
     private String subPosition2 = null;
-
     private byte severity = -1;
-
     private byte alarmType = -1;
-
     private long probableCause = -1;
-
     private String specificProblem = null;
-
     private String additionalText = null;
-
     private Date raisedTime = new Date();
-
     private Date raisedServerTime = new Date();
-
     private Date clearedTime = null;
-
-    private final Date clearedServerTime = null;
-
     private String region = null;
-
     private String site = null;
-
     private String aid = null;
-
     private short systemType = -1;
-
     private boolean rootAlarmFlag = false;
-
     private int linkId = -1;
-
     private int nodeIdx = -1;
-
     private Set<Integer> linkIds = new HashSet<Integer>();
-
     private HashMap<String, Integer> priorityMap = new HashMap<String, Integer>();
-
     private HashMap<String, Integer> rootAlarmTypeMap = new HashMap<String, Integer>();
-
     private int rootAlarmType = -1;
-
     private boolean keyAlarmFlag = false;
-
     private int keyAlarmType = -1;
-
     private int networkLevel = -1;
-
     private int linkType = -1;
-
     private int centerType;
 
-    private final Map<Integer, Integer> linkIdNodeIdxMap = new HashMap<Integer, Integer>();
+    public static Alarm valueOf(String xmlString) {
+        Element element;
+        try {
+            StringReader sb = new StringReader(xmlString);
+            element = new SAXBuilder().build(sb).getRootElement();
+            sb.close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        Alarm alarm = new Alarm();
+        @SuppressWarnings("unchecked")
+        List<Attribute> list = element.getAttributes();
+        for (Attribute attr : list) {
+            String attrName = attr.getName();
+            try {
+                Field field = Alarm.class.getDeclaredField(attrName);
+                if (!attrName.endsWith("Time")) {
+                    String type = field.getType().getSimpleName();
+                    if ("byte".equals(type)) {
+                        field.set(alarm, Byte.parseByte(attr.getValue()));
+                    } else if ("long".equals(type)) {
+                        field.set(alarm, Long.parseLong(attr.getValue()));
+                    } else if ("String".equals(type)) {
+                        field.set(alarm, attr.getValue());
+                    } else {
+                        throw new RuntimeException("unknow attr type: " + type.toString());
+                    }
+                } else {
+                    Date date = new Date();
+                    date.setTime(Long.parseLong(attr.getValue()));
+                    field.set(alarm, date);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return alarm;
+    }
 
     public void addLinkIdNodeIdx(int linkId, int index) {
         linkIdNodeIdxMap.put(linkId, index);
@@ -146,11 +151,7 @@ public class Alarm implements AplusData, Cloneable, Serializable {
     }
 
     public boolean containNode(int linkId, int index) {
-        if (linkIdNodeIdxMap.containsKey(linkId) && linkIdNodeIdxMap.get(linkId) == index) {
-            return true;
-        } else {
-            return false;
-        }
+       return linkIdNodeIdxMap.containsKey(linkId) && linkIdNodeIdxMap.get(linkId) == index;
     }
 
     @Override
@@ -191,47 +192,6 @@ public class Alarm implements AplusData, Cloneable, Serializable {
         }
 
         return new XMLOutputter().outputString(el);
-    }
-
-    public static Alarm valueOf(String xmlString) {
-        Element element = null;
-        try {
-            StringReader sb = new StringReader(xmlString);
-            element = new SAXBuilder().build(sb).getRootElement();
-            sb.close();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        Alarm alarm = new Alarm();
-        @SuppressWarnings("unchecked")
-        List<Attribute> list = element.getAttributes();
-        for (Attribute attr : list) {
-            String attrName = attr.getName();
-            try {
-                Field field = Alarm.class.getDeclaredField(attrName);
-                if (!attrName.endsWith("Time")) {
-                    String type = field.getType().getSimpleName();
-                    if (type.equals("byte")) {
-                        field.set(alarm, Byte.parseByte(attr.getValue()));
-                    } else if (type.equals("long")) {
-                        field.set(alarm, Long.parseLong(attr.getValue()));
-                    } else if (type.equals("String")) {
-                        field.set(alarm, attr.getValue());
-                    } else {
-                        throw new RuntimeException("unknow attr type: " + type.toString());
-                    }
-                } else {
-                    Date date = new Date();
-                    date.setTime(Long.parseLong(attr.getValue()));
-                    field.set(alarm, date);
-                }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        return alarm;
     }
 
     @Override

@@ -26,7 +26,7 @@ public class UserUtil {
 
     public static String getUserName(HttpServletRequest request) {
         String userName = AlarmConst.ADMIN;
-        String sessionName = (String) request.getHeader("username");
+        String sessionName = request.getHeader("username");
         if (sessionName != null) {
             userName = sessionName.toLowerCase();
         }

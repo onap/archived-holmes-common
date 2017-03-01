@@ -21,6 +21,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 
 import java.util.Locale;
+import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -34,8 +35,28 @@ public class I18nProxyTest {
     }
 
     @Test
-    public void testGetValue() {
+    public void getValue_locale_and_key() {
         String result = i18nProxy.getValue(new Locale("zh"), "test");
         assertThat(result, equalTo(null));
+    }
+    @Test
+    public void getValueByArgs(){
+        String result = i18nProxy.getValueByArgs(new Locale("zh"), "test",new String[]{"1"});
+        assertThat(result,equalTo(null));
+    }
+    @Test
+    public void getValue_by_key(){
+        Map<String,String> result = i18nProxy.getValue("test");
+        assertThat(result, equalTo(null));
+    }
+    @Test
+    public void jsonI18n(){
+        String result = i18nProxy.jsonI18n("test");
+        assertThat(result,equalTo(null));
+    }
+    @Test
+    public void i18nWithArgs(){
+        String result = i18nProxy.i18nWithArgs("test",new String[]{});
+        assertThat(result,equalTo("null"));
     }
 }
