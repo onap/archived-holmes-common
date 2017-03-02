@@ -10,7 +10,7 @@
   "DSA_QUERY_CURRENT_ALARM_FAILED":"query current alarm failed",
   "DSA_REQUEST_ANALYSIS_ERROR":"request analysis error",
   "DSA_REQUEST_EXECUTE_FAILED":"send request failed",
-  "DSA_HTTP_CLIENT_CLOSE_FAILED":"httpclient close failed"
+  "DSA_HTTP_CLIENT_CLOSE_FAILED":"httpclient close failed",
   "EXCEPTION_DB_RULE_NOT_EXIST_ERROR": "This rule does not exist in the database.",
   "EXCEPTION_DB_RULE_SAVE_ERROR": "Error saving rule to database",
   "EXCEPTION_DB_RULE_GET_ERROR": "Error when get rule from database",
