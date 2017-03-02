@@ -35,10 +35,16 @@ public class I18nProxy {
     public static final String ENGINE_DELETE_RULE_FAILED_FROM_CACHE = "ENGINE_DELETE_RULE_FAILED_FROM_CACHE";
     public static final String ENGINE_CONTAINS_PACKAGE = "ENGINE_CONTAINS_PACKAGE";
     public static final String ENGINE_QUERY_CACHE_FAILED = "ENGINE_QUERY_CACHE_FAILED";
+    /*-----------------------DSA ------------------------------- */
+    public static final String DSA_QUERY_CURRENT_ALARM_FAILED = "DSA_QUERY_CURRENT_ALARM_FAILED";
+    public static final String DSA_REQUEST_ANALYSIS_FAILED = "DSA_REQUEST_ANALYSIS_ERROR";
+    public static final String DSA_REQUEST_EXECUTE_FAILED = "DSA_REQUEST_EXECUTE_FAILED";
+    public static final String DSA_HTTP_CLIENT_CLOSE_FAILED = "DSA_HTTP_CLIENT_CLOSE_FAILED";
+
     /*-----------------------Rule Management------------------------------- */
     public static final String RULE_MANAGEMENT_CALL_DELETE_RULE_REST_FAILED = "RULE_MANAGEMENT_CALL_DELETE_RULE_REST_FAILED";
     public static final String RULE_MANAGEMENT_CALL_DEPLOY_RULE_REST_FAILED = "RULE_MANAGEMENT_CALL_DEPLOY_RULE_REST_FAILED";
-    public static final String RULE_MANAGEMENT_CALL_CHECK_RULE_REST_FAILED = "RULE_MANAGEMENT_CALL_CHECK_RULE_REST_FAILED";
+    public static final String RULE_MANAGEMENT__CALL_CHECK_RULE_REST_FAILED = "RULE_MANAGEMENT__CALL_CHECK_RULE_REST_FAILED";
     public static final String RULE_MANAGEMENT_CREATE_QUERY_SQL_FAILED = "RULE_MANAGEMENT_CREATE_QUERY_SQL_FAILED";
     public static final String RULE_MANAGEMENT_QUERY_RULE_FAILED = "RULE_MANAGEMENT_QUERY_RULE_FAILED";
     public static final String RULE_MANAGEMENT_REQUEST_OBJECT_IS_EMPTY = "RULE_MANAGEMENT_REQUEST_OBJECT_IS_EMPTY";
@@ -95,7 +101,7 @@ public class I18nProxy {
             log.warn("get i18n error, key is :" + key, e);
         } catch (IllegalArgumentException e) {
             log.warn("get i18n error IllegalArgumentException, key is :" + key + ",args is :  " + Arrays.toString(args),
-                    e);
+                e);
         }
 
         return value;

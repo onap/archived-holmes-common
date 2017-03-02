@@ -32,6 +32,7 @@ import org.openo.holmes.common.api.stat.Alarm;
 import org.openo.holmes.common.api.stat.AplusResult;
 import org.openo.holmes.common.config.MQConfig;
 import org.openo.holmes.common.constant.AlarmConst;
+import org.apache.activemq.ActiveMQConnectionFactory;
 
 @Service
 @Slf4j
@@ -40,6 +41,18 @@ public class MQProducer {
     @Inject
     private IterableProvider<MQConfig> mqConfigProvider;
     private ConnectionFactory connectionFactory;
+
+    public MQProducer() {
+
+    }
+
+    public void init() {
+
+        String brokerURL =
+            "tcp://" + mqConfigProvider.get().brokerIp + ":" + mqConfigProvider.get().brokerPort;
+        connectionFactory = new ActiveMQConnectionFactory(mqConfigProvider.get().brokerUsername,
+            mqConfigProvider.get().brokerPassword, brokerURL);
+    }
 
     public void sendAlarmMQTopicMsg(Alarm alarm) {
         sendMQTopicMsg(alarm);

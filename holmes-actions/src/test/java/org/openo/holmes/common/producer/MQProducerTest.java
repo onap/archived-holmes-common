@@ -67,6 +67,22 @@ public class MQProducerTest {
     }
 
     @Test
+    public void init() {
+        MQConfig mqConfig = new MQConfig();
+        mqConfig.brokerIp = "127.0.0.1";
+        mqConfig.brokerPort = 61616;
+        mqConfig.brokerPassword = "admin";
+        mqConfig.brokerUsername = "admin";
+        expect(mqConfigProvider.get()).andReturn(mqConfig).anyTimes();
+
+        PowerMock.replayAll();
+
+        mqProducer.init();
+
+        PowerMock.verifyAll();
+    }
+
+    @Test
     public void sendAlarmMQTopicMsg() throws Exception {
         Alarm alarm = new Alarm();
         Connection connection = PowerMock.createMock(Connection.class);

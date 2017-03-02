@@ -17,15 +17,19 @@ package org.openo.holmes.common.constant;
 
 public interface AlarmConst {
 
-    public static final String MQ_TOPIC_NAME_ALARMS_CORRELATION = "topic://voss/fm/alarms_correlation";
+    String MQ_TOPIC_NAME_ALARMS_CORRELATION = "topic://voss/fm/alarms_correlation";
 
-    public static final String MQ_TOPIC_NAME_ALARM = "topic://voss/fm/alarm";
+    String MQ_TOPIC_NAME_ALARM = "topic://voss/fm/alarm";
 
-    public static final String I18N_EN = "en";
+    String NFVO_PATH = "/openoapi/umc/v1/fm/curalarms/findAll";
 
-    public static final String I18N_ZH = "zh";
+    int NFVO_STATUS_OK = 200;
 
-    public static final String ZH_CN = "zh_CN";
+    String I18N_EN = "en";
 
-    public static final String ADMIN = "admin";
+    String I18N_ZH = "zh";
+
+    String ZH_CN = "zh_CN";
+
+    String ADMIN = "admin";
 }
