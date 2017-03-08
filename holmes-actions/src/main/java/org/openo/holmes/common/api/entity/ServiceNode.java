@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,25 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openo.holmes.common.constant;
 
-public interface AlarmConst {
 
-    String MQ_TOPIC_NAME_ALARMS_CORRELATION = "topic://voss/fm/alarms_correlation";
+package org.openo.holmes.common.api.entity;
 
-    String MQ_TOPIC_NAME_ALARM = "topic://voss/fm/alarm";
+import lombok.Getter;
+import lombok.Setter;
 
-    String NFVO_PATH = "/openoapi/umc/v1/fm/curalarms/findAll";
+@Getter
+@Setter
+public class ServiceNode {
 
-    int NFVO_STATUS_OK = 200;
+    private String ip;
+    private String port;
+    private int ttl;
 
-    String I18N_EN = "en";
-
-    String I18N_ZH = "zh";
-
-    String ZH_CN = "zh_CN";
-
-    String ADMIN = "admin";
-
-    int RESPONSE_STATUS_OK = 200;
 }
