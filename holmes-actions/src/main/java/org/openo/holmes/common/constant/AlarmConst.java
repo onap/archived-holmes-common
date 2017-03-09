@@ -33,5 +33,5 @@ public interface AlarmConst {
 
     String ADMIN = "admin";
 
-    int RESPONSE_STATUS_OK = 200;
+    int MICRO_SERVICE_STATUS_SUCCESS = 201;
 }

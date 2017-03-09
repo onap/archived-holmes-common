@@ -53,14 +53,13 @@ public class MSBRegisterUtil {
                 log.warn("Registering the service to the bus failure", e);
                 return false;
             }
-            if (response.getStatusLine().getStatusCode() == AlarmConst.RESPONSE_STATUS_OK) {
+            if (response.getStatusLine().getStatusCode() == AlarmConst.MICRO_SERVICE_STATUS_SUCCESS) {
                 log.info("Registration successful service to the bus :" + response.getEntity());
                 return true;
             } else {
                 log.warn(
                         "Registering the service to the bus failure:" + response.getStatusLine().getStatusCode() + " " +
-                                response.getStatusLine().getReasonPhrase() + response.getStatusLine()
-                                .getProtocolVersion());
+                                response.getStatusLine().getReasonPhrase());
                 return false;
             }
         } finally {
