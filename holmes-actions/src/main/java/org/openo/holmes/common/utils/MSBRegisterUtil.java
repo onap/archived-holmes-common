@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -44,6 +45,7 @@ public class MSBRegisterUtil {
             if (StringUtils.isNotEmpty(content)) {
                 httpPost.setEntity(new ByteArrayEntity(content.getBytes()));
             }
+            this.setHeader(httpPost);
             HttpResponse response;
             try {
                 response = httpClient.execute(httpPost);
@@ -55,12 +57,20 @@ public class MSBRegisterUtil {
                 log.info("Registration successful service to the bus :" + response.getEntity());
                 return true;
             } else {
-                log.warn("Registering the service to the bus failure:"+response.getStatusLine().getStatusCode()+" "+
-                response.getStatusLine().getReasonPhrase()+response.getStatusLine().getProtocolVersion());
+                log.warn(
+                        "Registering the service to the bus failure:" + response.getStatusLine().getStatusCode() + " " +
+                                response.getStatusLine().getReasonPhrase() + response.getStatusLine()
+                                .getProtocolVersion());
                 return false;
             }
         } finally {
             httpClient.close();
         }
+    }
+
+    private void setHeader(HttpRequestBase httpRequestBase) {
+        httpRequestBase.setHeader("Content-Type", "text/html;charset=UTF-8");
+        httpRequestBase.setHeader("Accept", "application/json");
+        httpRequestBase.setHeader("Content-Type", "application/json");
     }
 }
