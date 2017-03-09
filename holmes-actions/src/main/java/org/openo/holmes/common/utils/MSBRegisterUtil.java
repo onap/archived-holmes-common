@@ -41,7 +41,7 @@ public class MSBRegisterUtil {
             ObjectMapper mapper = new ObjectMapper();
             String content = mapper.writeValueAsString(entity);
             HttpPost httpPost = new HttpPost("http://" + MicroServiceConfig.getMsbServerAddr()
-                    + ":8086/api/microservices/v1/services?createOrUpdate=false");
+                    + "/api/microservices/v1/services?createOrUpdate=false");
             if (StringUtils.isNotEmpty(content)) {
                 httpPost.setEntity(new ByteArrayEntity(content.getBytes()));
             }
