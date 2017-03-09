@@ -55,7 +55,8 @@ public class MSBRegisterUtil {
                 log.info("Registration successful service to the bus :" + response.getEntity());
                 return true;
             } else {
-                log.warn("Registering the service to the bus failure");
+                log.warn("Registering the service to the bus failure:"+response.getStatusLine().getStatusCode()+" "+
+                response.getStatusLine().getReasonPhrase()+response.getStatusLine().getProtocolVersion());
                 return false;
             }
         } finally {
