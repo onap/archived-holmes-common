@@ -28,7 +28,7 @@ public class MicroServiceConfig {
     }
 
     public static String getMsbServerAddr() {
-        return getProperty("MSB_ADDR") + ":" + AlarmConst.MICRO_SERVICE_PORT;
+        return AlarmConst.HTTP+getProperty("MSB_ADDR") + ":" + AlarmConst.MICRO_SERVICE_PORT;
     }
 
     public static String getServiceIp() {
