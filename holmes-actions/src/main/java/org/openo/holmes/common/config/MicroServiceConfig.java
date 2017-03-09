@@ -15,22 +15,24 @@
  */
 package org.openo.holmes.common.config;
 
+import org.openo.holmes.common.constant.AlarmConst;
+
 public class MicroServiceConfig {
 
-  private static String getProperty(String name) {
-    String value = System.getenv(name);
-    if (value == null) {
-      value = System.getProperty(name);
+    private static String getProperty(String name) {
+        String value = System.getenv(name);
+        if (value == null) {
+            value = System.getProperty(name);
+        }
+        return value;
     }
-    return value;
-  }
 
-  public static String getMsbServerAddr() {
-    return getProperty("MSB_ADDR");
-  }
+    public static String getMsbServerAddr() {
+        return getProperty("MSB_ADDR") + ":" + AlarmConst.MICRO_SERVICE_PORT;
+    }
 
-  public static String getServiceIp() {
-    return getProperty("SERVICE_IP");
-  }
+    public static String getServiceIp() {
+        return getProperty("SERVICE_IP");
+    }
 
 }
