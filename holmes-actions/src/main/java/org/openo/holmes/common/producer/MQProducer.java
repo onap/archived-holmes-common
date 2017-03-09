@@ -24,6 +24,7 @@ import javax.jms.JMSException;
 import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.glassfish.hk2.api.IterableProvider;
 import org.jvnet.hk2.annotations.Service;
@@ -36,15 +37,12 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 
 @Service
 @Slf4j
+@NoArgsConstructor
 public class MQProducer {
 
     @Inject
     private IterableProvider<MQConfig> mqConfigProvider;
     private ConnectionFactory connectionFactory;
-
-    public MQProducer() {
-
-    }
 
     public void init() {
 

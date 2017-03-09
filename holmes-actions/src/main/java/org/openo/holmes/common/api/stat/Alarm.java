@@ -201,7 +201,7 @@ public class Alarm implements AplusData, Cloneable, Serializable {
 
     @Override
     public boolean equals(Object arg0) {
-        if (arg0 == null) {
+        if (arg0 == null || !(arg0 instanceof Alarm)) {
             return false;
         }
         return this.alarmKey.equals(((Alarm) arg0).getAlarmKey());
