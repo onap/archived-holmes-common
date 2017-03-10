@@ -26,6 +26,7 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.jvnet.hk2.annotations.Service;
 import org.openo.holmes.common.api.entity.ServiceRegisterEntity;
 import org.openo.holmes.common.config.MicroServiceConfig;
@@ -35,13 +36,40 @@ import org.openo.holmes.common.constant.AlarmConst;
 @Service
 public class MSBRegisterUtil {
 
-    public boolean register(ServiceRegisterEntity entity) throws IOException {
+    public void register(ServiceRegisterEntity entity) throws IOException {
+        ((Runnable) () -> {
+            log.info("start inventory micro service register");
+            boolean flag = false;
+            int retry = 0;
+            while (!flag && retry < 20) {
+                log.info("inventory micro service register.retry:" + retry);
+                retry++;
+                flag = inner_register(entity);
+                if (!flag) {
+                    log.warn("micro service register failed, sleep 30S and try again.");
+                    threadSleep(30000);
+                } else {
+                    log.info("micro service register success!");
+                    break;
+                }
+            }
+            log.info("holmes micro service register end.");
+        }).run();
+    }
+
+    private void setHeader(HttpRequestBase httpRequestBase) {
+        httpRequestBase.setHeader("Content-Type", "text/html;charset=UTF-8");
+        httpRequestBase.setHeader("Accept", "application/json");
+        httpRequestBase.setHeader("Content-Type", "application/json");
+    }
+
+    private boolean inner_register(ServiceRegisterEntity entity) {
         CloseableHttpClient httpClient = HttpClients.createDefault();
         try {
             ObjectMapper mapper = new ObjectMapper();
             String content = mapper.writeValueAsString(entity);
-            HttpPost httpPost = new HttpPost(MicroServiceConfig.getMsbServerAddr()
-                    + "/api/microservices/v1/services?createOrUpdate=false");
+            HttpPost httpPost = new HttpPost(
+                    MicroServiceConfig.getMsbServerAddr() + "/api/microservices/v1/services?createOrUpdate=false");
             if (StringUtils.isNotEmpty(content)) {
                 httpPost.setEntity(new ByteArrayEntity(content.getBytes()));
             }
@@ -54,7 +82,7 @@ public class MSBRegisterUtil {
                 return false;
             }
             if (response.getStatusLine().getStatusCode() == AlarmConst.MICRO_SERVICE_STATUS_SUCCESS) {
-                log.info("Registration successful service to the bus :" + response.getEntity());
+                log.info("Registration successful service to the bus :" + EntityUtils.toString(response.getEntity()));
                 return true;
             } else {
                 log.warn(
@@ -62,14 +90,25 @@ public class MSBRegisterUtil {
                                 response.getStatusLine().getReasonPhrase());
                 return false;
             }
+        } catch (IOException e) {
+            log.warn("ServiceRegisterEntity:" + entity + " parse failed",e);
         } finally {
-            httpClient.close();
+            try {
+                httpClient.close();
+            } catch (IOException e) {
+                log.warn("At the time of registering service httpclient close failure",e);
+            }
         }
+        return false;
     }
 
-    private void setHeader(HttpRequestBase httpRequestBase) {
-        httpRequestBase.setHeader("Content-Type", "text/html;charset=UTF-8");
-        httpRequestBase.setHeader("Accept", "application/json");
-        httpRequestBase.setHeader("Content-Type", "application/json");
+    private void threadSleep(int second) {
+        log.info("start sleep ....");
+        try {
+            Thread.sleep(second);
+        } catch (InterruptedException error) {
+            log.error("thread sleep error.errorMsg:" + error.getMessage());
+        }
+        log.info("sleep end .");
     }
 }
