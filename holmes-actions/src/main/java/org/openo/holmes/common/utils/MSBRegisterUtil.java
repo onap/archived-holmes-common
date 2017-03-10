@@ -37,7 +37,6 @@ import org.openo.holmes.common.constant.AlarmConst;
 public class MSBRegisterUtil {
 
     public void register(ServiceRegisterEntity entity) throws IOException {
-        ((Runnable) () -> {
             log.info("start inventory micro service register");
             boolean flag = false;
             int retry = 0;
@@ -54,7 +53,6 @@ public class MSBRegisterUtil {
                 }
             }
             log.info("holmes micro service register end.");
-        }).run();
     }
 
     private void setHeader(HttpRequestBase httpRequestBase) {
