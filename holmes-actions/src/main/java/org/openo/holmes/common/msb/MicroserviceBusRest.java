@@ -24,7 +24,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.openo.holmes.common.api.entity.ServiceRegisterEntity;
 
-@Path("/api/microservices/v1/services")
+@Path("/openoapi/microservices/v1/services")
 public interface MicroserviceBusRest {
     @Path("")
     @POST
