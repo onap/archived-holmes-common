@@ -16,33 +16,26 @@
 
 package org.openo.holmes.common.utils;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.eclipsesource.jaxrs.consumer.ConsumerFactory;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
+import org.glassfish.jersey.client.ClientConfig;
 import org.jvnet.hk2.annotations.Service;
 import org.openo.holmes.common.api.entity.ServiceRegisterEntity;
 import org.openo.holmes.common.config.MicroServiceConfig;
-import org.openo.holmes.common.constant.AlarmConst;
+import org.openo.holmes.common.msb.MicroserviceBusRest;
 
 @Slf4j
 @Service
 public class MSBRegisterUtil {
 
     public void register(ServiceRegisterEntity entity) throws IOException {
-        log.info("start inventory micro service register");
+        log.info("start holmes micro service register");
         boolean flag = false;
         int retry = 0;
         while (!flag && retry < 20) {
-            log.info("holmes micro service register.retry:" + retry);
+            log.info("Holmes microservice register. retry:" + retry);
             retry++;
             flag = inner_register(entity);
             if (!flag) {
@@ -56,62 +49,17 @@ public class MSBRegisterUtil {
         log.info("holmes micro service register end.");
     }
 
-    private void setHeader(HttpRequestBase httpRequestBase) {
-        httpRequestBase.setHeader("Content-Type", "text/html;charset=UTF-8");
-        httpRequestBase.setHeader("Accept", "application/json");
-        httpRequestBase.setHeader("Content-Type", "application/json");
-    }
-
     private boolean inner_register(ServiceRegisterEntity entity) {
-        CloseableHttpClient httpClient = HttpClients.createDefault();
+        ClientConfig config = new ClientConfig();
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            String content = mapper.writeValueAsString(entity);
-            HttpPost httpPost = new HttpPost(
-                    MicroServiceConfig.getMsbServerAddr() + "/api/microservices/v1/services?createOrUpdate=true");
-            HttpGet httpGet = new HttpGet(
-                    MicroServiceConfig.getMsbServerAddr() + "/api/microservices/v1/services/");
-            if (StringUtils.isNotEmpty(content)) {
-                httpPost.setEntity(new ByteArrayEntity(content.getBytes()));
-            }
-            this.setHeader(httpPost);
-            this.setHeader(httpGet);
-            HttpResponse response;
-            try {
-                response = httpClient.execute(httpPost);
-            } catch (Exception e) {
-                log.warn("Registering the service to the bus failure", e);
-                return false;
-            }
-            HttpResponse responseGet = null;
-            try {
-                responseGet = httpClient.execute(httpPost);
-                log.info("all service:" + EntityUtils.toString(responseGet.getEntity()));
-            } catch (Exception e) {
-                if (responseGet != null) {
-                    log.info(responseGet.getStatusLine().getReasonPhrase());
-                }
-                log.warn("query all service failure", e);
-            }
-            if (response.getStatusLine().getStatusCode() == AlarmConst.MICRO_SERVICE_STATUS_SUCCESS) {
-                log.info("Registration successful service to the bus :" + EntityUtils.toString(response.getEntity()));
-                return true;
-            } else {
-                log.warn(
-                        "Registering the service to the bus failure:" + response.getStatusLine().getStatusCode() + " " +
-                                response.getStatusLine().getReasonPhrase());
-                return false;
-            }
-        } catch (IOException e) {
-            log.warn("ServiceRegisterEntity:" + entity + " parse failed", e);
-        } finally {
-            try {
-                httpClient.close();
-            } catch (IOException e) {
-                log.warn("At the time of registering service httpclient close failure", e);
-            }
+            MicroserviceBusRest resourceserviceproxy = ConsumerFactory.createConsumer(
+                    MicroServiceConfig.getMsbServerAddr(), config, MicroserviceBusRest.class);
+            resourceserviceproxy.registerServce("false", entity);
+        } catch (Exception error) {
+            log.error("microservice register failed!" + error.getMessage());
+            return false;
         }
-        return false;
+        return true;
     }
 
     private void threadSleep(int second) {
