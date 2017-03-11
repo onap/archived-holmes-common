@@ -21,6 +21,7 @@ import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.ByteArrayEntity;
@@ -37,22 +38,22 @@ import org.openo.holmes.common.constant.AlarmConst;
 public class MSBRegisterUtil {
 
     public void register(ServiceRegisterEntity entity) throws IOException {
-            log.info("start inventory micro service register");
-            boolean flag = false;
-            int retry = 0;
-            while (!flag && retry < 20) {
-                log.info("inventory micro service register.retry:" + retry);
-                retry++;
-                flag = inner_register(entity);
-                if (!flag) {
-                    log.warn("micro service register failed, sleep 30S and try again.");
-                    threadSleep(30000);
-                } else {
-                    log.info("micro service register success!");
-                    break;
-                }
+        log.info("start inventory micro service register");
+        boolean flag = false;
+        int retry = 0;
+        while (!flag && retry < 20) {
+            log.info("holmes micro service register.retry:" + retry);
+            retry++;
+            flag = inner_register(entity);
+            if (!flag) {
+                log.warn("micro service register failed, sleep 30S and try again.");
+                threadSleep(30000);
+            } else {
+                log.info("micro service register success!");
+                break;
             }
-            log.info("holmes micro service register end.");
+        }
+        log.info("holmes micro service register end.");
     }
 
     private void setHeader(HttpRequestBase httpRequestBase) {
@@ -67,17 +68,30 @@ public class MSBRegisterUtil {
             ObjectMapper mapper = new ObjectMapper();
             String content = mapper.writeValueAsString(entity);
             HttpPost httpPost = new HttpPost(
-                    MicroServiceConfig.getMsbServerAddr() + "/api/microservices/v1/services?createOrUpdate=false");
+                    MicroServiceConfig.getMsbServerAddr() + "/api/microservices/v1/services?createOrUpdate=true");
+            HttpGet httpGet = new HttpGet(
+                    MicroServiceConfig.getMsbServerAddr() + "/api/microservices/v1/services/");
             if (StringUtils.isNotEmpty(content)) {
                 httpPost.setEntity(new ByteArrayEntity(content.getBytes()));
             }
             this.setHeader(httpPost);
+            this.setHeader(httpGet);
             HttpResponse response;
             try {
                 response = httpClient.execute(httpPost);
             } catch (Exception e) {
                 log.warn("Registering the service to the bus failure", e);
                 return false;
+            }
+            HttpResponse responseGet = null;
+            try {
+                responseGet = httpClient.execute(httpPost);
+                log.info("all service:" + EntityUtils.toString(responseGet.getEntity()));
+            } catch (Exception e) {
+                if (responseGet != null) {
+                    log.info(responseGet.getStatusLine().getReasonPhrase());
+                }
+                log.warn("query all service failure", e);
             }
             if (response.getStatusLine().getStatusCode() == AlarmConst.MICRO_SERVICE_STATUS_SUCCESS) {
                 log.info("Registration successful service to the bus :" + EntityUtils.toString(response.getEntity()));
@@ -89,12 +103,12 @@ public class MSBRegisterUtil {
                 return false;
             }
         } catch (IOException e) {
-            log.warn("ServiceRegisterEntity:" + entity + " parse failed",e);
+            log.warn("ServiceRegisterEntity:" + entity + " parse failed", e);
         } finally {
             try {
                 httpClient.close();
             } catch (IOException e) {
-                log.warn("At the time of registering service httpclient close failure",e);
+                log.warn("At the time of registering service httpclient close failure", e);
             }
         }
         return false;
