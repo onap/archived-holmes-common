@@ -65,7 +65,7 @@ public class MSBRegisterUtilTest {
 
         @Override
         public ServiceRegisterEntity registerServce(@QueryParam("createOrUpdate") String createOrUpdate,
-                ServiceRegisterEntity entity) throws Exception {
+                ServiceRegisterEntity entity) {
             return null;
         }
     }

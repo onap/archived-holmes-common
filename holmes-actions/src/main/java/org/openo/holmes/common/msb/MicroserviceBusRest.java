@@ -26,10 +26,11 @@ import org.openo.holmes.common.api.entity.ServiceRegisterEntity;
 
 @Path("/openoapi/microservices/v1/services")
 public interface MicroserviceBusRest {
+
     @Path("")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public ServiceRegisterEntity registerServce(@QueryParam("createOrUpdate") String createOrUpdate,
-            ServiceRegisterEntity entity) throws Exception;
+    ServiceRegisterEntity registerServce(@QueryParam("createOrUpdate") String createOrUpdate,
+            ServiceRegisterEntity entity);
 }

@@ -35,7 +35,7 @@ public class MSBRegisterUtil {
         while (!flag && retry < 20) {
             log.info("Holmes microservice register. retry:" + retry);
             retry++;
-            flag = inner_register(entity);
+            flag = innerRegister(entity);
             if (!flag) {
                 log.warn("micro service register failed, sleep 30S and try again.");
                 threadSleep(30000);
@@ -47,7 +47,7 @@ public class MSBRegisterUtil {
         log.info("holmes micro service register end.");
     }
 
-    private boolean inner_register(ServiceRegisterEntity entity) {
+    private boolean innerRegister(ServiceRegisterEntity entity) {
         try {
             log.info("msbServerAddr:" + MicroServiceConfig.getMsbServerAddr());
             log.info("entity:" + entity);
@@ -55,7 +55,7 @@ public class MSBRegisterUtil {
                     MicroServiceConfig.getMsbServerAddr(), MicroserviceBusRest.class);
             resourceserviceproxy.registerServce("false", entity);
         } catch (Exception error) {
-            log.error("microservice register failed!" + error.getMessage());
+            log.error("microservice register failed!" + error.getMessage(), error);
             return false;
         }
         return true;
@@ -66,7 +66,7 @@ public class MSBRegisterUtil {
         try {
             Thread.sleep(second);
         } catch (InterruptedException error) {
-            log.error("thread sleep error.errorMsg:" + error.getMessage());
+            log.error("thread sleep error.errorMsg:" + error.getMessage(), error);
         }
         log.info("sleep end .");
     }
