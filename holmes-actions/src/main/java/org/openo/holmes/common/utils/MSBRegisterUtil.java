@@ -19,7 +19,6 @@ package org.openo.holmes.common.utils;
 import com.eclipsesource.jaxrs.consumer.ConsumerFactory;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
-import org.glassfish.jersey.client.ClientConfig;
 import org.jvnet.hk2.annotations.Service;
 import org.openo.holmes.common.api.entity.ServiceRegisterEntity;
 import org.openo.holmes.common.config.MicroServiceConfig;
@@ -49,12 +48,11 @@ public class MSBRegisterUtil {
     }
 
     private boolean inner_register(ServiceRegisterEntity entity) {
-        ClientConfig config = new ClientConfig();
         try {
             log.info("msbServerAddr:" + MicroServiceConfig.getMsbServerAddr());
             log.info("entity:" + entity);
             MicroserviceBusRest resourceserviceproxy = ConsumerFactory.createConsumer(
-                    MicroServiceConfig.getMsbServerAddr(), config, MicroserviceBusRest.class);
+                    MicroServiceConfig.getMsbServerAddr(), MicroserviceBusRest.class);
             resourceserviceproxy.registerServce("false", entity);
         } catch (Exception error) {
             log.error("microservice register failed!" + error.getMessage());
