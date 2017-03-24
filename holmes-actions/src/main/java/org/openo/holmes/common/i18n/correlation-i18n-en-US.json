@@ -16,6 +16,7 @@
   "EXCEPTION_DB_RULE_GET_ERROR": "Error when get rule from database",
   "EXCEPTION_REQUEST_IS_EMPTY": "The request object is empty",
   "RULE_MANAGEMENT_CALL_DELETE_RULE_REST_FAILED": "Delete rules from engine call interface failure ",
+  "RULE_MANAGEMENT_DELETE_RULE_FAILED":"To delete rules from the engine failure",
   "RULE_MANAGEMENT_CALL_DEPLOY_RULE_REST_FAILED": "From the rules engine calls the deployment of interface failure",
   "RULE_MANAGEMENT_CALL_CHECK_RULE_REST_FAILED": "From the rules engine calls the check of interface failure",
   "RULE_MANAGEMENT_CREATE_QUERY_SQL_FAILED": "Create query exception",
