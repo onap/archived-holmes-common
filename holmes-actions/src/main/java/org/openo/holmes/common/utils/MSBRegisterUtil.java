@@ -67,6 +67,7 @@ public class MSBRegisterUtil {
             Thread.sleep(second);
         } catch (InterruptedException error) {
             log.error("thread sleep error.errorMsg:" + error.getMessage(), error);
+            Thread.currentThread().interrupt();
         }
         log.info("sleep end .");
     }
