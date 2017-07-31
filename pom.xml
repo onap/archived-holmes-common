@@ -11,16 +11,17 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.openo.oparent</groupId>
-        <artifactId>oparent</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-        <relativePath>../oparent</relativePath>
+        <groupId>org.onap.oparent</groupId>
+        <artifactId>version</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../../oparent</relativePath>
     </parent>
 
-    <groupId>org.openo.holmes.actions</groupId>
-    <artifactId>holmes-actions-parent</artifactId>
+    <groupId>org.onap.holmes.common</groupId>
+    <artifactId>holmes-common-parent</artifactId>
     <packaging>pom</packaging>
-    <name>holmes-actions-parent</name>
+    <version>1.0.0-SNAPSHOT</version>
+    <name>holmes-common-parent</name>
     <modules>
         <module>holmes-actions</module>
     </modules>
@@ -88,17 +89,6 @@
                 <groupId>org.antlr</groupId>
                 <artifactId>stringtemplate</artifactId>
                 <version>${stringtemplate.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.openo.common-services.common-utilities</groupId>
-                <artifactId>dropwizard-ioc-container</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.openo.common-services.common-utilities</groupId>
-                <artifactId>baseservice-i18n</artifactId>
-                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.quartz-scheduler</groupId>
