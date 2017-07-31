@@ -17,11 +17,12 @@
         <relativePath>../../oparent</relativePath>
     </parent>
 
-    <groupId>org.onap.holmes.actions</groupId>
-    <artifactId>holmes-actions-parent</artifactId>
+    <groupId>org.onap.holmes.common</groupId>
+    <artifactId>holmes-common-parent</artifactId>
     <packaging>pom</packaging>
+
     <version>1.0.0-SNAPSHOT</version>
-    <name>holmes-actions-parent</name>
+    <name>holmes-common-parent</name>
     <modules>
         <module>holmes-actions</module>
     </modules>

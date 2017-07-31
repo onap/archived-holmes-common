@@ -11,12 +11,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.onap.holmes.actions</groupId>
-        <artifactId>holmes-actions-parent</artifactId>
+        <groupId>org.onap.holmes.common</groupId>
+        <artifactId>holmes-common-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <name>holmes-actions-service</name>
+    <name>holmes-common-service</name>
     <packaging>jar</packaging>
     <artifactId>holmes-actions</artifactId>
     <dependencies>
