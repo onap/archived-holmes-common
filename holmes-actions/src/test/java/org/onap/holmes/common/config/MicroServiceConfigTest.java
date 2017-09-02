@@ -18,6 +18,7 @@ package org.onap.holmes.common.config;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -28,6 +29,32 @@ public class MicroServiceConfigTest {
         System.setProperty("MSB_ADDR", "test");
         assertThat("http://test", equalTo(MicroServiceConfig.getMsbServerAddr()));
         System.clearProperty("MSB_ADDR");
+    }
+
+    @Test
+    public void getMsbServerIpTest() {
+        System.setProperty("MSB_ADDR", "10.54.23.79");
+        assertThat("10.54.23.79", equalTo(MicroServiceConfig.getMsbServerIp()));
+        System.clearProperty("MSB_ADDR");
+    }
+
+    @Test
+    public void getMsbPortTest() {
+        System.setProperty("MSB_PORT", "110");
+        assertTrue(110 == MicroServiceConfig.getMsbServerPort());
+        System.clearProperty("MSB_PORT");
+    }
+
+    @Test
+    public void getMsbPortTestNonnumeric() {
+        System.setProperty("MSB_PORT", "test");
+        assertTrue(80 == MicroServiceConfig.getMsbServerPort());
+        System.clearProperty("MSB_PORT");
+    }
+
+    @Test
+    public void getMsbPortTestNullValue() {
+        assertTrue(80 == MicroServiceConfig.getMsbServerPort());
     }
 
     @Test

@@ -31,6 +31,18 @@ public class MicroServiceConfig {
         return AlarmConst.HTTP + getProperty("MSB_ADDR");
     }
 
+    public static String getMsbServerIp() {
+        return getProperty("MSB_ADDR");
+    }
+
+    public static int getMsbServerPort() {
+        try {
+            return Integer.valueOf(getProperty("MSB_PORT"));
+        } catch (NumberFormatException e) {
+            return 80;
+        }
+    }
+
     public static String getServiceIp() {
         return getProperty("SERVICE_IP");
     }
