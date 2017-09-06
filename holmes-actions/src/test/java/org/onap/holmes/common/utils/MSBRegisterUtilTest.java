@@ -55,7 +55,7 @@ public class MSBRegisterUtilTest {
         serviceRegisterEntity.setServiceName("holmes-rule-mgmt");
         serviceRegisterEntity.setProtocol("REST");
         serviceRegisterEntity.setVersion("v1");
-        serviceRegisterEntity.setUrl("/onapapi/holmes-rule-mgmt/v1");
+        serviceRegisterEntity.setUrl("/api/holmes-rule-mgmt/v1");
         serviceRegisterEntity.setSingleNode(MicroServiceConfig.getServiceIp(), "9101", 0);
         serviceRegisterEntity.setVisualRange("1|0");
         return serviceRegisterEntity;
