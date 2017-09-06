@@ -69,7 +69,7 @@ public class CorrelationRuleTest {
 
     @Test
     public void getterAndSetter4TemplateID() throws Exception {
-        final int templateId = 1;
+        final long templateId = 1L;
         correlationRule.setTemplateID(templateId);
         assertThat(correlationRule.getTemplateID(), equalTo(templateId));
     }
