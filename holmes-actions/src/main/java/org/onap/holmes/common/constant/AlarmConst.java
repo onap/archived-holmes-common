@@ -21,7 +21,7 @@ public interface AlarmConst {
 
     String MQ_TOPIC_NAME_ALARM = "topic://voss/fm/alarm";
 
-    String NFVO_PATH = "/onapapi/umc/v1/fm/curalarms/findAll";
+    String NFVO_PATH = "/api/umc/v1/fm/curalarms/findAll";
 
     int NFVO_STATUS_OK = 200;
 
