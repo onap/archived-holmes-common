@@ -29,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.glassfish.hk2.api.IterableProvider;
 import org.jvnet.hk2.annotations.Service;
 import org.onap.holmes.common.api.stat.Alarm;
+import org.onap.holmes.common.api.stat.VesAlarm;
 import org.onap.holmes.common.constant.AlarmConst;
 import org.onap.holmes.common.api.entity.CorrelationResult;
 import org.onap.holmes.common.api.stat.AplusResult;
@@ -52,7 +53,7 @@ public class MQProducer {
             mqConfigProvider.get().brokerPassword, brokerURL);
     }
 
-    public void sendAlarmMQTopicMsg(Alarm alarm) {
+    public void sendAlarmMQTopicMsg(VesAlarm alarm) {
         sendMQTopicMsg(alarm);
     }
 
@@ -75,7 +76,7 @@ public class MQProducer {
             session = connection.createSession(true, Session.AUTO_ACKNOWLEDGE);
             if (t instanceof CorrelationResult) {
                 destination = session.createTopic(AlarmConst.MQ_TOPIC_NAME_ALARMS_CORRELATION);
-            } else if (t instanceof Alarm) {
+            } else if (t instanceof VesAlarm) {
                 destination = session.createTopic(AlarmConst.MQ_TOPIC_NAME_ALARM);
             }
             messageProducer = session.createProducer(destination);

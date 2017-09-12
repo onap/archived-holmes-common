@@ -36,6 +36,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.onap.holmes.common.api.stat.Alarm;
 import org.onap.holmes.common.api.entity.CorrelationResult;
+import org.onap.holmes.common.api.stat.VesAlarm;
 import org.onap.holmes.common.config.MQConfig;
 import org.powermock.api.easymock.PowerMock;
 import org.powermock.modules.junit4.rule.PowerMockRule;
@@ -84,7 +85,7 @@ public class MQProducerTest {
 
     @Test
     public void sendAlarmMQTopicMsg() throws Exception {
-        Alarm alarm = new Alarm();
+        VesAlarm alarm = new VesAlarm();
         Connection connection = PowerMock.createMock(Connection.class);
         Session session = PowerMock.createMock(Session.class);
         Destination destination = PowerMock.createMock(Topic.class);
@@ -113,7 +114,7 @@ public class MQProducerTest {
     @Test
     public void sendAlarmMQTopicMsg_exception() throws Exception {
         thrown.expect(JMSException.class);
-        Alarm alarm = new Alarm();
+        VesAlarm alarm = new VesAlarm();
 
         expect(connectionFactory.createConnection()).andThrow(new JMSException(""));
 
