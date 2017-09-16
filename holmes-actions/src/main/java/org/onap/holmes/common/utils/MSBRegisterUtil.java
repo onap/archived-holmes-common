@@ -35,44 +35,12 @@ import org.onap.msb.sdk.httpclient.msb.MSBServiceClient;
 @Service
 public class MSBRegisterUtil {
 
-    public void register(ServiceRegisterEntity entity) throws IOException {
-        log.info("Start register Holmes Service to MSB...");
-        boolean flag = false;
-        int retry = 0;
-        while (!flag && retry < 20) {
-            log.info("Holmes Service Registration. Retry: " + retry);
-            retry++;
-            flag = innerRegister(entity);
-            if (!flag) {
-                log.warn("Failed to register the service to MSB. Sleep 30s and try again.");
-                threadSleep(30000);
-            } else {
-                log.info("Registration succeeded!");
-                break;
-            }
-        }
-        log.info("Service registration completed.");
-    }
-
-    private boolean innerRegister(ServiceRegisterEntity entity) {
-        try {
-            log.info("msbServerAddr:" + MicroServiceConfig.getMsbServerAddr());
-            log.info("entity:" + entity);
-            MicroserviceBusRest resourceserviceproxy = ConsumerFactory.createConsumer(
-                    MicroServiceConfig.getMsbServerAddr(), MicroserviceBusRest.class);
-            resourceserviceproxy.registerServce("false", entity);
-        } catch (Exception error) {
-            log.error("Micro-service registration failed!" + error.getMessage(), error);
-            return false;
-        }
-        return true;
-    }
-
     public void register2Msb(MicroServiceInfo msinfo) throws CorrelationException {
-        MSBServiceClient msbClient = new MSBServiceClient(MicroServiceConfig.getMsbServerIp(),
-                MicroServiceConfig.getMsbServerPort());
+        String[] msbAddrInfo = MicroServiceConfig.getMsbAddrInfo();
+        MSBServiceClient msbClient = new MSBServiceClient(msbAddrInfo[0],
+                Integer.parseInt(msbAddrInfo[1]));
 
-        log.info("Start register Holmes Service to MSB...");
+        log.info("Start to register Holmes Service to MSB...");
         MicroServiceFullInfo microServiceFullInfo = null;
         int retry = 0;
         while (null == microServiceFullInfo && retry < 20) {

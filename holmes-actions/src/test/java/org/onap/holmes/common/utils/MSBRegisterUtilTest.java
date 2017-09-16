@@ -16,6 +16,8 @@
 
 package org.onap.holmes.common.utils;
 
+import static org.onap.holmes.common.config.MicroServiceConfig.HOSTNAME;
+
 import com.eclipsesource.jaxrs.consumer.ConsumerFactory;
 import javax.ws.rs.QueryParam;
 import org.easymock.EasyMock;
@@ -25,10 +27,12 @@ import org.onap.holmes.common.msb.MicroserviceBusRest;
 import org.onap.holmes.common.api.entity.ServiceRegisterEntity;
 import org.onap.holmes.common.config.MicroServiceConfig;
 import org.powermock.api.easymock.PowerMock;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 
-@PrepareForTest(ConsumerFactory.class)
+@PrepareForTest({ConsumerFactory.class, MicroServiceConfig.class})
+@PowerMockIgnore({"javax.ws.*"})
 public class MSBRegisterUtilTest {
 
     @Rule
@@ -36,27 +40,14 @@ public class MSBRegisterUtilTest {
     private MSBRegisterUtil msbRegisterUtil = new MSBRegisterUtil();
     private MicroserviceBusRest microserviceBusRest = new MicroserviceBusRestProxy();
 
-    @Test
-    public void registerTest() throws Exception {
-        ServiceRegisterEntity entity = initServiceEntity();
-        PowerMock.mockStatic(ConsumerFactory.class);
-        EasyMock.expect(ConsumerFactory
-                .createConsumer(EasyMock.anyObject(String.class), EasyMock.anyObject(Class.class)))
-                .andReturn(microserviceBusRest);
-        PowerMock.replayAll();
-
-        msbRegisterUtil.register(initServiceEntity());
-
-        PowerMock.verifyAll();
-    }
-
     private ServiceRegisterEntity initServiceEntity() {
+        String[] serviceAddrInfo = MicroServiceConfig.getServiceAddrInfo();
         ServiceRegisterEntity serviceRegisterEntity = new ServiceRegisterEntity();
         serviceRegisterEntity.setServiceName("holmes-rule-mgmt");
         serviceRegisterEntity.setProtocol("REST");
         serviceRegisterEntity.setVersion("v1");
         serviceRegisterEntity.setUrl("/api/holmes-rule-mgmt/v1");
-        serviceRegisterEntity.setSingleNode(MicroServiceConfig.getServiceIp(), "9101", 0);
+        serviceRegisterEntity.setSingleNode(serviceAddrInfo[0], serviceAddrInfo[1], 0);
         serviceRegisterEntity.setVisualRange("1|0");
         return serviceRegisterEntity;
     }

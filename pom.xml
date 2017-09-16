@@ -38,9 +38,7 @@
         <excludesFile>**/*$*</excludesFile>
         <nexusproxy>https://nexus.open-o.org/content</nexusproxy>
 
-
         <stringtemplate.version>3.2.1</stringtemplate.version>
-        <mysql.connector.version>5.1.38</mysql.connector.version>
         <dropwizard.version>0.8.0</dropwizard.version>
         <swagger.version>1.5.3</swagger.version>
         <lombok.version>1.16.8</lombok.version>
@@ -55,6 +53,18 @@
                 <groupId>org.onap.msb.java-sdk</groupId>
                 <artifactId>msb-java-sdk</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.core</groupId>
+                <artifactId>jersey-common</artifactId>
+                <version>${jersey.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.core</groupId>
+                <artifactId>jersey-client</artifactId>
+                <version>${jersey.version}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard</groupId>
@@ -84,12 +94,6 @@
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
             </dependency>
-            <dependency>
-                <groupId>mysql</groupId>
-                <artifactId>mysql-connector-java</artifactId>
-                <version>${mysql.connector.version}</version>
-            </dependency>
-
             <dependency>
                 <groupId>org.antlr</groupId>
                 <artifactId>stringtemplate</artifactId>
@@ -161,11 +165,6 @@
                 <groupId>org.apache.activemq</groupId>
                 <artifactId>activemq-pool</artifactId>
                 <version>5.8.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.httpcomponents</groupId>
-                <artifactId>httpclient</artifactId>
-                <version>4.3.6</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
