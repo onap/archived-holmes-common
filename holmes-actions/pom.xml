@@ -52,10 +52,6 @@
             <artifactId>lombok</artifactId>
         </dependency>
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-        </dependency>
-        <dependency>
             <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-jdbi</artifactId>
         </dependency>
@@ -109,10 +105,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.eclipsesource.jaxrs</groupId>
             <artifactId>consumer</artifactId>
             <version>${jaxrs.consumer.version}</version>
@@ -121,6 +113,14 @@
             <groupId>org.glassfish.jersey.containers</groupId>
             <artifactId>jersey-container-servlet-core</artifactId>
             <version>${jersey.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-core</artifactId>
         </dependency>
         <dependency>
             <groupId>net.sf.json-lib</groupId>

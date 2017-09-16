@@ -38,4 +38,6 @@ public interface AlarmConst {
     int MICRO_SERVICE_PORT = 8086;
 
     String HTTP = "http://";
+
+    String HTTPS = "https://";
 }

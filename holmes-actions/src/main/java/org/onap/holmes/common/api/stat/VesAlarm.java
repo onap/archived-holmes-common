@@ -27,7 +27,7 @@ import lombok.Setter;
 public class VesAlarm implements Cloneable, Serializable{
     private String domain;
     private String eventId;
-    private String EventName;
+    private String eventName;
     private String eventType;
     private Object internalHeaderFields;
     private Long lastEpochMicrosec;

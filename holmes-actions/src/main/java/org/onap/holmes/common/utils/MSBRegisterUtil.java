@@ -69,10 +69,11 @@ public class MSBRegisterUtil {
     }
 
     public void register2Msb(MicroServiceInfo msinfo) throws CorrelationException {
-        MSBServiceClient msbClient = new MSBServiceClient(MicroServiceConfig.getMsbServerIp(),
-                MicroServiceConfig.getMsbServerPort());
+        String[] msbAddrInfo = MicroServiceConfig.getMsbAddrInfo();
+        MSBServiceClient msbClient = new MSBServiceClient(msbAddrInfo[0],
+                Integer.parseInt(msbAddrInfo[1]));
 
-        log.info("Start register Holmes Service to MSB...");
+        log.info("Start to register Holmes Service to MSB...");
         MicroServiceFullInfo microServiceFullInfo = null;
         int retry = 0;
         while (null == microServiceFullInfo && retry < 20) {
