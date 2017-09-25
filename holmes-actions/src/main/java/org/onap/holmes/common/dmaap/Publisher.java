@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.onap.holmes.common.dmaap;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -27,11 +26,13 @@ import javax.ws.rs.core.Response;
 import lombok.Getter;
 import lombok.Setter;
 import org.glassfish.jersey.client.ClientConfig;
+import org.jvnet.hk2.annotations.Service;
 import org.onap.holmes.common.dmaap.entity.PolicyMsg;
 import org.onap.holmes.common.exception.CorrelationException;
 
 @Getter
 @Setter
+@Service
 public class Publisher {
 
     private String topic;

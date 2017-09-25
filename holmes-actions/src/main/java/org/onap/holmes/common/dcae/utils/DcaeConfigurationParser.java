@@ -102,7 +102,7 @@ public class DcaeConfigurationParser {
         Set<Entry<String, Object>> entries = jsonObject.entrySet();
         for (Entry<String, Object> entry : entries) {
             if (entry.getKey().startsWith("holmes.default.rule")) {
-                ret.addDefaultRule(new Rule(entry.getKey(), (String) entry.getValue()));
+                ret.addDefaultRule(new Rule(entry.getKey(), (String) entry.getValue(), 1));
             }
         }
     }

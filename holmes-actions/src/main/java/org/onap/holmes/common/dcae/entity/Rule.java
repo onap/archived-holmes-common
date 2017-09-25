@@ -26,4 +26,5 @@ import lombok.Setter;
 public class Rule {
     private String name;
     private String contents;
+    private int enabled = 1;
 }
