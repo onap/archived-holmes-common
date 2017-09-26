@@ -13,35 +13,21 @@
  */
 package org.onap.holmes.common.aai;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MultivaluedHashMap;
-import org.glassfish.jersey.client.ClientConfig;
+import java.util.HashMap;
+import java.util.Map;
 import org.onap.holmes.common.aai.config.AaiConfig;
 import org.onap.holmes.common.aai.entity.VmEntity;
 import org.onap.holmes.common.aai.entity.VnfEntity;
 import org.onap.holmes.common.config.MicroServiceConfig;
 import org.onap.holmes.common.exception.CorrelationException;
+import org.onap.holmes.common.utils.HttpsUtils;
 
 public class AaiQuery {
 
     private AaiResponseUtil aaiResponseUtil;
 
     public VnfEntity getAaiVnfData(String vnfId, String vnfName) throws CorrelationException {
-        Client client = ClientBuilder.newClient(new ClientConfig());
-        WebTarget webTarget = client
-                .target(MicroServiceConfig.getMsbServerAddr() + AaiConfig.VNF_ADDR + "vnf-id="
-                        + vnfId);
-        String response = webTarget.request("application/json").headers(getHeaders()).get()
-                .readEntity(String.class);
-        if (response == null) {
-            webTarget = client
-                    .target(MicroServiceConfig.getMsbServerAddr() + AaiConfig.VNF_ADDR + "vnf-name="
-                            + vnfName);
-            response = webTarget.request("application/json").headers(getHeaders()).get()
-                    .readEntity(String.class);
-        }
+        String response = getVnfDataResponse(vnfId, vnfName);
         try {
             return aaiResponseUtil.convertJsonToVnfEntity(response);
         } catch (Exception e) {
@@ -50,11 +36,8 @@ public class AaiQuery {
     }
 
     public VmEntity getAaiVmData(String vserverId, String vserverName) throws CorrelationException {
-        Client client = ClientBuilder.newClient(new ClientConfig());
-        String response = client
-                .target(MicroServiceConfig.getMsbServerAddr() + getVmResourceLinks(client,
-                        vserverId, vserverName)).request("application/json").headers(getHeaders())
-                .get().readEntity(String.class);
+        String url = MicroServiceConfig.getMsbServerAddr() + getVmResourceLinks(vserverId, vserverName);
+        String response = getResponse(url);
         try {
             return aaiResponseUtil.convertJsonToVmEntity(response);
         } catch (Exception e) {
@@ -62,18 +45,8 @@ public class AaiQuery {
         }
     }
 
-    private String getVmResourceLinks(Client client, String vserverId, String vserverName) throws CorrelationException {
-        WebTarget webTarget = client
-                .target(MicroServiceConfig.getMsbServerAddr() + AaiConfig.VM_ADDR
-                        + "vserver-id:EQUALS:" + vserverId);
-        String response = webTarget.request("application/json").headers(getHeaders()).get()
-                .readEntity(String.class);
-        if (response == null) {
-            webTarget = client.target(MicroServiceConfig.getMsbServerAddr() + AaiConfig.VM_ADDR
-                    + "vserver-name:EQUALS:" + vserverName);
-            response = webTarget.request("application/json").headers(getHeaders()).get()
-                    .readEntity(String.class);
-        }
+    private String getVmResourceLinks(String vserverId, String vserverName) throws CorrelationException {
+        String response = getResourceLinksResponse(vserverId, vserverName);
         try {
             return aaiResponseUtil.convertJsonToVmResourceLink(response).get(0).getResourceLink();
         } catch (Exception e) {
@@ -81,11 +54,46 @@ public class AaiQuery {
         }
     }
 
-    private MultivaluedHashMap getHeaders() {
-        MultivaluedHashMap<String, String> headers = new MultivaluedHashMap<>();
-        headers.add("X-TransactionId", AaiConfig.X_TRANSACTION_ID);
-        headers.add("X-FromAppId", AaiConfig.X_FROMAPP_ID);
-        headers.add("Authorization", AaiConfig.getAuthenticationCredentials());
+    private String getResourceLinksResponse(String vserverId, String vserverName) throws CorrelationException {
+        String url =
+                MicroServiceConfig.getMsbServerAddr() + AaiConfig.VM_ADDR + "vserver-id:EQUALS:"
+                        + vserverId;
+        String response = getResponse(url);
+        if (response.equals("")) {
+            url = MicroServiceConfig.getMsbServerAddr() + AaiConfig.VM_ADDR
+                    + "vserver-name:EQUALS:" + vserverName;
+            response = getResponse(url);
+        }
+        return response;
+    }
+
+    private String getVnfDataResponse(String vnfId, String vnfName) throws CorrelationException {
+        String url = MicroServiceConfig.getMsbServerAddr() + AaiConfig.VNF_ADDR + "vnf-id=" + vnfId;
+        String response = getResponse(url);
+        if (response.equals("")) {
+            url = MicroServiceConfig.getMsbServerAddr() + AaiConfig.VNF_ADDR + "vnf-name="
+                    + vnfName;
+            response = getResponse(url);
+        }
+        return response;
+    }
+
+    private String getResponse(String url) throws CorrelationException {
+        String response = "";
+        try {
+            response = HttpsUtils.get(url, getHeaders());
+        } catch (Exception e) {
+            throw new CorrelationException("Failed to get data from aai", e);
+        }
+        return response;
+    }
+
+    private Map getHeaders() {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("X-TransactionId", AaiConfig.X_TRANSACTION_ID);
+        headers.put("X-FromAppId", AaiConfig.X_FROMAPP_ID);
+        headers.put("Authorization", AaiConfig.getAuthenticationCredentials());
+        headers.put("Accept", "application/json");
         return headers;
     }
 }
