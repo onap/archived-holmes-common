@@ -135,9 +135,7 @@ public class MicroServiceConfigTest {
                 .andReturn("{}");
 
         PowerMock.replayAll();
-
         assertThat(getServiceAddrInfoFromCBS(HOSTNAME), is(nullValue()));
-
         PowerMock.verifyAll();
     }
 
@@ -170,10 +168,10 @@ public class MicroServiceConfigTest {
 
         PowerMock.replayAll();
         String[] msbInfo = getMsbAddrInfo();
+        PowerMock.verifyAll();
+
         assertThat(msbInfo[0], equalTo("127.0.0.3"));
         assertThat(msbInfo[1], equalTo("5432"));
-
-        PowerMock.verifyAll();
 
         System.clearProperty(MSB_ADDR);
     }
@@ -189,10 +187,10 @@ public class MicroServiceConfigTest {
 
         PowerMock.replayAll();
         String[] msbInfo = getMsbAddrInfo();
+        PowerMock.verifyAll();
+
         assertThat(msbInfo[0], equalTo("10.74.5.8"));
         assertThat(msbInfo[1], equalTo("1545"));
-
-        PowerMock.verifyAll();
 
         System.clearProperty(MSB_ADDR);
     }
@@ -208,10 +206,10 @@ public class MicroServiceConfigTest {
 
         PowerMock.replayAll();
         String[] msbInfo = getServiceAddrInfo();
+        PowerMock.verifyAll();
+
         assertThat(msbInfo[0], equalTo("127.0.0.3"));
         assertThat(msbInfo[1], equalTo("5432"));
-
-        PowerMock.verifyAll();
 
         System.clearProperty(HOSTNAME);
     }
@@ -227,10 +225,10 @@ public class MicroServiceConfigTest {
 
         PowerMock.replayAll();
         String[] msbInfo = getServiceAddrInfo();
+        PowerMock.verifyAll();
+
         assertThat(msbInfo[0], equalTo("10.74.5.8"));
         assertThat(msbInfo[1], equalTo("1545"));
-
-        PowerMock.verifyAll();
 
         System.clearProperty(HOSTNAME);
     }
@@ -246,10 +244,10 @@ public class MicroServiceConfigTest {
 
         PowerMock.replayAll();
         String[] msbInfo = getServiceAddrInfo();
+        PowerMock.verifyAll();
+
         assertThat(msbInfo[0], equalTo("10.74.5.8"));
         assertThat(msbInfo[1], equalTo("1545"));
-
-        PowerMock.verifyAll();
 
         System.clearProperty(MSB_ADDR);
     }
@@ -265,10 +263,10 @@ public class MicroServiceConfigTest {
 
         PowerMock.replayAll();
         String[] msbInfo = getServiceAddrInfo();
+        PowerMock.verifyAll();
+
         assertThat(msbInfo[0], equalTo("10.74.5.8"));
         assertThat(msbInfo[1], equalTo("80"));
-
-        PowerMock.verifyAll();
 
         System.clearProperty(MSB_ADDR);
     }
@@ -284,10 +282,10 @@ public class MicroServiceConfigTest {
 
         PowerMock.replayAll();
         String[] msbInfo = getServiceAddrInfo();
+        PowerMock.verifyAll();
+
         assertThat(msbInfo[0], equalTo("10.74.5.8"));
         assertThat(msbInfo[1], equalTo("80"));
-
-        PowerMock.verifyAll();
 
         System.clearProperty(MSB_ADDR);
     }
@@ -303,10 +301,10 @@ public class MicroServiceConfigTest {
 
         PowerMock.replayAll();
         String[] msbInfo = getServiceAddrInfo();
+        PowerMock.verifyAll();
+
         assertThat(msbInfo[0], equalTo("10.74.5.8"));
         assertThat(msbInfo[1], equalTo("5432"));
-
-        PowerMock.verifyAll();
 
         System.clearProperty(MSB_ADDR);
     }

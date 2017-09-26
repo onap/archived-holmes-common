@@ -34,17 +34,17 @@ public class CorrelationUtil {
         return LazyHolder.INSTANCE;
     }
 
-    public boolean isTopologicallyRelated(String childId, String rootId) {
+    public boolean isTopologicallyRelated(String eventId, String sourceId, String sourceName) {
 
-        return Optional.ofNullable(getVmEntity(rootId)).map(vmEntity ->
-                getIsRelated(childId, vmEntity)).orElse(false);
+        return Optional.ofNullable(getVmEntity(sourceId, sourceName)).map(vmEntity ->
+                getIsRelated(eventId, vmEntity)).orElse(false);
     }
 
-    private boolean getIsRelated(String childId, VmEntity vmEntity) {
+    private boolean getIsRelated(String eventId, VmEntity vmEntity) {
         List<Relationship> relationships = vmEntity.getRelationshipList().getRelationships();
         for (Relationship relationship : relationships) {
             boolean isRelated = relationship.getRelationshipDataList().stream().anyMatch(
-                    relationshipData -> relationshipData.getRelationshipValue().equals(childId));
+                    relationshipData -> relationshipData.getRelationshipValue().equals(eventId));
             if (isRelated) {
                 return true;
             }
@@ -52,10 +52,10 @@ public class CorrelationUtil {
         return false;
     }
 
-    private VmEntity getVmEntity(String rootId) {
+    private VmEntity getVmEntity(String sourceId, String sourceName) {
         VmEntity vmEntity = null;
         try {
-            vmEntity = aaiQuery.getAaiVmData("", rootId);
+            vmEntity = aaiQuery.getAaiVmData(sourceId, sourceName);
         } catch (CorrelationException e) {
             log.error("Failed to get vm data", e.getMessage());
         }
