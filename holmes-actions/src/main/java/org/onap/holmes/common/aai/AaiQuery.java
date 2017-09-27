@@ -76,7 +76,7 @@ public class AaiQuery {
     private String getResourceLinksResponse(String vserverId, String vserverName) throws CorrelationException {
         String url = getBaseUrl(getMsbSuffixAddr(AaiConfig.AAI_VNF_ADDR) + "vserver-id:EQUALS:" + vserverId);
         String response = getResponse(url);
-        if (response.equals("")) {
+        if ("".equals(response) || "{}".equals(response)) {
             url = getBaseUrl(AaiConfig.AAI_VM_ADDR + "vserver-name:EQUALS:" + vserverName);
             response = getResponse(url);
         }
@@ -86,7 +86,7 @@ public class AaiQuery {
     private String getVnfDataResponse(String vnfId, String vnfName) throws CorrelationException {
         String url = getBaseUrl(getMsbSuffixAddr(AaiConfig.AAI_VM_ADDR)+  "vnf-id=" + vnfId);
         String response = getResponse(url);
-        if (response.equals("")) {
+        if ("".equals(response) || "{}".equals(response)) {
             url = getBaseUrl(AaiConfig.AAI_VNF_ADDR + "vnf-name=" + vnfName);
             response = getResponse(url);
         }
