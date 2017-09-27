@@ -51,13 +51,15 @@ public class DmaapServiceTest {
 
     private AaiQuery aaiQuery;
 
+    private DmaapService dmaapService;
+
     @Before
     public void setUp() {
+        dmaapService = new DmaapService();
         publisher = PowerMock.createMock(Publisher.class);
-        Whitebox.setInternalState(DmaapService.class, "publisher", publisher);
+        Whitebox.setInternalState(dmaapService, "publisher", publisher);
         aaiQuery = PowerMock.createMock(AaiQuery.class);
-        Whitebox.setInternalState(DmaapService.class, "aaiQuery", aaiQuery);
-        PowerMock.replayAll();
+        Whitebox.setInternalState(dmaapService, "aaiQuery", aaiQuery);
     }
 
     @Test
@@ -67,7 +69,7 @@ public class DmaapServiceTest {
         PowerMock.expectPrivate(publisher, "publish", anyObject(PolicyMsg.class)).andReturn(true)
                 .anyTimes();
         PowerMock.replayAll();
-        Whitebox.invokeMethod(DmaapService.class, "publishPolicyMsg", policyMsg);
+        Whitebox.invokeMethod(dmaapService, "publishPolicyMsg", policyMsg);
         PowerMock.verifyAll();
     }
 
@@ -78,7 +80,7 @@ public class DmaapServiceTest {
         PowerMock.expectPrivate(publisher, "publish", policyMsg)
                 .andThrow(new CorrelationException("")).anyTimes();
         PowerMock.replayAll();
-        Whitebox.invokeMethod(DmaapService.class, "publishPolicyMsg", policyMsg);
+        Whitebox.invokeMethod(dmaapService, "publishPolicyMsg", policyMsg);
         PowerMock.verifyAll();
     }
 
@@ -88,7 +90,7 @@ public class DmaapServiceTest {
 
         PowerMock.replayAll();
         PolicyMsg policyMsg = Whitebox
-                .invokeMethod(DmaapService.class, "getDefaultPolicyMsg", "tetss");
+                .invokeMethod(dmaapService, "getDefaultPolicyMsg", "tetss");
         PowerMock.verifyAll();
 
         assertThat(policyMsg.getTarget(), equalTo("vserver.vserver-name"));
@@ -105,7 +107,7 @@ public class DmaapServiceTest {
                 anyObject(String.class)).andReturn(expect).anyTimes();
         PowerMock.replayAll();
         VnfEntity actual = Whitebox
-                .invokeMethod(DmaapService.class, "getVnfEntity", "tset", "test");
+                .invokeMethod(dmaapService, "getVnfEntity", "tset", "test");
         PowerMock.verifyAll();
 
         assertThat(actual.getVnfName(), equalTo("test"));
@@ -117,7 +119,7 @@ public class DmaapServiceTest {
         PowerMock.expectPrivate(aaiQuery, "getAaiVnfData", anyObject(String.class),
                 anyObject(String.class)).andThrow(new CorrelationException("")).anyTimes();
         PowerMock.replayAll();
-        VnfEntity actual = Whitebox.invokeMethod(DmaapService.class, "getVnfEntity", "tset", "test");
+        VnfEntity actual = Whitebox.invokeMethod(dmaapService, "getVnfEntity", "tset", "test");
         PowerMock.verifyAll();
 
         assertThat(actual == null, equalTo(true));
@@ -132,7 +134,7 @@ public class DmaapServiceTest {
                 anyObject(String.class)).andReturn(expect).anyTimes();
         PowerMock.replayAll();
         VmEntity actual = Whitebox
-                .invokeMethod(DmaapService.class, "getVmEntity", "tset", "test");
+                .invokeMethod(dmaapService, "getVmEntity", "tset", "test");
         PowerMock.verifyAll();
 
         assertThat(actual.getVserverId(), equalTo("11111"));
@@ -144,7 +146,7 @@ public class DmaapServiceTest {
         PowerMock.expectPrivate(aaiQuery, "getAaiVmData", anyObject(String.class),
                 anyObject(String.class)).andThrow(new CorrelationException("")).anyTimes();
         PowerMock.replayAll();
-        VnfEntity actual = Whitebox.invokeMethod(DmaapService.class, "getVmEntity", "tset", "test");
+        VnfEntity actual = Whitebox.invokeMethod(dmaapService, "getVmEntity", "tset", "test");
         PowerMock.verifyAll();
 
         assertThat(actual == null, equalTo(true));
@@ -170,7 +172,7 @@ public class DmaapServiceTest {
         vnfEntity.getRelationshipList().setRelationships(relationships);
 
         PowerMock.replayAll();
-        String actual = Whitebox.invokeMethod(DmaapService.class, "getVserverInstanceId", vnfEntity);
+        String actual = Whitebox.invokeMethod(dmaapService, "getVserverInstanceId", vnfEntity);
         PowerMock.verifyAll();
 
         assertThat(actual, equalTo("USUCP0PCOIL0110UJZZ01"));
@@ -182,7 +184,7 @@ public class DmaapServiceTest {
         VnfEntity vnfEntity = null;
 
         PowerMock.replayAll();
-        String actual = Whitebox.invokeMethod(DmaapService.class, "getVserverInstanceId", vnfEntity);
+        String actual = Whitebox.invokeMethod(dmaapService, "getVserverInstanceId", vnfEntity);
         PowerMock.verifyAll();
 
         assertThat(actual, equalTo(""));
@@ -200,12 +202,12 @@ public class DmaapServiceTest {
         vesAlarm.setEventId("11111");
         vesAlarm.setEventName("3333");
 
-        PowerMock.expectPrivate(DmaapService.class, "getVnfEntity", anyObject(String.class),
+        PowerMock.expectPrivate(dmaapService, "getVnfEntity", anyObject(String.class),
                 anyObject(String.class)).andReturn(null).anyTimes();
 
         PowerMock.replayAll();
         PolicyMsg actual = Whitebox
-                .invokeMethod(DmaapService.class, "getEnrichedPolicyMsg", vmEntity, vesAlarm);
+                .invokeMethod(dmaapService, "getEnrichedPolicyMsg", vmEntity, vesAlarm);
         PowerMock.verifyAll();
 
         assertThat(actual.getPolicyName(), equalTo("vLoadBalancer"));

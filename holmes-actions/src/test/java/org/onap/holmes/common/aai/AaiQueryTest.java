@@ -301,4 +301,64 @@ public class AaiQueryTest {
         assertThat(actual.get("Authorization"), equalTo("Basic QUFJOkFBSQ=="));
         assertThat(actual.get("Accept"), equalTo("application/json"));
     }
+
+    @Test
+    public void testAaiQuery_getBaseUrl_msb() throws Exception {
+        PowerMock.resetAll();
+        aaiQuery = new AaiQuery();
+
+        PowerMockito.mockStatic(MicroServiceConfig.class);
+        when(MicroServiceConfig.getMsbServerAddr()).thenReturn("msb");
+        when(MicroServiceConfig.getServiceAddrInfoFromCBS("nihao")).thenReturn("");
+
+        PowerMock.replayAll();
+        String actual = Whitebox.invokeMethod(aaiQuery,"getBaseUrl", "url");
+        PowerMock.verifyAll();
+        assertThat(actual, equalTo("msburl"));
+    }
+
+    @Test
+    public void testAaiQuery_getBaseUrl_aaiurl() throws Exception {
+        PowerMock.resetAll();
+        aaiQuery = new AaiQuery();
+
+        PowerMockito.mockStatic(MicroServiceConfig.class);
+        when(MicroServiceConfig.getMsbServerAddr()).thenThrow(new NullPointerException());
+        when(MicroServiceConfig.getServiceAddrInfoFromCBS("aai_config")).thenReturn("aai");
+
+        PowerMock.replayAll();
+        String actual = Whitebox.invokeMethod(aaiQuery,"getBaseUrl", "url");
+        System.out.println(actual);
+        PowerMock.verifyAll();
+        assertThat(actual, equalTo("https:\\\\aaiurl"));
+    }
+
+    @Test
+    public void testAaiQuery_getBaseUrl_exception() throws Exception {
+        PowerMock.resetAll();
+        aaiQuery = new AaiQuery();
+
+        PowerMockito.mockStatic(MicroServiceConfig.class);
+        when(MicroServiceConfig.getMsbServerAddr()).thenThrow(new NullPointerException());
+        when(MicroServiceConfig.getServiceAddrInfoFromCBS("aai_config"))
+                .thenThrow(new NullPointerException());
+
+        PowerMock.replayAll();
+        String actual = Whitebox.invokeMethod(aaiQuery,"getBaseUrl", "url");
+        System.out.println(actual);
+        PowerMock.verifyAll();
+        assertThat(actual, equalTo(""));
+    }
+
+    @Test
+    public void testAaiQuery_getMsbSuffixAddr_Ok() throws Exception {
+        PowerMock.resetAll();
+        String url = "/aai/v11/network/generic-vnfs/generic-vnf?";
+        String expect = "/aai/network/v11/generic-vnfs/generic-vnf?";
+        aaiQuery = new AaiQuery();
+        PowerMock.replayAll();
+        String actual = Whitebox.invokeMethod(aaiQuery, "getMsbSuffixAddr", url);
+        PowerMock.verifyAll();
+        assertThat(actual, equalTo(expect));
+    }
 }

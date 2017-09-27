@@ -51,6 +51,7 @@ public class VesAlarm implements Cloneable, Serializable{
     private Long faultFieldsVersion;
     private String specificProblem;
     private String vfStatus;
+    private String parentId;
 
     @Override
     public int hashCode() {
