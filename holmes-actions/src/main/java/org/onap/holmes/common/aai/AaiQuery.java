@@ -15,6 +15,8 @@ package org.onap.holmes.common.aai;
 
 import java.util.HashMap;
 import java.util.Map;
+import javax.inject.Inject;
+import org.jvnet.hk2.annotations.Service;
 import org.onap.holmes.common.aai.config.AaiConfig;
 import org.onap.holmes.common.aai.entity.VmEntity;
 import org.onap.holmes.common.aai.entity.VnfEntity;
@@ -22,8 +24,10 @@ import org.onap.holmes.common.config.MicroServiceConfig;
 import org.onap.holmes.common.exception.CorrelationException;
 import org.onap.holmes.common.utils.HttpsUtils;
 
+@Service
 public class AaiQuery {
 
+    @Inject
     private AaiResponseUtil aaiResponseUtil;
 
     public VnfEntity getAaiVnfData(String vnfId, String vnfName) throws CorrelationException {

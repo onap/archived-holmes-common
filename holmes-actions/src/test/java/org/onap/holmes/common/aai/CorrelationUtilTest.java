@@ -46,9 +46,10 @@ public class CorrelationUtilTest {
 
     @Before
     public void testCorrelationUtil() {
-        correlationUtil = CorrelationUtil.getInstance();
         aaiQuery = PowerMock.createMock(AaiQuery.class);
-        Whitebox.setInternalState(correlationUtil, "aaiQuery", aaiQuery);
+        Whitebox.setInternalState(CorrelationUtil.class, "aaiQuery", aaiQuery);
+        correlationUtil = CorrelationUtil.getInstance();
+        PowerMock.replayAll();
     }
 
     @Test
