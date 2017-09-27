@@ -32,6 +32,7 @@ import org.apache.http.ParseException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
@@ -79,73 +80,88 @@ public class HttpsUtils {
 
     public static String post(String url, Map<String, String> header, Map<String, String> param,
             HttpEntity entity) throws Exception {
-        String result = "";
-        CloseableHttpClient httpClient = null;
+        HttpResponse httpResponse = null;
         try {
-            httpClient = getHttpClient();
-            HttpPost httpPost = new HttpPost(url);
-            if (!header.isEmpty()) {
-                for (Map.Entry<String, String> entry : header.entrySet()) {
-                    httpPost.addHeader(entry.getKey(), entry.getValue());
-                }
+            CloseableHttpClient httpClient = getHttpClient();
+            HttpPost httpPost = getHttpPost(url, header, param, entity);
+            httpResponse = getHttpResponse(httpClient, httpPost);
+        } catch (Exception e) {
+            throw new CorrelationException("Failed to use post method query data from server");
+        }
+
+        return getResponseEntity(httpResponse);
+    }
+
+    public static String get(String url, Map<String, String> header) throws Exception {
+        HttpResponse httpResponse = null;
+        try {
+            CloseableHttpClient httpClient = getHttpClient();
+            HttpGet httpGet = getHttpGet(url, header);
+            httpResponse = getHttpResponse(httpClient, httpGet);
+        } catch (Exception e) {
+            throw new CorrelationException("Failed to use get method query data from server");
+        }
+        return getResponseEntity(httpResponse);
+    }
+
+    private static HttpPost getHttpPost(String url, Map<String, String> header,
+            Map<String, String> param, HttpEntity entity) {
+        HttpPost httpPost = new HttpPost(url);
+        if (!header.isEmpty()) {
+            for (Map.Entry<String, String> entry : header.entrySet()) {
+                httpPost.addHeader(entry.getKey(), entry.getValue());
             }
-            if (!param.isEmpty()) {
-                List<NameValuePair> formparams = new ArrayList<>();
-                for (Map.Entry<String, String> entry : param.entrySet()) {
-                    formparams.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
-                }
-                UrlEncodedFormEntity urlEncodedFormEntity = new UrlEncodedFormEntity(formparams,
-                        Consts.UTF_8);
-                httpPost.setEntity(urlEncodedFormEntity);
+        }
+        if (!param.isEmpty()) {
+            List<NameValuePair> formparams = new ArrayList<>();
+            for (Map.Entry<String, String> entry : param.entrySet()) {
+                formparams.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
             }
-            if (entity != null) {
-                httpPost.setEntity(entity);
+            UrlEncodedFormEntity urlEncodedFormEntity = new UrlEncodedFormEntity(formparams,
+                    Consts.UTF_8);
+            httpPost.setEntity(urlEncodedFormEntity);
+        }
+        if (entity != null) {
+            httpPost.setEntity(entity);
+        }
+        return httpPost;
+    }
+
+    private static HttpGet getHttpGet(String url, Map<String, String> header) {
+        HttpGet httpGet = new HttpGet(url);
+        if (!header.isEmpty()) {
+            for (Map.Entry<String, String> entry : header.entrySet()) {
+                httpGet.addHeader(entry.getKey(), entry.getValue());
             }
-            HttpResponse httpResponse = httpClient.execute(httpPost);
+        }
+        return httpGet;
+    }
+
+    private static String getResponseEntity(HttpResponse httpResponse) throws IOException {
+        String result = "";
+        if (httpResponse != null) {
             int statusCode = httpResponse.getStatusLine().getStatusCode();
             if (statusCode == HttpStatus.SC_OK) {
                 HttpEntity resEntity = httpResponse.getEntity();
                 result = EntityUtils.toString(resEntity);
-            } else {
-                readHttpResponse(httpResponse);
-            }
-        } catch (Exception e) {
-            throw new CorrelationException("Failed to use post method to get data from server");
-        } finally {
-            if (httpClient != null) {
-                httpClient.close();
             }
         }
         return result;
     }
 
-    public static String get(String url, Map<String, String> header) throws Exception {
-        String result = "";
-        CloseableHttpClient httpClient = null;
+    private static HttpResponse getHttpResponse(CloseableHttpClient httpClient, HttpRequestBase httpRequest)
+            throws Exception {
+        HttpResponse httpResponse = null;
         try {
-            httpClient = getHttpClient();
-            HttpGet httpGet = new HttpGet(url);
-            if (!header.isEmpty()) {
-                for (Map.Entry<String, String> entry : header.entrySet()) {
-                    httpGet.addHeader(entry.getKey(), entry.getValue());
-                }
-            }
-            HttpResponse httpResponse = httpClient.execute(httpGet);
-            int statusCode = httpResponse.getStatusLine().getStatusCode();
-            if (statusCode == HttpStatus.SC_OK) {
-                HttpEntity resEntity = httpResponse.getEntity();
-                result = EntityUtils.toString(resEntity);
-            } else {
-                readHttpResponse(httpResponse);
-            }
+            httpResponse = httpClient.execute(httpRequest);
         } catch (Exception e) {
-            throw new CorrelationException("Failed to use get method get data from server");
+            throw new CorrelationException("Failed to get data from server");
         } finally {
             if (httpClient != null) {
                 httpClient.close();
             }
         }
-        return result;
+        return httpResponse;
     }
 
     private static CloseableHttpClient getHttpClient() throws Exception {
@@ -155,23 +171,5 @@ public class HttpsUtils {
                 .setConnectionManagerShared(true)
                 .build();
         return httpClient;
-    }
-
-    private static String readHttpResponse(HttpResponse httpResponse)
-            throws ParseException, IOException {
-        StringBuilder builder = new StringBuilder();
-        HttpEntity entity = httpResponse.getEntity();
-        builder.append("status:" + httpResponse.getStatusLine());
-        builder.append("headers:");
-        HeaderIterator iterator = httpResponse.headerIterator();
-        while (iterator.hasNext()) {
-            builder.append("\t" + iterator.next());
-        }
-        if (entity != null) {
-            String responseString = EntityUtils.toString(entity);
-            builder.append("response length:" + responseString.length());
-            builder.append("response content:" + responseString.replace("\r\n", ""));
-        }
-        return builder.toString();
     }
 }

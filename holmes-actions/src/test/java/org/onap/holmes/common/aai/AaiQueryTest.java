@@ -301,4 +301,16 @@ public class AaiQueryTest {
         assertThat(actual.get("Authorization"), equalTo("Basic QUFJOkFBSQ=="));
         assertThat(actual.get("Accept"), equalTo("application/json"));
     }
+
+    @Test
+    public void testAaiQuery_getMsbSuffixAddr_Ok() throws Exception {
+        PowerMock.resetAll();
+        String url = "/aai/v11/network/generic-vnfs/generic-vnf?";
+        String expect = "/aai/network/v11/generic-vnfs/generic-vnf?";
+        aaiQuery = new AaiQuery();
+        PowerMock.replayAll();
+        String actual = Whitebox.invokeMethod(aaiQuery, "getMsbSuffixAddr", url);
+        PowerMock.verifyAll();
+        assertThat(actual, equalTo(expect));
+    }
 }
