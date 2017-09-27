@@ -18,12 +18,13 @@ import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.onap.holmes.common.aai.entity.RelationshipList.Relationship;
 import org.onap.holmes.common.aai.entity.VmEntity;
+import org.onap.holmes.common.dropwizard.ioc.utils.ServiceLocatorHolder;
 import org.onap.holmes.common.exception.CorrelationException;
 
 @Slf4j
 public class CorrelationUtil {
 
-    private AaiQuery aaiQuery;
+    private static AaiQuery aaiQuery;
 
     private static class LazyHolder {
         private static final CorrelationUtil INSTANCE = new CorrelationUtil();
@@ -31,31 +32,33 @@ public class CorrelationUtil {
     private CorrelationUtil (){}
 
     public static final CorrelationUtil getInstance() {
+        if (aaiQuery == null) {
+            aaiQuery = ServiceLocatorHolder.getLocator().getService(AaiQuery.class);
+        }
         return LazyHolder.INSTANCE;
     }
 
-    public boolean isTopologicallyRelated(String eventId, String sourceId, String sourceName) {
-
-        return Optional.ofNullable(getVmEntity(sourceId, sourceName)).map(vmEntity ->
-                getIsRelated(eventId, vmEntity)).orElse(false);
+    public boolean isTopologicallyRelated(String sourceId, String rootSourceId, String rootSourceName) {
+        return Optional.ofNullable(getVmEntity(rootSourceId, rootSourceName)).map(vmEntity ->
+                getIsRelated(sourceId, vmEntity)).orElse(false);
     }
 
-    private boolean getIsRelated(String eventId, VmEntity vmEntity) {
+    private boolean getIsRelated(String sourceId, VmEntity vmEntity) {
         List<Relationship> relationships = vmEntity.getRelationshipList().getRelationships();
         for (Relationship relationship : relationships) {
             boolean isRelated = relationship.getRelationshipDataList().stream().anyMatch(
-                    relationshipData -> relationshipData.getRelationshipValue().equals(eventId));
+                    relationshipData -> relationshipData.getRelationshipValue().equals(sourceId));
             if (isRelated) {
                 return true;
             }
         }
-        return false;
+        return  false;
     }
 
-    private VmEntity getVmEntity(String sourceId, String sourceName) {
+    private VmEntity getVmEntity(String rootSourceId, String rootSourceName) {
         VmEntity vmEntity = null;
         try {
-            vmEntity = aaiQuery.getAaiVmData(sourceId, sourceName);
+            vmEntity = aaiQuery.getAaiVmData(rootSourceId, rootSourceName);
         } catch (CorrelationException e) {
             log.error("Failed to get vm data", e.getMessage());
         }

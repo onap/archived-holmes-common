@@ -15,10 +15,13 @@
  */
 package org.onap.holmes.common.dmaap;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
 import java.util.Optional;
+import javax.inject.Inject;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jvnet.hk2.annotations.Service;
 import org.onap.holmes.common.aai.AaiQuery;
 import org.onap.holmes.common.aai.entity.RelationshipList.RelationshipData;
 import org.onap.holmes.common.aai.entity.VmEntity;
@@ -27,29 +30,35 @@ import org.onap.holmes.common.api.stat.VesAlarm;
 import org.onap.holmes.common.dmaap.entity.PolicyMsg;
 import org.onap.holmes.common.dmaap.entity.PolicyMsg.EVENT_STATUS;
 import org.onap.holmes.common.exception.CorrelationException;
+import org.onap.holmes.common.utils.JacksonUtil;
 
 @Slf4j
-@AllArgsConstructor
+@Service
 public class DmaapService {
 
-    private static AaiQuery aaiQuery;
-    private static Publisher publisher;
+    @Inject
+    private AaiQuery aaiQuery;
+    @Inject
+    private Publisher publisher;
 
-    public static void publishPolicyMsg(PolicyMsg policyMsg) {
+    public void publishPolicyMsg(PolicyMsg policyMsg) {
         try {
             publisher.publish(policyMsg);
+            log.info("send policyMsg: " + JacksonUtil.beanToJson(policyMsg));
         } catch (CorrelationException e) {
             log.error("Failed to publish policyMsg to dmaap", e.getMessage());
+        } catch (JsonProcessingException e) {
+            log.info("Failed to convert policyMsg to json");
         }
     }
 
-    public static PolicyMsg getPolicyMsg(VesAlarm vesAlarm) {
+    public PolicyMsg getPolicyMsg(VesAlarm vesAlarm) {
         return Optional.ofNullable(getVmEntity(vesAlarm.getSourceId(), vesAlarm.getSourceName()))
                 .map(vmEntity -> getEnrichedPolicyMsg(vmEntity, vesAlarm))
                 .orElse(getDefaultPolicyMsg(vesAlarm.getSourceName()));
     }
 
-    private static String getVserverInstanceId(VnfEntity vnfEntity) {
+    private String getVserverInstanceId(VnfEntity vnfEntity) {
         String vserverInstanceId = "";
         if (vnfEntity != null) {
             List<RelationshipData> relationshipDataList = vnfEntity.getRelationshipList()
@@ -65,7 +74,7 @@ public class DmaapService {
         return vserverInstanceId;
     }
 
-    private static VnfEntity getVnfEntity(String vnfId, String vnfName) {
+    private VnfEntity getVnfEntity(String vnfId, String vnfName) {
         VnfEntity vnfEntity = null;
         try {
             vnfEntity = aaiQuery.getAaiVnfData(vnfId, vnfName);
@@ -75,7 +84,7 @@ public class DmaapService {
         return vnfEntity;
     }
 
-    private static VmEntity getVmEntity(String sourceId, String sourceName) {
+    private VmEntity getVmEntity(String sourceId, String sourceName) {
         VmEntity vmEntity = null;
         try {
             vmEntity = aaiQuery.getAaiVmData(sourceId, sourceName);
@@ -85,7 +94,7 @@ public class DmaapService {
         return vmEntity;
     }
 
-    private static PolicyMsg getEnrichedPolicyMsg(VmEntity vmEntity, VesAlarm vesAlarm) {
+    private PolicyMsg getEnrichedPolicyMsg(VmEntity vmEntity, VesAlarm vesAlarm) {
         VnfEntity vnfEntity = getVnfEntity(vesAlarm.getEventId(), vesAlarm.getEventName());
         String vserverInstatnceId = getVserverInstanceId(vnfEntity);
         PolicyMsg policyMsg = new PolicyMsg();
@@ -118,7 +127,7 @@ public class DmaapService {
         return policyMsg;
     }
 
-    private static PolicyMsg getDefaultPolicyMsg(String sourceName) {
+    private PolicyMsg getDefaultPolicyMsg(String sourceName) {
         PolicyMsg policyMsg = new PolicyMsg();
         policyMsg.setTarget("vserver.vserver-name");
         policyMsg.setTargetType("VM");

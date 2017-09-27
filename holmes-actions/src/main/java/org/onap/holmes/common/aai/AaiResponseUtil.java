@@ -30,6 +30,7 @@ import org.onap.holmes.common.aai.entity.VmEntity;
 import org.onap.holmes.common.aai.entity.VmResourceLink;
 import org.onap.holmes.common.aai.entity.VnfEntity;
 
+@Service
 public class AaiResponseUtil {
 
     public List<VmResourceLink> convertJsonToVmResourceLink(String responseJson) throws IOException {
@@ -106,73 +107,65 @@ public class AaiResponseUtil {
 
     private List<VmResourceLink> convertResultDataList(JsonNode resultData) {
         List<VmResourceLink> vmResourceLinkList = new ArrayList<>();
-        if (resultData.isArray()) {
-            resultData.forEach(node ->{
-                if (node.has("resource-link") && node.has("resource-type")) {
-                    VmResourceLink vmResourceLink = new VmResourceLink();
-                    vmResourceLink.setResourceLink(getTextElementByNode(node, "resource-link"));
-                    vmResourceLink.setResourceType(getTextElementByNode(node, "resource-type"));
-                    vmResourceLinkList.add(vmResourceLink);
-                }
-            });
-        }
+        resultData.forEach(node ->{
+            if (node.has("resource-link") && node.has("resource-type")) {
+                VmResourceLink vmResourceLink = new VmResourceLink();
+                vmResourceLink.setResourceLink(getTextElementByNode(node, "resource-link"));
+                vmResourceLink.setResourceType(getTextElementByNode(node, "resource-type"));
+                vmResourceLinkList.add(vmResourceLink);
+            }
+        });
         return vmResourceLinkList;
     }
 
     private List<Relationship> convertRelationships(JsonNode relationshipNode) {
         List<Relationship> relationshipList = new ArrayList<>();
-        if (relationshipNode.isArray()) {
-            relationshipNode.forEach(node ->{
-                Relationship relationship = new Relationship();
-                relationship.setRelatedLink(getTextElementByNode(node, "related-link"));
-                relationship.setRelatedTo(getTextElementByNode(node, "related-to"));
-                if (node.has("related-to-property")) {
-                    JsonNode relatedToPropertyNode = node.get("related-to-property");
-                    relationship.setRelatedToPropertyList(
-                            convertRelatedToProperty(relatedToPropertyNode));
-                } else {
-                    relationship.setRelatedToPropertyList(Collections.emptyList());
-                }
-                if (node.has("relationship-data")) {
-                    JsonNode relationshipDataNode = node.get("relationship-data");
-                    relationship
-                            .setRelationshipDataList(convertRelationshipDate(relationshipDataNode));
-                } else {
-                    relationship.setRelationshipDataList(Collections.emptyList());
-                }
-                relationshipList.add(relationship);
-            });
-        }
+        relationshipNode.forEach(node ->{
+            Relationship relationship = new Relationship();
+            relationship.setRelatedLink(getTextElementByNode(node, "related-link"));
+            relationship.setRelatedTo(getTextElementByNode(node, "related-to"));
+            if (node.has("related-to-property")) {
+                JsonNode relatedToPropertyNode = node.get("related-to-property");
+                relationship.setRelatedToPropertyList(
+                        convertRelatedToProperty(relatedToPropertyNode));
+            } else {
+                relationship.setRelatedToPropertyList(Collections.emptyList());
+            }
+            if (node.has("relationship-data")) {
+                JsonNode relationshipDataNode = node.get("relationship-data");
+                relationship
+                        .setRelationshipDataList(convertRelationshipDate(relationshipDataNode));
+            } else {
+                relationship.setRelationshipDataList(Collections.emptyList());
+            }
+            relationshipList.add(relationship);
+        });
         return relationshipList;
     }
 
     private List<RelationshipData> convertRelationshipDate(JsonNode relationshipDataNode) {
         List<RelationshipData> relationshipDataList = new ArrayList<>();
-        if (relationshipDataNode.isArray()) {
-            relationshipDataNode.forEach(node ->{
-                RelationshipData relationshipData = new RelationshipData();
-                relationshipData.setRelationshipKey(
-                        getTextElementByNode(node,"relationship-key"));
-                relationshipData.setRelationshipValue(
-                        getTextElementByNode(node,"relationship-value"));
-                relationshipDataList.add(relationshipData);
-            });
-        }
+        relationshipDataNode.forEach(node ->{
+            RelationshipData relationshipData = new RelationshipData();
+            relationshipData.setRelationshipKey(
+                    getTextElementByNode(node,"relationship-key"));
+            relationshipData.setRelationshipValue(
+                    getTextElementByNode(node,"relationship-value"));
+            relationshipDataList.add(relationshipData);
+        });
         return relationshipDataList;
     }
 
     private List<RelatedToProperty> convertRelatedToProperty(JsonNode relatedToPropertyNode) {
         List<RelatedToProperty> relatedToPropertyList = new ArrayList<>();
-        if (relatedToPropertyNode.isArray()) {
-            relatedToPropertyNode.forEach(node ->{
-                RelatedToProperty relatedToProperty = new RelatedToProperty();
-                relatedToProperty
-                        .setPropertyKey(getTextElementByNode(node, "property-key"));
-                relatedToProperty.setPropertyValue(
-                        getTextElementByNode(node, "property-value"));
-                relatedToPropertyList.add(relatedToProperty);
-            });
-        }
+        relatedToPropertyNode.forEach(node ->{
+            RelatedToProperty relatedToProperty = new RelatedToProperty();
+            relatedToProperty
+                    .setPropertyKey(getTextElementByNode(node, "property-key"));
+            relatedToProperty.setPropertyValue(
+                    getTextElementByNode(node, "property-value"));
+            relatedToPropertyList.add(relatedToProperty);
+        });
         return relatedToPropertyList;
     }
 
