@@ -88,7 +88,6 @@ public class HttpsUtils {
         } catch (Exception e) {
             throw new CorrelationException("Failed to use post method query data from server");
         }
-
         return getResponseEntity(httpResponse);
     }
 
