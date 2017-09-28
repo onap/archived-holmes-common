@@ -52,6 +52,7 @@ public class VesAlarm implements Cloneable, Serializable{
     private String specificProblem;
     private String vfStatus;
     private String parentId;
+    private int alarmIsCleared;  //mark as 1 when alarm type is cleared, else mark as 2
 
     @Override
     public int hashCode() {

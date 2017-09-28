@@ -105,7 +105,11 @@ public class DmaapService {
                 "resource=SampleResource,service=SampleService,type=SampleType,closedLoopControlName=SampleClosedLoop");
         policyMsg.setTargetType("VM");
         policyMsg.setClosedLoopAlarmStart(1484855);
-        policyMsg.setClosedLoopEventStatus(EVENT_STATUS.ONSET);
+        if (vesAlarm.getAlarmIsCleared() == 1) {
+            policyMsg.setClosedLoopEventStatus(EVENT_STATUS.ABATED);
+        } else {
+            policyMsg.setClosedLoopEventStatus(EVENT_STATUS.ONSET);
+        }
         policyMsg.setClosedLoopControlName(
                 "CL-LB-LOW-TRAFFIC-SIG-d925ed73-8231-4d02-9545-db4e101f88f8");
         policyMsg.setVersion("1.0.2");
