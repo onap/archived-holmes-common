@@ -15,7 +15,6 @@
  */
 package org.onap.holmes.common.aai.entity;
 
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 

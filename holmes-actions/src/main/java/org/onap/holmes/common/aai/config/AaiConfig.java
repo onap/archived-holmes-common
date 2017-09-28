@@ -15,17 +15,17 @@ package org.onap.holmes.common.aai.config;
 
 public class AaiConfig {
 
-    public static String AAI_VNF_ADDR = "/aai/v11/network/generic-vnfs/generic-vnf?";
+    public static final String AAI_VNF_ADDR = "/aai/v11/network/generic-vnfs/generic-vnf?";
 
-    public static String AAI_VM_ADDR = "/aai/v11/search/nodes-query?search-node-type=vserver&filter=";
+    public static final String AAI_VM_ADDR = "/aai/v11/search/nodes-query?search-node-type=vserver&filter=";
 
-    public static String X_TRANSACTION_ID = "9999";
+    public static final String X_TRANSACTION_ID = "9999";
 
-    public static String X_FROMAPP_ID = "jimmy-postman";
+    public static final String X_FROMAPP_ID = "jimmy-postman";
 
-    private static String AAI_AUTHENTICATION_USER = "AAI";
+    private static final String AAI_AUTHENTICATION_USER = "AAI";
 
-    private static String AAI_AUTHENTICATION_PAASWORD = "AAI";
+    private static final String AAI_AUTHENTICATION_PAASWORD = "AAI";
 
     public static String getAuthenticationCredentials() {
         String usernameAndPassword = AAI_AUTHENTICATION_USER + ":"

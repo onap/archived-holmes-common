@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.jvnet.hk2.annotations.Service;
-import org.onap.holmes.common.aai.entity.RelationshipList;
 import org.onap.holmes.common.aai.entity.RelationshipList.RelatedToProperty;
 import org.onap.holmes.common.aai.entity.RelationshipList.Relationship;
 import org.onap.holmes.common.aai.entity.RelationshipList.RelationshipData;
@@ -33,6 +32,7 @@ import org.onap.holmes.common.aai.entity.VnfEntity;
 @Service
 public class AaiResponseUtil {
 
+    public static final String RELATIONSHIP_LIST = "relationship-list";
     public List<VmResourceLink> convertJsonToVmResourceLink(String responseJson) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.readTree(responseJson);
@@ -61,8 +61,8 @@ public class AaiResponseUtil {
         vmEntity.setVserverName2(getTextElementByNode(jsonNode,"vserver-name2"));
         vmEntity.setVserverSelflink(getTextElementByNode(jsonNode,"vserver-selflink"));
 
-        if (jsonNode.has("relationship-list")) {
-            JsonNode relationshipListNode = jsonNode.get("relationship-list");
+        if (jsonNode.has(RELATIONSHIP_LIST)) {
+            JsonNode relationshipListNode = jsonNode.get(RELATIONSHIP_LIST);
             if (relationshipListNode.has("relationship")) {
                 JsonNode relationshipNode = relationshipListNode.get("relationship");
                 vmEntity.getRelationshipList().setRelationships(convertRelationships(relationshipNode));
@@ -92,8 +92,8 @@ public class AaiResponseUtil {
         vnfEntity.setVnfName(getTextElementByNode(jsonNode,"vnf-name"));
         vnfEntity.setVnfType(getTextElementByNode(jsonNode,"vnf-type"));
 
-        if (jsonNode.has("relationship-list")) {
-            JsonNode relationshipListNode = jsonNode.get("relationship-list");
+        if (jsonNode.has(RELATIONSHIP_LIST)) {
+            JsonNode relationshipListNode = jsonNode.get(RELATIONSHIP_LIST);
             if (relationshipListNode.has("relationship")) {
                 JsonNode relationshipNode = relationshipListNode.get("relationship");
                 vnfEntity.getRelationshipList().setRelationships(convertRelationships(relationshipNode));
