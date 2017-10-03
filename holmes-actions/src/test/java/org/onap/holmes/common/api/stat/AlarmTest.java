@@ -49,7 +49,7 @@ public class AlarmTest {
     @Test
     public void testCompareLinkPosition_isEmpty() throws Exception {
         final Map<Integer, Integer> otherIdIdx = new HashMap<>();
-        assertThat(999, equalTo(alarm.CompareLinkPosition(otherIdIdx)));
+        assertThat(999, equalTo(alarm.compareLinkPosition(otherIdIdx)));
     }
 
     @Test
@@ -57,7 +57,7 @@ public class AlarmTest {
         final Map<Integer, Integer> otherIdIdx = new HashMap<>();
         otherIdIdx.put(1, 2);
         alarm.addLinkIdNodeIdx(1, 3);
-        assertThat(1, equalTo(alarm.CompareLinkPosition(otherIdIdx)));
+        assertThat(1, equalTo(alarm.compareLinkPosition(otherIdIdx)));
     }
 
     @Test

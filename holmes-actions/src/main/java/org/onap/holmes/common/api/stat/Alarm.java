@@ -47,7 +47,7 @@ public class Alarm implements AplusData, Cloneable, Serializable {
 
     private static final long serialVersionUID = 4520003737132012000L;
     private final static Date clearedServerTime = null;
-    private final Map<Integer, Integer> linkIdNodeIdxMap = new HashMap<Integer, Integer>();
+    private final Map<Integer, Integer> linkIdNodeIdxMap = new HashMap<>();
     private byte eventType = EVENT_RAISED;
     private long id = 0L;
     private String alarmKey = "";
@@ -73,9 +73,9 @@ public class Alarm implements AplusData, Cloneable, Serializable {
     private boolean rootAlarmFlag = false;
     private int linkId = -1;
     private int nodeIdx = -1;
-    private Set<Integer> linkIds = new HashSet<Integer>();
-    private HashMap<String, Integer> priorityMap = new HashMap<String, Integer>();
-    private HashMap<String, Integer> rootAlarmTypeMap = new HashMap<String, Integer>();
+    private Set<Integer> linkIds = new HashSet<>();
+    private HashMap<String, Integer> priorityMap = new HashMap<>();
+    private HashMap<String, Integer> rootAlarmTypeMap = new HashMap<>();
     private int rootAlarmType = -1;
     private boolean keyAlarmFlag = false;
     private int keyAlarmType = -1;
@@ -135,8 +135,8 @@ public class Alarm implements AplusData, Cloneable, Serializable {
      * (in the same site otherIdIdx):0, the same link: the node location number is greater than the
      * number of locations in otherIdIdx (otherIdIdx) with the site):1,
      */
-    public int CompareLinkPosition(Map<Integer, Integer> otherIdIdx) {
-        Set<Integer> myIdSet = new HashSet<Integer>();
+    public int compareLinkPosition(Map<Integer, Integer> otherIdIdx) {
+        Set<Integer> myIdSet = new HashSet<>();
         myIdSet.addAll(this.linkIdNodeIdxMap.keySet());
         myIdSet.retainAll(otherIdIdx.keySet());
 
