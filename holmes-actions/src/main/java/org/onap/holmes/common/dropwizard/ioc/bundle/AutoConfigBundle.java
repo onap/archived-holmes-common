@@ -20,7 +20,6 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.ext.Provider;
@@ -55,8 +54,6 @@ import com.google.common.collect.Lists;
 
 import io.dropwizard.Configuration;
 import io.dropwizard.ConfiguredBundle;
-import io.dropwizard.configuration.ConfigurationSourceProvider;
-import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.lifecycle.ServerLifecycleListener;
 import io.dropwizard.servlets.tasks.Task;
 import io.dropwizard.setup.Bootstrap;
@@ -107,7 +104,7 @@ public class AutoConfigBundle<T extends Configuration> implements ConfiguredBund
   }
 
   public static <T extends Configuration> AutoConfigBundleBuider<T> newBuilder() {
-    return new AutoConfigBundleBuider<T>();
+    return new AutoConfigBundleBuider<>();
   }
 
   @Override
@@ -146,7 +143,6 @@ public class AutoConfigBundle<T extends Configuration> implements ConfiguredBund
 
     registerServices();
 
-    // registerManaged(environment);
     registerLifecycle(environment);
     registerServerLifecycleListeners(environment);
     registerJettyLifeCycleListener(environment);
@@ -232,17 +228,6 @@ public class AutoConfigBundle<T extends Configuration> implements ConfiguredBund
         });
   }
 
-  /*
-   * private void registerManaged(Environment environment) {
-   * 
-   * reflections.getSubTypesOf(Managed.class).stream().filter(services::contains)
-   * .forEach(managedKlass -> { try {
-   * environment.lifecycle().manage(locator.getService(managedKlass)); } catch (Exception e) {
-   * LOG.warn("", e); } LOG.info("Registering Dropwizard managed, class name : {}",
-   * managedKlass.getName()); });
-   * 
-   * }
-   */
 
   private void registerObjectMapper(Environment environment) {
 
@@ -344,7 +329,7 @@ public class AutoConfigBundle<T extends Configuration> implements ConfiguredBund
               long startTime = System.currentTimeMillis();
               locator.getService(serviceClazz);
               LOG.info("active service, class name : {},cost time:{}", serviceClazz.getName(),
-                  (System.currentTimeMillis() - startTime));
+                  System.currentTimeMillis() - startTime);
             } catch (Exception e) {
               LOG.warn("", e);
             }
@@ -414,7 +399,7 @@ public class AutoConfigBundle<T extends Configuration> implements ConfiguredBund
               long startTime = System.currentTimeMillis();
               locator.getService(serviceClazz);
               LOG.info("active service, class name : {},cost time:{}", serviceClazz.getName(),
-                  (System.currentTimeMillis() - startTime));
+                  System.currentTimeMillis() - startTime);
             } catch (Exception e) {
               LOG.warn("", e);
             }

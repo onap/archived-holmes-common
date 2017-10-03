@@ -37,6 +37,6 @@ public class AutoConfigBundleBuider<T extends Configuration> {
 
     
     public AutoConfigBundle<T> build() {
-        return new AutoConfigBundle<T>(packageNames);
+        return new AutoConfigBundle<>(packageNames);
     }
 }
