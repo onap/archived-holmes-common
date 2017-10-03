@@ -16,16 +16,10 @@
 
 package org.onap.holmes.common.utils;
 
-import static jdk.nashorn.internal.runtime.regexp.joni.Config.log;
-
-import com.eclipsesource.jaxrs.consumer.ConsumerFactory;
-import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.jvnet.hk2.annotations.Service;
-import org.onap.holmes.common.api.entity.ServiceRegisterEntity;
 import org.onap.holmes.common.config.MicroServiceConfig;
 import org.onap.holmes.common.exception.CorrelationException;
-import org.onap.holmes.common.msb.MicroserviceBusRest;
 import org.onap.msb.sdk.discovery.common.RouteException;
 import org.onap.msb.sdk.discovery.entity.MicroServiceFullInfo;
 import org.onap.msb.sdk.discovery.entity.MicroServiceInfo;
@@ -43,13 +37,13 @@ public class MSBRegisterUtil {
         log.info("Start to register Holmes Service to MSB...");
         MicroServiceFullInfo microServiceFullInfo = null;
         int retry = 0;
-        while (null == microServiceFullInfo && retry < 20) {
+        while (retry < 20) {
             log.info("Holmes Service Registration. Retry: " + retry);
             retry++;
             try {
                 microServiceFullInfo = msbClient.registerMicroServiceInfo(msinfo, false);
             } catch (RouteException e) {
-
+                log.warn("Holmes Service Registration retry returns exception");
             }
 
             if (null == microServiceFullInfo) {
