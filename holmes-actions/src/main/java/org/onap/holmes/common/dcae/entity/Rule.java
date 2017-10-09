@@ -25,6 +25,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Rule {
     private String name;
+    private String loopControlName;
     private String contents;
     private int enabled = 1;
 }
