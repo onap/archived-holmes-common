@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.onap.holmes.common.dcae.utils;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -29,6 +29,8 @@ import org.onap.holmes.common.dcae.entity.SecurityInfo;
 import org.onap.holmes.common.exception.CorrelationException;
 
 public class DcaeConfigurationParser {
+
+    private static final String RULE_CONTENT_SPLIT = "\\$\\$\\$";
 
     private static final List<String> OBJECT_ATTRS = Arrays
             .asList(new String[]{"streams_subscribes", "streams_publishes", "services_calls", "services_provides"});
@@ -102,7 +104,9 @@ public class DcaeConfigurationParser {
         Set<Entry<String, Object>> entries = jsonObject.entrySet();
         for (Entry<String, Object> entry : entries) {
             if (entry.getKey().startsWith("holmes.default.rule")) {
-                ret.addDefaultRule(new Rule(entry.getKey(), (String) entry.getValue(), 1));
+                String value = (String) entry.getValue();
+                String[] contents = value.split(RULE_CONTENT_SPLIT);
+                ret.addDefaultRule(new Rule(entry.getKey(), contents[0], contents[1], 1));
             }
         }
     }

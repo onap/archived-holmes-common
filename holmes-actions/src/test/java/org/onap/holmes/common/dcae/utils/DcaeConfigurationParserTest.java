@@ -52,7 +52,6 @@ public class DcaeConfigurationParserTest {
         br.lines().forEach(line -> {
             sb.append(line);
         });
-
         try {
             br.close();
         } catch (IOException e) {

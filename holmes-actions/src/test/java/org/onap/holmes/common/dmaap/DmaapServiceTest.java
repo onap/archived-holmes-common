@@ -207,10 +207,10 @@ public class DmaapServiceTest {
 
         PowerMock.replayAll();
         PolicyMsg actual = Whitebox
-                .invokeMethod(dmaapService, "getEnrichedPolicyMsg", vmEntity, vesAlarm);
+                .invokeMethod(dmaapService, "getEnrichedPolicyMsg", vmEntity, vesAlarm, "loopName");
         PowerMock.verifyAll();
 
-        assertThat(actual.getPolicyName(), equalTo("vLoadBalancer"));
+        assertThat(actual.getClosedLoopControlName(), equalTo(null));
         assertThat(actual.getAai().get("vserver.prov-status"), equalTo("prov"));
         assertThat(actual.getAai().get("vserver.vserver-name2") == null, equalTo(true));
         assertThat(actual.getAai().get("generic-vnf.service-instance-id"), equalTo(""));
