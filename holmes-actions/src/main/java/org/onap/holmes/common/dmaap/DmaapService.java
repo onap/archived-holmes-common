@@ -18,8 +18,8 @@ package org.onap.holmes.common.dmaap;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.Inject;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jvnet.hk2.annotations.Service;
 import org.onap.holmes.common.aai.AaiQuery;
@@ -36,10 +36,13 @@ import org.onap.holmes.common.utils.JacksonUtil;
 @Service
 public class DmaapService {
 
+    public static final int POLICY_MESSAGE_ABATED = 1;
     @Inject
     private AaiQuery aaiQuery;
     @Inject
     private Publisher publisher;
+
+    public static ConcurrentHashMap<String, String> loopControlNames = new ConcurrentHashMap<>();
 
     public void publishPolicyMsg(PolicyMsg policyMsg) {
         try {
@@ -52,9 +55,9 @@ public class DmaapService {
         }
     }
 
-    public PolicyMsg getPolicyMsg(VesAlarm vesAlarm) {
+    public PolicyMsg getPolicyMsg(VesAlarm vesAlarm, String packgeName) {
         return Optional.ofNullable(getVmEntity(vesAlarm.getSourceId(), vesAlarm.getSourceName()))
-                .map(vmEntity -> getEnrichedPolicyMsg(vmEntity, vesAlarm))
+                .map(vmEntity -> getEnrichedPolicyMsg(vmEntity, vesAlarm, packgeName))
                 .orElse(getDefaultPolicyMsg(vesAlarm.getSourceName()));
     }
 
@@ -94,28 +97,16 @@ public class DmaapService {
         return vmEntity;
     }
 
-    private PolicyMsg getEnrichedPolicyMsg(VmEntity vmEntity, VesAlarm vesAlarm) {
+    private PolicyMsg getEnrichedPolicyMsg(VmEntity vmEntity, VesAlarm vesAlarm, String packageName) {
         VnfEntity vnfEntity = getVnfEntity(vesAlarm.getEventId(), vesAlarm.getEventName());
         String vserverInstatnceId = getVserverInstanceId(vnfEntity);
         PolicyMsg policyMsg = new PolicyMsg();
-        policyMsg.setClosedLoopEventClient("DCAE_INSTANCE_ID.dcae-tca");
-        policyMsg.setPolicyVersion("1.0.0.5");
-        policyMsg.setPolicyName("vLoadBalancer");
-        policyMsg.setPolicyScope(
-                "resource=SampleResource,service=SampleService,type=SampleType,closedLoopControlName=SampleClosedLoop");
-        policyMsg.setTargetType("VM");
-        policyMsg.setClosedLoopAlarmStart(1484855);
-        if (vesAlarm.getAlarmIsCleared() == 1) {
+        if (vesAlarm.getAlarmIsCleared() == POLICY_MESSAGE_ABATED) {
             policyMsg.setClosedLoopEventStatus(EVENT_STATUS.ABATED);
         } else {
             policyMsg.setClosedLoopEventStatus(EVENT_STATUS.ONSET);
         }
-        policyMsg.setClosedLoopControlName(
-                "CL-LB-LOW-TRAFFIC-SIG-d925ed73-8231-4d02-9545-db4e101f88f8");
-        policyMsg.setVersion("1.0.2");
-        policyMsg.setTarget("generic-vnf.vnf-id");
-        policyMsg.setRequestID("8c1b8bd8-06f7-493f-8ed7-daaa4cc481bc");
-        policyMsg.setFrom("DCAE");
+        policyMsg.setClosedLoopControlName(loopControlNames.get(packageName));
         policyMsg.getAai().put("vserver.in-maint", String.valueOf(vmEntity.getInMaint()));
         policyMsg.getAai().put("vserver.is-closed-loop-disabled",
                 String.valueOf(vmEntity.getClosedLoopDisable()));
