@@ -27,6 +27,7 @@ import org.onap.holmes.common.aai.entity.RelationshipList.RelationshipData;
 import org.onap.holmes.common.aai.entity.VmEntity;
 import org.onap.holmes.common.aai.entity.VnfEntity;
 import org.onap.holmes.common.api.stat.VesAlarm;
+import org.onap.holmes.common.dcae.DcaeConfigurationsCache;
 import org.onap.holmes.common.dmaap.entity.PolicyMsg;
 import org.onap.holmes.common.dmaap.entity.PolicyMsg.EVENT_STATUS;
 import org.onap.holmes.common.exception.CorrelationException;
@@ -37,15 +38,18 @@ import org.onap.holmes.common.utils.JacksonUtil;
 public class DmaapService {
 
     public static final int POLICY_MESSAGE_ABATED = 1;
+
+    public static final String PUBLISHER_KEY = "unauthenticated.DCAE_CL_OUTPUT";
+
     @Inject
     private AaiQuery aaiQuery;
-    @Inject
-    private Publisher publisher;
 
     public static ConcurrentHashMap<String, String> loopControlNames = new ConcurrentHashMap<>();
 
     public void publishPolicyMsg(PolicyMsg policyMsg) {
         try {
+            Publisher publisher = new Publisher();
+            publisher.setUrl(DcaeConfigurationsCache.getPubSecInfo(PUBLISHER_KEY).getDmaapInfo().getTopicUrl());
             publisher.publish(policyMsg);
             log.info("send policyMsg: " + JacksonUtil.beanToJson(policyMsg));
         } catch (CorrelationException e) {
