@@ -22,6 +22,7 @@ import static org.junit.Assert.assertThat;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.runner.RunWith;
+import org.omg.CORBA.Any;
 import org.onap.holmes.common.aai.AaiQuery;
 import org.onap.holmes.common.aai.entity.RelationshipList.Relationship;
 import org.onap.holmes.common.aai.entity.RelationshipList.RelationshipData;
@@ -29,6 +30,7 @@ import org.onap.holmes.common.aai.entity.VmEntity;
 import org.onap.holmes.common.aai.entity.VnfEntity;
 import org.onap.holmes.common.api.stat.VesAlarm;
 import org.onap.holmes.common.exception.CorrelationException;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 
 import org.junit.Before;
@@ -47,8 +49,6 @@ public class DmaapServiceTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    private Publisher publisher;
-
     private AaiQuery aaiQuery;
 
     private DmaapService dmaapService;
@@ -56,32 +56,8 @@ public class DmaapServiceTest {
     @Before
     public void setUp() {
         dmaapService = new DmaapService();
-        publisher = PowerMock.createMock(Publisher.class);
-        Whitebox.setInternalState(dmaapService, "publisher", publisher);
         aaiQuery = PowerMock.createMock(AaiQuery.class);
         Whitebox.setInternalState(dmaapService, "aaiQuery", aaiQuery);
-    }
-
-    @Test
-    public void testDmaapService_publish_ok() throws Exception {
-        PowerMock.resetAll();
-        PolicyMsg policyMsg = new PolicyMsg();
-        PowerMock.expectPrivate(publisher, "publish", anyObject(PolicyMsg.class)).andReturn(true)
-                .anyTimes();
-        PowerMock.replayAll();
-        Whitebox.invokeMethod(dmaapService, "publishPolicyMsg", policyMsg);
-        PowerMock.verifyAll();
-    }
-
-    @Test
-    public void testDmaapService_publish_exception() throws Exception {
-        PowerMock.resetAll();
-        final PolicyMsg policyMsg = new PolicyMsg();
-        PowerMock.expectPrivate(publisher, "publish", policyMsg)
-                .andThrow(new CorrelationException("")).anyTimes();
-        PowerMock.replayAll();
-        Whitebox.invokeMethod(dmaapService, "publishPolicyMsg", policyMsg);
-        PowerMock.verifyAll();
     }
 
     @Test
