@@ -32,7 +32,6 @@ public class DcaeConfigurations extends HashMap<String, Object>{
         if (null == rule) {
             return;
         }
-
         this.rules.add(rule);
     }
 
