@@ -25,6 +25,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.http.HttpStatus;
 import org.glassfish.jersey.client.ClientConfig;
 import org.jvnet.hk2.annotations.Service;
 import org.onap.holmes.common.dmaap.entity.PolicyMsg;
@@ -49,15 +50,13 @@ public class Publisher {
         } catch (JsonProcessingException e) {
             throw new CorrelationException("Failed to convert the message object to a json string.", e);
         }
-
         WebTarget webTarget = client.target(url);
         Response response = webTarget.request(MediaType.APPLICATION_JSON)
                 .post(Entity.entity(content, MediaType.APPLICATION_JSON));
-
         return checkStatus(response);
     }
 
     private boolean checkStatus(Response response) {
-        return false;
+        return (response.getStatus() == HttpStatus.SC_OK) ? true : false;
     }
 }
