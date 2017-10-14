@@ -20,13 +20,19 @@ import org.onap.holmes.common.dcae.entity.SecurityInfo;
 
 public class DcaeConfigurationsCache {
 
-    private static DcaeConfigurations dcaeConfigurations;
+    private static DcaeConfigurations dcaeConfigurations = new DcaeConfigurations();
 
     public synchronized static SecurityInfo getPubSecInfo(String key) {
         if (dcaeConfigurations != null) {
             return dcaeConfigurations.getPubSecInfo(key);
         }
         return null;
+    }
+
+    public synchronized static void addPubSecInfo(String key, SecurityInfo securityInfo) {
+        if (dcaeConfigurations != null) {
+            dcaeConfigurations.addPubSecInfo(key, securityInfo);
+        }
     }
 
     public synchronized static void setDcaeConfigurations(DcaeConfigurations configurations) {

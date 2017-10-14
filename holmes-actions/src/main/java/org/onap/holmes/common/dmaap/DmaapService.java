@@ -39,23 +39,23 @@ public class DmaapService {
 
     public static final int POLICY_MESSAGE_ABATED = 1;
 
-    public static final String PUBLISHER_KEY = "unauthenticated.DCAE_CL_OUTPUT";
-
     @Inject
     private AaiQuery aaiQuery;
 
     public static ConcurrentHashMap<String, String> loopControlNames = new ConcurrentHashMap<>();
 
-    public void publishPolicyMsg(PolicyMsg policyMsg) {
+    public void publishPolicyMsg(PolicyMsg policyMsg, String dmaapConfigKey) {
         try {
             Publisher publisher = new Publisher();
-            publisher.setUrl(DcaeConfigurationsCache.getPubSecInfo(PUBLISHER_KEY).getDmaapInfo().getTopicUrl());
+            publisher.setUrl(DcaeConfigurationsCache.getPubSecInfo(dmaapConfigKey).getDmaapInfo().getTopicUrl());
             publisher.publish(policyMsg);
             log.info("send policyMsg: " + JacksonUtil.beanToJson(policyMsg));
         } catch (CorrelationException e) {
             log.error("Failed to publish policyMsg to dmaap", e.getMessage());
         } catch (JsonProcessingException e) {
             log.info("Failed to convert policyMsg to json");
+        } catch (NullPointerException e) {
+            log.error("DMaaP configurations does not exist!");
         }
     }
 

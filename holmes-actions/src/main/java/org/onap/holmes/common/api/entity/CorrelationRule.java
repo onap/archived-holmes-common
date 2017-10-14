@@ -54,4 +54,6 @@ public class CorrelationRule {
     private Date updateTime;
     @JsonProperty(value = "package")
     private String packageName;
+    @JsonProperty(value = "controlloopname")
+    private String closedControlLoopName;
 }
