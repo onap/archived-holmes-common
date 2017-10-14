@@ -29,6 +29,12 @@ public class DcaeConfigurationsCache {
         return null;
     }
 
+    public synchronized static void addPubSecInfo(String key, SecurityInfo securityInfo) {
+        if (dcaeConfigurations != null) {
+            dcaeConfigurations.addPubSecInfo(key, securityInfo);
+        }
+    }
+
     public synchronized static void setDcaeConfigurations(DcaeConfigurations configurations) {
         dcaeConfigurations = configurations;
     }

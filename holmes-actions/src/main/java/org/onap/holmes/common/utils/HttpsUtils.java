@@ -74,7 +74,7 @@ public class HttpsUtils {
             connectionManager = new PoolingHttpClientConnectionManager(registry);
             connectionManager.setMaxTotal(200);
         } catch (Exception e) {
-            log.error("Failed to init ssl builder" + e.getMessage());
+            log.error("Failed to initialize the ssl builder: " + e.getMessage());
         }
     }
 
