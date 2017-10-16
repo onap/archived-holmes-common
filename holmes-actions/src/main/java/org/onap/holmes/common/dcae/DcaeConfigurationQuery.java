@@ -30,7 +30,12 @@ public class DcaeConfigurationQuery {
     public static DcaeConfigurations getDcaeConfigurations(String hostname)
             throws CorrelationException {
         String serviceAddrInfo = MicroServiceConfig.getServiceAddrInfoFromCBS(hostname);
-        String response = getDcaeResponse(serviceAddrInfo);
+        String response;
+        try {
+            response = getDcaeResponse(serviceAddrInfo);
+        } catch (Exception e) {
+            throw new CorrelationException("Failed to connect to dcae", e);
+        }
         DcaeConfigurations dcaeConfigurations = null;
         dcaeConfigurations = DcaeConfigurationParser.parse(response);
         return dcaeConfigurations;

@@ -52,8 +52,13 @@ public class Publisher {
                     e);
         }
         WebTarget webTarget = client.target(url);
-        Response response = webTarget.request(MediaType.APPLICATION_JSON)
-                .post(Entity.entity(content, MediaType.APPLICATION_JSON));
+        Response response = null;
+        try {
+            response = webTarget.request(MediaType.APPLICATION_JSON)
+                    .post(Entity.entity(content, MediaType.APPLICATION_JSON));
+        } catch (Exception e) {
+            throw new CorrelationException("Failed to connect dcae.", e);
+        }
         return checkStatus(response);
     }
 
