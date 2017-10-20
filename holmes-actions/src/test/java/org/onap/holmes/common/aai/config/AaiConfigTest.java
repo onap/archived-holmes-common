@@ -24,7 +24,7 @@ public class AaiConfigTest {
 
     @Test
     public void testAaiConfig_get_static_fields() {
-        String aaiVnfAddr = "/aai/v11/network/generic-vnfs/generic-vnf?";
+        String aaiVnfAddr = "/aai/v11/network/generic-vnfs/generic-vnf";
         String aaiVmAddr = "/aai/v11/search/nodes-query?search-node-type=vserver&filter=";
         String xTransactionId = "9999";
         String xFromAppId = "jimmy-postman";

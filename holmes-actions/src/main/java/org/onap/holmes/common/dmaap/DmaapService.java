@@ -18,6 +18,7 @@ package org.onap.holmes.common.dmaap;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +45,8 @@ public class DmaapService {
 
     public static ConcurrentHashMap<String, String> loopControlNames = new ConcurrentHashMap<>();
 
+    public static ConcurrentHashMap<String, String> alarmUniqueRequestID = new ConcurrentHashMap<>();
+
     public void publishPolicyMsg(PolicyMsg policyMsg, String dmaapConfigKey) {
         try {
             Publisher publisher = new Publisher();
@@ -59,10 +62,10 @@ public class DmaapService {
         }
     }
 
-    public PolicyMsg getPolicyMsg(VesAlarm vesAlarm, String packgeName) {
-        return Optional.ofNullable(getVmEntity(vesAlarm.getSourceId(), vesAlarm.getSourceName()))
-                .map(vmEntity -> getEnrichedPolicyMsg(vmEntity, vesAlarm, packgeName))
-                .orElse(getDefaultPolicyMsg(vesAlarm.getSourceName()));
+    public PolicyMsg getPolicyMsg(VesAlarm rootAlarm, VesAlarm childAlarm, String packgeName) {
+        return Optional.ofNullable(getVmEntity(rootAlarm.getSourceId(), rootAlarm.getSourceName()))
+                .map(vmEntity -> getEnrichedPolicyMsg(vmEntity, rootAlarm, childAlarm, packgeName))
+                .orElse(getDefaultPolicyMsg(rootAlarm.getSourceName()));
     }
 
     private String getVserverInstanceId(VnfEntity vnfEntity) {
@@ -74,11 +77,57 @@ public class DmaapService {
                     .limit(1).findFirst().get().getRelationshipDataList();
 
             vserverInstanceId = relationshipDataList.stream()
-                    .filter(relationshipData -> relationshipData.getRelationshipKey().equals("service-instance.service-instance-id"))
+                    .filter(relationshipData -> relationshipData.getRelationshipKey()
+                            .equals("service-instance.service-instance-id"))
                     .findFirst()
                     .map(relationshipData -> relationshipData.getRelationshipValue()).get();
         }
         return vserverInstanceId;
+    }
+
+    private PolicyMsg getEnrichedPolicyMsg(VmEntity vmEntity, VesAlarm rootAlarm, VesAlarm childAlarm,
+            String packageName) {
+        PolicyMsg policyMsg = new PolicyMsg();
+        if (rootAlarm.getAlarmIsCleared() == POLICY_MESSAGE_ABATED) {
+            policyMsg.setClosedLoopEventStatus(EVENT_STATUS.ABATED);
+        } else {
+            policyMsg.setClosedLoopEventStatus(EVENT_STATUS.ONSET);
+            enrichVnfInfo(childAlarm, policyMsg);
+        }
+        if (alarmUniqueRequestID.containsKey(rootAlarm.getSourceId())) {
+            policyMsg.setRequestID(alarmUniqueRequestID.get(rootAlarm.getSourceId()));
+        } else {
+            String requestID = UUID.randomUUID().toString();
+            policyMsg.setRequestID(requestID);
+            alarmUniqueRequestID.put(rootAlarm.getSourceId(), requestID);
+        }
+        policyMsg.setClosedLoopControlName(loopControlNames.get(packageName));
+        policyMsg.getAai().put("vserver.in-maint", String.valueOf(vmEntity.getInMaint()));
+        policyMsg.getAai().put("vserver.is-closed-loop-disabled",
+                String.valueOf(vmEntity.getClosedLoopDisable()));
+        policyMsg.getAai().put("vserver.prov-status", vmEntity.getProvStatus());
+        policyMsg.getAai().put("vserver.resource-version", vmEntity.getResourceVersion());
+        policyMsg.getAai().put("vserver.vserver-id", vmEntity.getVserverId());
+        policyMsg.getAai().put("vserver.vserver-name", vmEntity.getVserverName());
+        policyMsg.getAai().put("vserver.vserver-name2", vmEntity.getVserverName2());
+        policyMsg.getAai().put("vserver.vserver-selflink", vmEntity.getVserverSelflink());
+        return policyMsg;
+    }
+
+    private PolicyMsg getDefaultPolicyMsg(String sourceName) {
+        PolicyMsg policyMsg = new PolicyMsg();
+        policyMsg.setTarget("vserver.vserver-name");
+        policyMsg.setTargetType("VM");
+        policyMsg.getAai().put("vserver.vserver-name", sourceName);
+        return policyMsg;
+    }
+
+    private void enrichVnfInfo(VesAlarm childAlarm, PolicyMsg policyMsg) {
+        VnfEntity vnfEntity = getVnfEntity(childAlarm.getSourceId(), childAlarm.getSourceName());
+        String vserverInstatnceId = getVserverInstanceId(vnfEntity);
+        policyMsg.getAai().put("generic-vnf.vnf-id", childAlarm.getSourceId());
+        policyMsg.getAai().put("generic-vnf.vnf-name", childAlarm.getSourceName());
+        policyMsg.getAai().put("generic-vnf.service-instance-id", vserverInstatnceId);
     }
 
     private VnfEntity getVnfEntity(String vnfId, String vnfName) {
@@ -99,38 +148,5 @@ public class DmaapService {
             log.error("Failed to get vm data", e.getMessage());
         }
         return vmEntity;
-    }
-
-    private PolicyMsg getEnrichedPolicyMsg(VmEntity vmEntity, VesAlarm vesAlarm, String packageName) {
-        VnfEntity vnfEntity = getVnfEntity(vesAlarm.getEventId(), vesAlarm.getEventName());
-        String vserverInstatnceId = getVserverInstanceId(vnfEntity);
-        PolicyMsg policyMsg = new PolicyMsg();
-        if (vesAlarm.getAlarmIsCleared() == POLICY_MESSAGE_ABATED) {
-            policyMsg.setClosedLoopEventStatus(EVENT_STATUS.ABATED);
-        } else {
-            policyMsg.setClosedLoopEventStatus(EVENT_STATUS.ONSET);
-        }
-        policyMsg.setClosedLoopControlName(loopControlNames.get(packageName));
-        policyMsg.getAai().put("vserver.in-maint", String.valueOf(vmEntity.getInMaint()));
-        policyMsg.getAai().put("vserver.is-closed-loop-disabled",
-                String.valueOf(vmEntity.getClosedLoopDisable()));
-        policyMsg.getAai().put("vserver.prov-status", vmEntity.getProvStatus());
-        policyMsg.getAai().put("vserver.resource-version", vmEntity.getResourceVersion());
-        policyMsg.getAai().put("vserver.vserver-id", vmEntity.getVserverId());
-        policyMsg.getAai().put("vserver.vserver-name", vmEntity.getVserverName());
-        policyMsg.getAai().put("vserver.vserver-name2", vmEntity.getVserverName2());
-        policyMsg.getAai().put("vserver.vserver-selflink", vmEntity.getVserverSelflink());
-        policyMsg.getAai().put("generic-vnf.vnf-id", vesAlarm.getEventId());
-        policyMsg.getAai().put("generic-vnf.vnf-name", vesAlarm.getEventName());
-        policyMsg.getAai().put("generic-vnf.service-instance-id", vserverInstatnceId);
-        return policyMsg;
-    }
-
-    private PolicyMsg getDefaultPolicyMsg(String sourceName) {
-        PolicyMsg policyMsg = new PolicyMsg();
-        policyMsg.setTarget("vserver.vserver-name");
-        policyMsg.setTargetType("VM");
-        policyMsg.getAai().put("vserver.vserver-name", sourceName);
-        return policyMsg;
     }
 }
