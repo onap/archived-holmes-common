@@ -18,17 +18,15 @@ import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.Consts;
-import org.apache.http.HeaderIterator;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
-import org.apache.http.ParseException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -46,16 +44,19 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
+import org.jvnet.hk2.annotations.Service;
 import org.onap.holmes.common.exception.CorrelationException;
 
 @Slf4j
+@Service
 public class HttpsUtils {
     private static final String HTTP = "http";
     private static final String HTTPS = "https";
     private static SSLConnectionSocketFactory sslConnectionSocketFactory = null;
     private static PoolingHttpClientConnectionManager connectionManager = null;
     private static SSLContextBuilder sslContextBuilder = null;
-    static {
+
+    static{
         try {
             sslContextBuilder = new SSLContextBuilder();
             sslContextBuilder.loadTrustMaterial(null, new TrustStrategy() {
@@ -93,14 +94,25 @@ public class HttpsUtils {
 
     public static String get(String url, Map<String, String> header) throws Exception {
         HttpResponse httpResponse = null;
+        CloseableHttpClient httpClient = null;
+        HttpGet httpGet = null;
+        String response = "";
         try {
-            CloseableHttpClient httpClient = getHttpClient();
-            HttpGet httpGet = getHttpGet(url, header);
+            httpClient = getHttpClient();
+            httpGet = getHttpGet(url, header);
             httpResponse = getHttpResponse(httpClient, httpGet);
+            response = getResponseEntity(httpResponse);
         } catch (Exception e) {
             throw new CorrelationException("Failed to use get method query data from server");
+        } finally {
+            if (httpGet != null) {
+                httpGet.releaseConnection();
+            }
+            if (httpResponse != null) {
+                httpClient.close();
+            }
         }
-        return getResponseEntity(httpResponse);
+        return response;
     }
 
     private static HttpPost getHttpPost(String url, Map<String, String> header,
@@ -155,10 +167,6 @@ public class HttpsUtils {
             httpResponse = httpClient.execute(httpRequest);
         } catch (Exception e) {
             throw new CorrelationException("Failed to get data from server");
-        } finally {
-            if (httpClient != null) {
-                httpClient.close();
-            }
         }
         return httpResponse;
     }
