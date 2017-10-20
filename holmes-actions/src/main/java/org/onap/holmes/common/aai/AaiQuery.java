@@ -73,7 +73,7 @@ public class AaiQuery {
     }
 
     private String getResourceLinksResponse(String vserverId, String vserverName) throws CorrelationException {
-        String url = getBaseUrl(getMsbSuffixAddr(AaiConfig.AAI_VNF_ADDR) + "vserver-id:EQUALS:" + vserverId);
+        String url = getBaseUrl(getMsbSuffixAddr(AaiConfig.AAI_VM_ADDR) + "vserver-id:EQUALS:" + vserverId);
         String response = getResponse(url);
         if ("".equals(response) || "{}".equals(response)) {
             url = getBaseUrl(AaiConfig.AAI_VM_ADDR + "vserver-name:EQUALS:" + vserverName);
@@ -83,7 +83,7 @@ public class AaiQuery {
     }
 
     private String getVnfDataResponse(String vnfId, String vnfName) throws CorrelationException {
-        String url = getBaseUrl(getMsbSuffixAddr(AaiConfig.AAI_VM_ADDR)+  "vnf-id=" + vnfId);
+        String url = getBaseUrl(getMsbSuffixAddr(AaiConfig.AAI_VNF_ADDR)+  "vnf-id=" + vnfId);
         String response = getResponse(url);
         if ("".equals(response) || "{}".equals(response)) {
             url = getBaseUrl(AaiConfig.AAI_VNF_ADDR + "vnf-name=" + vnfName);
@@ -113,7 +113,7 @@ public class AaiQuery {
     private String getMsbSuffixAddr(String suffixUrl) {
         String[] addrSplits = suffixUrl.substring(1).split("/");
         String ret = addrSplits[1];
-        addrSplits[1] = addrSplits[2];
+        addrSplits[1] = addrSplits[0] + "-" + addrSplits[2];
         addrSplits[2] = ret;
         StringBuffer stringBuffer = new StringBuffer();
         for (String split : addrSplits) {
