@@ -15,7 +15,7 @@ package org.onap.holmes.common.aai.config;
 
 public class AaiConfig {
 
-    public static final String AAI_VNF_ADDR = "/aai/v11/network/generic-vnfs/generic-vnf?";
+    public static final String AAI_VNF_ADDR = "/aai/v11/network/generic-vnfs/generic-vnf";
 
     public static final String AAI_VM_ADDR = "/aai/v11/search/nodes-query?search-node-type=vserver&filter=";
 

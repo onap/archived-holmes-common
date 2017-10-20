@@ -83,7 +83,7 @@ public class AaiQuery {
     }
 
     private String getVnfDataResponse(String vnfId, String vnfName) throws CorrelationException {
-        String url = getBaseUrl(getMsbSuffixAddr(AaiConfig.AAI_VNF_ADDR)+  "vnf-id=" + vnfId);
+        String url = getBaseUrl(getMsbSuffixAddr(AaiConfig.AAI_VNF_ADDR)+  "/" + vnfId);
         String response = getResponse(url);
         if ("".equals(response) || "{}".equals(response)) {
             url = getBaseUrl(AaiConfig.AAI_VNF_ADDR + "vnf-name=" + vnfName);

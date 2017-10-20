@@ -21,6 +21,7 @@ import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.easymock.EasyMock;
 import org.junit.runner.RunWith;
 import org.omg.CORBA.Any;
 import org.onap.holmes.common.aai.AaiQuery;
@@ -59,6 +60,29 @@ public class DmaapServiceTest {
         aaiQuery = PowerMock.createMock(AaiQuery.class);
         Whitebox.setInternalState(dmaapService, "aaiQuery", aaiQuery);
     }
+
+//    @Test
+//    public void testDmaapService_publish_ok() throws Exception {
+//        PowerMock.resetAll();
+//        PolicyMsg policyMsg = new PolicyMsg();
+//        Publisher publisher = PowerMockito.mock(Publisher.class);
+//        PowerMockito.whenNew(Publisher.class).withNoArguments().thenReturn(publisher);
+//        PowerMockito.when(publisher.publish(anyObject(PolicyMsg.class))).thenReturn(true);
+//        PowerMock.replayAll();
+//        Whitebox.invokeMethod(dmaapService, "publishPolicyMsg", policyMsg);
+//        PowerMock.verifyAll();
+//    }
+//
+//    @Test
+//    public void testDmaapService_publish_exception() throws Exception {
+//        PowerMock.resetAll();
+//        final PolicyMsg policyMsg = new PolicyMsg();
+//        PowerMock.expectPrivate(publisher, "publish", policyMsg)
+//                .andThrow(new CorrelationException("")).anyTimes();
+//        PowerMock.replayAll();
+//        Whitebox.invokeMethod(dmaapService, "publishPolicyMsg", policyMsg);
+//        PowerMock.verifyAll();
+//    }
 
     @Test
     public void testDmaapService_getDefaultPolicyMsg_ok() throws Exception {
@@ -177,13 +201,14 @@ public class DmaapServiceTest {
         VesAlarm vesAlarm = new VesAlarm();
         vesAlarm.setEventId("11111");
         vesAlarm.setEventName("3333");
+        vesAlarm.setSourceId("111");
 
         PowerMock.expectPrivate(dmaapService, "getVnfEntity", anyObject(String.class),
                 anyObject(String.class)).andReturn(null).anyTimes();
 
         PowerMock.replayAll();
         PolicyMsg actual = Whitebox
-                .invokeMethod(dmaapService, "getEnrichedPolicyMsg", vmEntity, vesAlarm, "loopName");
+                .invokeMethod(dmaapService, "getEnrichedPolicyMsg", vmEntity, vesAlarm, vesAlarm, "loopName");
         PowerMock.verifyAll();
 
         assertThat(actual.getClosedLoopControlName(), equalTo(null));
