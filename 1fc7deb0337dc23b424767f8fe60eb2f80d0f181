@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a2f8d8d_c26e6bc9",
+        "filename": "holmes-actions/src/main/java/org/onap/holmes/common/dmaap/DmaapService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1515
+      },
+      "writtenOn": "2017-10-23T10:55:35Z",
+      "side": 1,
+      "message": "The event ID can not be used as the key of the map.",
+      "range": {
+        "startLine": 106,
+        "startChar": 45,
+        "endLine": 106,
+        "endChar": 67
+      },
+      "revId": "1fc7deb0337dc23b424767f8fe60eb2f80d0f181",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
