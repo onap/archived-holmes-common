@@ -24,6 +24,7 @@ import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.jvnet.hk2.annotations.Service;
 import org.onap.holmes.common.aai.AaiQuery;
+import org.onap.holmes.common.aai.entity.RelationshipList.Relationship;
 import org.onap.holmes.common.aai.entity.RelationshipList.RelationshipData;
 import org.onap.holmes.common.aai.entity.VmEntity;
 import org.onap.holmes.common.aai.entity.VnfEntity;
@@ -71,16 +72,24 @@ public class DmaapService {
     private String getVserverInstanceId(VnfEntity vnfEntity) {
         String vserverInstanceId = "";
         if (vnfEntity != null) {
-            List<RelationshipData> relationshipDataList = vnfEntity.getRelationshipList()
-                    .getRelationships().stream()
-                    .filter(relationship -> relationship.getRelatedTo().equals("service-instance"))
-                    .limit(1).findFirst().get().getRelationshipDataList();
-
-            vserverInstanceId = relationshipDataList.stream()
-                    .filter(relationshipData -> relationshipData.getRelationshipKey()
-                            .equals("service-instance.service-instance-id"))
-                    .findFirst()
-                    .map(relationshipData -> relationshipData.getRelationshipValue()).get();
+            List<Relationship> relationshipList = vnfEntity.getRelationshipList().getRelationships();
+            Relationship relationship = null;
+            for(int i = 0; i < relationshipList.size(); i++) {
+                if ("service-instance".equals(relationshipList.get(i).getRelatedTo())) {
+                    relationship = relationshipList.get(i);
+                    break;
+                }
+            }
+            if (relationship != null) {
+                List<RelationshipData> relationshipDataList = relationship.getRelationshipDataList();
+                for(int i = 0; i < relationshipDataList.size(); i++) {
+                    if ("service-instance.service-instance-id"
+                            .equals(relationshipDataList.get(i).getRelationshipKey())) {
+                        vserverInstanceId = relationshipDataList.get(i).getRelationshipValue();
+                        break;
+                    }
+                }
+            }
         }
         return vserverInstanceId;
     }
@@ -102,15 +111,16 @@ public class DmaapService {
             alarmUniqueRequestID.put(rootAlarm.getSourceId(), requestID);
         }
         policyMsg.setClosedLoopControlName(loopControlNames.get(packageName));
-        policyMsg.getAai().put("vserver.in-maint", String.valueOf(vmEntity.getInMaint()));
-        policyMsg.getAai().put("vserver.is-closed-loop-disabled",
+        policyMsg.setTarget(vmEntity.getVserverName());
+        policyMsg.getAAI().put("vserver.in-maint", String.valueOf(vmEntity.getInMaint()));
+        policyMsg.getAAI().put("vserver.is-closed-loop-disabled",
                 String.valueOf(vmEntity.getClosedLoopDisable()));
-        policyMsg.getAai().put("vserver.prov-status", vmEntity.getProvStatus());
-        policyMsg.getAai().put("vserver.resource-version", vmEntity.getResourceVersion());
-        policyMsg.getAai().put("vserver.vserver-id", vmEntity.getVserverId());
-        policyMsg.getAai().put("vserver.vserver-name", vmEntity.getVserverName());
-        policyMsg.getAai().put("vserver.vserver-name2", vmEntity.getVserverName2());
-        policyMsg.getAai().put("vserver.vserver-selflink", vmEntity.getVserverSelflink());
+        policyMsg.getAAI().put("vserver.prov-status", vmEntity.getProvStatus());
+        policyMsg.getAAI().put("vserver.resource-version", vmEntity.getResourceVersion());
+        policyMsg.getAAI().put("vserver.vserver-id", vmEntity.getVserverId());
+        policyMsg.getAAI().put("vserver.vserver-name", vmEntity.getVserverName());
+        policyMsg.getAAI().put("vserver.vserver-name2", vmEntity.getVserverName2());
+        policyMsg.getAAI().put("vserver.vserver-selflink", vmEntity.getVserverSelflink());
         return policyMsg;
     }
 
@@ -118,16 +128,16 @@ public class DmaapService {
         PolicyMsg policyMsg = new PolicyMsg();
         policyMsg.setTarget("vserver.vserver-name");
         policyMsg.setTargetType("VM");
-        policyMsg.getAai().put("vserver.vserver-name", sourceName);
+        policyMsg.getAAI().put("vserver.vserver-name", sourceName);
         return policyMsg;
     }
 
     private void enrichVnfInfo(VesAlarm childAlarm, PolicyMsg policyMsg) {
         VnfEntity vnfEntity = getVnfEntity(childAlarm.getSourceId(), childAlarm.getSourceName());
         String vserverInstatnceId = getVserverInstanceId(vnfEntity);
-        policyMsg.getAai().put("generic-vnf.vnf-id", childAlarm.getSourceId());
-        policyMsg.getAai().put("generic-vnf.vnf-name", childAlarm.getSourceName());
-        policyMsg.getAai().put("generic-vnf.service-instance-id", vserverInstatnceId);
+        policyMsg.getAAI().put("generic-vnf.vnf-id", childAlarm.getSourceId());
+        policyMsg.getAAI().put("generic-vnf.vnf-name", childAlarm.getSourceName());
+        policyMsg.getAAI().put("generic-vnf.service-instance-id", vserverInstatnceId);
     }
 
     private VnfEntity getVnfEntity(String vnfId, String vnfName) {

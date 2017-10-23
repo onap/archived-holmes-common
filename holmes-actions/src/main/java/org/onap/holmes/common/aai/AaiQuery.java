@@ -95,13 +95,14 @@ public class AaiQuery {
     private String getBaseUrl(String suffixUrl) {
         String url = "";
         try {
-            url = MicroServiceConfig.getMsbServerAddr() + suffixUrl;
+            String[] msbUrl = MicroServiceConfig.getMsbServerAddr().split(":");
+            url = msbUrl[0] + ":" + msbUrl[1] + suffixUrl;
         } catch (Exception e) {
             log.info("Failed to get msb address");
         }
-        if (url.equals("")) {
+        if ("".equals(url)) {
             try {
-                url = "https:\\\\" + MicroServiceConfig.getServiceAddrInfoFromCBS("aai_config")
+                url = "https://" + MicroServiceConfig.getServiceAddrInfoFromCBS("aai_config")
                         + suffixUrl;
             } catch (Exception e) {
                 log.info("Failed to get aai address");
@@ -112,9 +113,18 @@ public class AaiQuery {
 
     private String getMsbSuffixAddr(String suffixUrl) {
         String[] addrSplits = suffixUrl.substring(1).split("/");
+        String[] conv = addrSplits[2].split("-");
+        addrSplits[2] = conv[0];
+        if (conv.length > 1) {
+            for(int i = 1; i < conv.length; i++) {
+                addrSplits[2] = addrSplits[2] + conv[i].substring(0, 1).toUpperCase() + conv[i]
+                        .substring(1);
+            }
+        }
         String ret = addrSplits[1];
         addrSplits[1] = addrSplits[0] + "-" + addrSplits[2];
         addrSplits[2] = ret;
+        addrSplits[0] = "api";
         StringBuffer stringBuffer = new StringBuffer();
         for (String split : addrSplits) {
             stringBuffer.append("/" + split);
