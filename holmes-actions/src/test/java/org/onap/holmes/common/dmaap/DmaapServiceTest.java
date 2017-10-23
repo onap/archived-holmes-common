@@ -72,7 +72,7 @@ public class DmaapServiceTest {
 
         assertThat(policyMsg.getTarget(), equalTo("vserver.vserver-name"));
         assertThat(policyMsg.getTargetType(), equalTo("VM"));
-        assertThat(policyMsg.getAAI().get("vserver.vserver-name"), equalTo("tetss"));
+        assertThat(policyMsg.getAai().get("vserver.vserver-name"), equalTo("tetss"));
     }
 
     @Test
@@ -189,8 +189,8 @@ public class DmaapServiceTest {
         PowerMock.verifyAll();
 
         assertThat(actual.getClosedLoopControlName(), equalTo(null));
-        assertThat(actual.getAAI().get("vserver.prov-status"), equalTo("prov"));
-        assertThat(actual.getAAI().get("vserver.vserver-name2") == null, equalTo(true));
-        assertThat(actual.getAAI().get("generic-vnf.service-instance-id"), equalTo(""));
+        assertThat(actual.getAai().get("vserver.prov-status"), equalTo("prov"));
+        assertThat(actual.getAai().get("vserver.vserver-name2") == null, equalTo(true));
+        assertThat(actual.getAai().get("generic-vnf.service-instance-id"), equalTo(""));
     }
 }

@@ -27,7 +27,8 @@ public class VesAlarmTest {
     @Test
     public void hashCodeTest() throws Exception {
         VesAlarm alarm = new VesAlarm();
-        alarm.setVersion(0L);
+        alarm.setEventName("unique");
+        alarm.setSourceId("123");
         VesAlarm alarmClone = (VesAlarm)alarm.clone();
         assertTrue(alarm.hashCode() == alarmClone.hashCode());
     }
@@ -35,7 +36,8 @@ public class VesAlarmTest {
     @Test
     public void equalsTest() throws Exception {
         VesAlarm alarm = new VesAlarm();
-        alarm.setVersion(0L);
+        alarm.setEventName("unique");
+        alarm.setSourceId("123");
         VesAlarm alarmClone = (VesAlarm)alarm.clone();
         assertTrue(alarm.equals(alarmClone));
     }
@@ -44,7 +46,8 @@ public class VesAlarmTest {
     public void cloneTest() throws Exception {
         VesAlarm alarm = new VesAlarm();
         alarm.setDomain("Test");
-        alarm.setVersion(0L);
+        alarm.setEventName("unique");
+        alarm.setSourceId("123");
         assertThat(alarm, equalTo(alarm.clone()));
     }
 

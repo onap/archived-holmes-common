@@ -36,11 +36,12 @@ public class PolicyMsg {
     private String policyVersion;
     private String policyName;
     private String policyScope;
-    private String from = "HOLMES";
+    private String from = "DCAE";
     @JsonProperty(value = "target_type")
     private String targetType = "VM";
     private String target;
-    private Map<String, String> AAI = new HashMap<>();
+    @JsonProperty(value = "AAI")
+    private Map<String, String> aai = new HashMap<>();
 
     public static enum EVENT_STATUS {
         ONSET, ABATED;
