@@ -103,12 +103,12 @@ public class DmaapService {
             policyMsg.setClosedLoopEventStatus(EVENT_STATUS.ONSET);
             enrichVnfInfo(childAlarm, policyMsg);
         }
-        if (alarmUniqueRequestID.containsKey(rootAlarm.getSourceId())) {
-            policyMsg.setRequestID(alarmUniqueRequestID.get(rootAlarm.getSourceId()));
+        if (alarmUniqueRequestID.containsKey(rootAlarm.getEventId())) {
+            policyMsg.setRequestID(alarmUniqueRequestID.get(rootAlarm.getEventId()));
         } else {
             String requestID = UUID.randomUUID().toString();
             policyMsg.setRequestID(requestID);
-            alarmUniqueRequestID.put(rootAlarm.getSourceId(), requestID);
+            alarmUniqueRequestID.put(rootAlarm.getEventId(), requestID);
         }
         policyMsg.setClosedLoopControlName(loopControlNames.get(packageName));
         policyMsg.setTarget(vmEntity.getVserverName());

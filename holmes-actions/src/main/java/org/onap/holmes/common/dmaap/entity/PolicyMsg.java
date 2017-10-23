@@ -36,7 +36,7 @@ public class PolicyMsg {
     private String policyVersion;
     private String policyName;
     private String policyScope;
-    private String from = "HOLMES";
+    private String from = "DCAE";
     @JsonProperty(value = "target_type")
     private String targetType = "VM";
     private String target;
