@@ -57,7 +57,7 @@ public class VesAlarm implements Cloneable, Serializable{
 
     @Override
     public int hashCode() {
-        return this.version.hashCode();
+        return this.eventId.hashCode();
     }
 
     @Override
@@ -65,7 +65,7 @@ public class VesAlarm implements Cloneable, Serializable{
         if (object == null || !(object instanceof VesAlarm)) {
             return false;
         }
-        return this.version.equals(((VesAlarm) object).getVersion());
+        return this.eventId.equals(((VesAlarm) object).getEventId());
     }
 
     @Override
