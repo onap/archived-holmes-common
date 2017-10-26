@@ -70,7 +70,7 @@ public class DmaapServiceTest {
                 .invokeMethod(dmaapService, "getDefaultPolicyMsg", "tetss");
         PowerMock.verifyAll();
 
-        assertThat(policyMsg.getTarget(), equalTo("vserver.vserver-name"));
+        assertThat(policyMsg.getTarget(), equalTo("vserver.vserver-id"));
         assertThat(policyMsg.getTargetType(), equalTo("VM"));
         assertThat(policyMsg.getAai().get("vserver.vserver-name"), equalTo("tetss"));
     }
@@ -179,6 +179,7 @@ public class DmaapServiceTest {
         vesAlarm.setEventId("11111");
         vesAlarm.setEventName("3333");
         vesAlarm.setSourceId("111");
+        vesAlarm.setStartEpochMicrosec(11111L);
 
         PowerMock.expectPrivate(dmaapService, "getVnfEntity", anyObject(String.class),
                 anyObject(String.class)).andReturn(null).anyTimes();
