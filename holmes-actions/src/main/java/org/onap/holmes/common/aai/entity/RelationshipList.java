@@ -26,6 +26,19 @@ public class RelationshipList {
 
     private List<Relationship> relationships;
 
+    public Relationship getRelationship(String relatedTo) {
+        Relationship relationship = null;
+        if(null == relationships || relationships.size() == 0)
+            return  relationship;
+        for(int i = 0; i < relationships.size(); i++) {
+            if (relatedTo.equals(relationships.get(i).getRelatedTo())) {
+                relationship = relationships.get(i);
+                break;
+            }
+        }
+        return relationship;
+    }
+
     @Setter
     @Getter
     public static class Relationship {
@@ -33,6 +46,34 @@ public class RelationshipList {
         private String relatedTo;
         private List<RelatedToProperty> relatedToPropertyList;
         private List<RelationshipData> relationshipDataList;
+
+        public String getRelatedToPropertyValue(String key) {
+            String value = "";
+            if (null == relatedToPropertyList || relatedToPropertyList.size() == 0) {
+                return "";
+            }
+            for(int i = 0; i < relatedToPropertyList.size(); i++) {
+                if (key.equals(relatedToPropertyList.get(i).getPropertyKey())) {
+                    value = relatedToPropertyList.get(i).getPropertyValue();
+                    break;
+                }
+            }
+            return value;
+        }
+
+        public String getRelationshipDataValue(String key) {
+            String value = "";
+            if (null == relationshipDataList || relationshipDataList.size() == 0) {
+                return "";
+            }
+            for(int i = 0; i < relationshipDataList.size(); i++) {
+                if (key.equals(relationshipDataList.get(i).getRelationshipKey())) {
+                    value = relationshipDataList.get(i).getRelationshipValue();
+                    break;
+                }
+            }
+            return value;
+        }
     }
 
     @Setter
