@@ -76,7 +76,7 @@ public class AaiQuery {
         String url = getBaseUrl(getMsbSuffixAddr(AaiConfig.AAI_VM_ADDR) + "vserver-id:EQUALS:" + vserverId);
         String response = getResponse(url);
         if ("".equals(response) || "{}".equals(response)) {
-            url = getBaseUrl(AaiConfig.AAI_VM_ADDR + "vserver-name:EQUALS:" + vserverName);
+            url = getBaseUrl(getMsbSuffixAddr(AaiConfig.AAI_VM_ADDR) + "vserver-name:EQUALS:" + vserverName);
             response = getResponse(url);
         }
         return response;
@@ -86,7 +86,7 @@ public class AaiQuery {
         String url = getBaseUrl(getMsbSuffixAddr(AaiConfig.AAI_VNF_ADDR)+  "/" + vnfId);
         String response = getResponse(url);
         if ("".equals(response) || "{}".equals(response)) {
-            url = getBaseUrl(AaiConfig.AAI_VNF_ADDR + "vnf-name=" + vnfName);
+            url = getBaseUrl(getMsbSuffixAddr(AaiConfig.AAI_VNF_ADDR) + "vnf-name=" + vnfName);
             response = getResponse(url);
         }
         return response;
