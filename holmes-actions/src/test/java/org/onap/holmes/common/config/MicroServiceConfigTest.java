@@ -41,15 +41,28 @@ public class MicroServiceConfigTest {
     @Test
     public void getMsbServerAddrTest() {
         System.setProperty(MSB_ADDR, "test:80");
+        System.setProperty(HOSTNAME, "rule-mgmt");
+        PowerMock.mockStaticPartial(MicroServiceConfig.class, "getServiceAddrInfoFromCBS", String.class);
+        EasyMock.expect(MicroServiceConfig.getServiceAddrInfoFromCBS(System.getProperty(HOSTNAME)))
+                .andReturn("{\"msb.hostname\": \"test:80\"}");
+        PowerMock.replayAll();
         assertThat("http://test:80", equalTo(getMsbServerAddr()));
+        PowerMock.verifyAll();
+        System.clearProperty(MicroServiceConfig.HOSTNAME);
         System.clearProperty(MicroServiceConfig.MSB_ADDR);
     }
 
     @Test
     public void getMsbServerIpTest() {
         System.setProperty(MSB_ADDR, "10.54.23.79:80");
+        System.setProperty(HOSTNAME, "rule-mgmt");
+        PowerMock.mockStaticPartial(MicroServiceConfig.class, "getServiceAddrInfoFromCBS", String.class);
+        EasyMock.expect(MicroServiceConfig.getServiceAddrInfoFromCBS(System.getProperty(HOSTNAME)))
+                .andReturn("{\"msb.hostname\": \"10.54.23.79:80\"}").times(2);
+        PowerMock.replayAll();
         assertThat("10.54.23.79", equalTo(getMsbAddrInfo()[0]));
         assertThat("80", equalTo(getMsbAddrInfo()[1]));
+        System.clearProperty(MicroServiceConfig.HOSTNAME);
         System.clearProperty(MSB_ADDR);
     }
 
@@ -160,11 +173,10 @@ public class MicroServiceConfigTest {
     @Test
     public void getMsbAddrInfo_msb_registered() throws Exception {
         System.setProperty(MSB_ADDR, "10.74.5.8:1545");
-        PowerMock.mockStaticPartial(MicroServiceConfig.class, "execQuery", String.class);
-        PowerMock.expectPrivate(MicroServiceConfig.class, "execQuery", EasyMock.anyObject())
-                .andReturn("[{\"ServiceAddress\": \"127.0.0.2\", \"ServicePort\": \"8080\"}]");
-        PowerMock.expectPrivate(MicroServiceConfig.class, "execQuery", EasyMock.anyObject())
-                .andReturn("{\"" + MSB_ADDR + "\": \"[\\\"127.0.0.3:5432\\\"]\"}");
+        System.setProperty(HOSTNAME, "rule-mgmt");
+        PowerMock.mockStaticPartial(MicroServiceConfig.class, "getServiceAddrInfoFromCBS", String.class);
+        EasyMock.expect(MicroServiceConfig.getServiceAddrInfoFromCBS(System.getProperty(HOSTNAME)))
+                .andReturn("{\"msb.hostname\": \"127.0.0.3:5432\"}");
 
         PowerMock.replayAll();
         String[] msbInfo = getMsbAddrInfo();
@@ -173,16 +185,16 @@ public class MicroServiceConfigTest {
         assertThat(msbInfo[0], equalTo("127.0.0.3"));
         assertThat(msbInfo[1], equalTo("5432"));
 
+        System.clearProperty(HOSTNAME);
         System.clearProperty(MSB_ADDR);
     }
 
     @Test
     public void getMsbAddrInfo_msb_not_registered() throws Exception {
         System.setProperty(MSB_ADDR, "10.74.5.8:1545");
-        PowerMock.mockStaticPartial(MicroServiceConfig.class, "execQuery", String.class);
-        PowerMock.expectPrivate(MicroServiceConfig.class, "execQuery", EasyMock.anyObject())
-                .andReturn("[{\"ServiceAddress\": \"127.0.0.2\", \"ServicePort\": \"8080\"}]");
-        PowerMock.expectPrivate(MicroServiceConfig.class, "execQuery", EasyMock.anyObject())
+        System.setProperty(HOSTNAME, "rule-mgmt");
+        PowerMock.mockStaticPartial(MicroServiceConfig.class, "getServiceAddrInfoFromCBS", String.class);
+        EasyMock.expect(MicroServiceConfig.getServiceAddrInfoFromCBS(System.getProperty(HOSTNAME)))
                 .andReturn("{}");
 
         PowerMock.replayAll();
@@ -192,6 +204,7 @@ public class MicroServiceConfigTest {
         assertThat(msbInfo[0], equalTo("10.74.5.8"));
         assertThat(msbInfo[1], equalTo("1545"));
 
+        System.clearProperty(HOSTNAME);
         System.clearProperty(MSB_ADDR);
     }
 

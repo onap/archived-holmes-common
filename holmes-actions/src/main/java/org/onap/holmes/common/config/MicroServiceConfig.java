@@ -49,6 +49,7 @@ public class MicroServiceConfig {
     public static String getConfigBindingServiceAddrInfo() {
         String ret = null;
         String queryString = getConsulAddrInfo() + CONFIG_BINDING_SERVICE;
+        log.info("Query the CBS address using the URL: " + queryString);
         try {
             JSONObject addrJson = (JSONObject) JSONArray.fromObject(execQuery(queryString)).get(0);
             if (addrJson.has("ServiceAddress") && addrJson.has("ServicePort")) {
@@ -57,6 +58,7 @@ public class MicroServiceConfig {
         } catch (Exception e) {
             log.warn(e.getMessage(), e);
         }
+        log.info("The CBS address is " + ret);
         return ret;
     }
 
@@ -71,6 +73,7 @@ public class MicroServiceConfig {
         String url = getConfigBindingServiceAddrInfo() + "/service_component/" +serviceName;
         try {
             JSONObject jsonObject = JSONObject.fromObject(execQuery(url));
+            log.info("The origin configurations (" + url + ") returned by DCAE is: " + jsonObject.toString());
             if (jsonObject.has(serviceName)) {
                 ret = (String) jsonObject.getJSONArray(serviceName).get(0);
             }
@@ -92,7 +95,11 @@ public class MicroServiceConfig {
     public static String[] getMsbAddrInfo() {
         String[] msbServerInfo = null;
 
-        String info = getServiceAddrInfoFromCBS(MSB_ADDR);
+        //String info = getServiceAddrInfoFromCBS(MSB_ADDR);
+        String info = getServiceAddrInfoFromCBS(getEnv(HOSTNAME));
+        log.info("Got the service information of \"" + getEnv(HOSTNAME) + "\" from CBS. The response is " + info + ".");
+        JSONObject infoObj = JSONObject.fromObject(info);
+        info = infoObj.has("msb.hostname") ? infoObj.getString("msb.hostname") : null;
         if (info != null){
             msbServerInfo = split(info);
         } else {
@@ -105,6 +112,7 @@ public class MicroServiceConfig {
     public static String[] getServiceAddrInfo() {
         String[] serviceAddrInfo = null;
         String info = getServiceAddrInfoFromCBS(getEnv(HOSTNAME));
+        log.info("Got the service information of \"" + getEnv(HOSTNAME) + "\" from CBS. The response is " + info + ".");
         if (info != null){
             serviceAddrInfo = split(info);
         } else {
