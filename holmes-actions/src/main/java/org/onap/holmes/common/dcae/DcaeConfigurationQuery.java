@@ -34,7 +34,7 @@ public class DcaeConfigurationQuery {
         try {
             response = getDcaeResponse(serviceAddrInfo);
         } catch (Exception e) {
-            throw new CorrelationException("Failed to connect to dcae", e);
+            throw new CorrelationException("Failed to connect to DCAE. ", e);
         }
         DcaeConfigurations dcaeConfigurations = null;
         dcaeConfigurations = DcaeConfigurationParser.parse(response);
