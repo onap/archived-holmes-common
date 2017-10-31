@@ -98,10 +98,15 @@ public class MicroServiceConfig {
         //String info = getServiceAddrInfoFromCBS(MSB_ADDR);
         String info = getServiceAddrInfoFromCBS(getEnv(HOSTNAME));
         log.info("Got the service information of \"" + getEnv(HOSTNAME) + "\" from CBS. The response is " + info + ".");
-        JSONObject infoObj = JSONObject.fromObject(info);
-        info = infoObj.has("msb.hostname") ? infoObj.getString("msb.hostname") : null;
+
         if (info != null){
-            msbServerInfo = split(info);
+            JSONObject infoObj = JSONObject.fromObject(info);
+            String msbInfoTmp = infoObj.has("msb.hostname") ? infoObj.getString("msb.hostname") : null;
+            if (msbInfoTmp != null) {
+                msbServerInfo = split(msbInfoTmp);
+            } else {
+                msbServerInfo = split(getEnv(MSB_ADDR));
+            }
         } else {
             msbServerInfo = split(getEnv(MSB_ADDR));
         }
