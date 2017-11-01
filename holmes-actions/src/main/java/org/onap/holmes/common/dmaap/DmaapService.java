@@ -71,7 +71,6 @@ public class DmaapService {
         if (rootAlarm.getAlarmIsCleared() == PolicyMassgeConstant.POLICY_MESSAGE_ONSET) {
             enrichVnfInfo(vmEntity, childAlarm, policyMsg);
             policyMsg.setClosedLoopEventStatus(EVENT_STATUS.ONSET);
-            policyMsg.setTarget("vserver.vserver-id");
             policyMsg.getAai().put("vserver.in-maint", String.valueOf(vmEntity.getInMaint()));
             policyMsg.getAai().put("vserver.is-closed-loop-disabled",
                     String.valueOf(vmEntity.getClosedLoopDisable()));
@@ -83,6 +82,7 @@ public class DmaapService {
         }
         policyMsg.setClosedLoopControlName(loopControlNames.get(packageName));
         policyMsg.setClosedLoopAlarmStart(rootAlarm.getStartEpochMicrosec());
+		policyMsg.setTarget("vserver.vserver-name");
         policyMsg.getAai().put("vserver.vserver-id", vmEntity.getVserverId());
         policyMsg.getAai().put("vserver.vserver-name", vmEntity.getVserverName());
         policyMsg.getAai().put("vserver.vserver-name2", vmEntity.getVserverName2());
