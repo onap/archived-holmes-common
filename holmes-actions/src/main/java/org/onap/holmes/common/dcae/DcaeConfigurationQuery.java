@@ -19,7 +19,6 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import org.glassfish.jersey.client.ClientConfig;
-import org.jvnet.hk2.annotations.Service;
 import org.onap.holmes.common.config.MicroServiceConfig;
 import org.onap.holmes.common.dcae.entity.DcaeConfigurations;
 import org.onap.holmes.common.dcae.utils.DcaeConfigurationParser;
@@ -29,7 +28,7 @@ public class DcaeConfigurationQuery {
 
     public static DcaeConfigurations getDcaeConfigurations(String hostname)
             throws CorrelationException {
-        String serviceAddrInfo = MicroServiceConfig.getServiceAddrInfoFromCBS(hostname);
+        String serviceAddrInfo = MicroServiceConfig.getServiceConfigInfoFromCBS(hostname);
         String response;
         try {
             response = getDcaeResponse(serviceAddrInfo);

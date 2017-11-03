@@ -95,17 +95,17 @@ public class AaiQuery {
     private String getBaseUrl(String suffixUrl) {
         String url = "";
         try {
-            String[] msbUrl = MicroServiceConfig.getMsbServerAddr().split(":");
+            String[] msbUrl = MicroServiceConfig.getMsbServerAddrWithHttpPrefix().split(":");
             url = msbUrl[0] + ":" + msbUrl[1] + suffixUrl;
         } catch (Exception e) {
             log.info("Failed to get msb address");
         }
         if ("".equals(url)) {
             try {
-                url = "https://" + MicroServiceConfig.getServiceAddrInfoFromCBS("aai_config")
+                url = "https://" + MicroServiceConfig.getServiceConfigInfoFromCBS("aai_config").replace("http://", "")
                         + suffixUrl;
             } catch (Exception e) {
-                log.info("Failed to get aai address");
+                log.info("Failed to get the address of A&AI.", e);
             }
         }
         return url;

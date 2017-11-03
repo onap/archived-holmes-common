@@ -97,7 +97,7 @@ public class AaiQueryTest {
         when(HttpsUtils.get(url, headers)).thenReturn("{}");
 
         PowerMockito.mockStatic(MicroServiceConfig.class);
-        when(MicroServiceConfig.getMsbServerAddr()).thenReturn("http://10.96.33.33:80");
+        when(MicroServiceConfig.getMsbServerAddrWithHttpPrefix()).thenReturn("http://10.96.33.33:80");
 
         PowerMock.expectPrivate(aaiQuery, "getVmResourceLinks", "test1", "test2")
                 .andReturn("/aai/v11/cloud-infrastructure");
@@ -131,7 +131,7 @@ public class AaiQueryTest {
         when(HttpsUtils.get(url, headers)).thenReturn("");
 
         PowerMockito.mockStatic(MicroServiceConfig.class);
-        when(MicroServiceConfig.getMsbServerAddr()).thenReturn("http://10.96.33.33:80");
+        when(MicroServiceConfig.getMsbServerAddrWithHttpPrefix()).thenReturn("http://10.96.33.33:80");
 
         PowerMock.expectPrivate(aaiQuery, "getVmResourceLinks", "test1", "test2")
                 .andReturn("/aai/v11/cloud-infrastructure");
@@ -162,7 +162,7 @@ public class AaiQueryTest {
         when(HttpsUtils.get(url, headers)).thenThrow(new CorrelationException(""));
 
         PowerMockito.mockStatic(MicroServiceConfig.class);
-        when(MicroServiceConfig.getMsbServerAddr()).thenReturn("http://10.96.33.33:80");
+        when(MicroServiceConfig.getMsbServerAddrWithHttpPrefix()).thenReturn("http://10.96.33.33:80");
 
         PowerMock.expectPrivate(aaiQuery, "getVmResourceLinks", "test1", "test2")
                 .andReturn("/aai/v11/cloud-infrastructure");
@@ -216,7 +216,7 @@ public class AaiQueryTest {
         Whitebox.setInternalState(aaiQuery, "aaiResponseUtil", aaiResponseUtil);
 
         PowerMockito.mockStatic(MicroServiceConfig.class);
-        when(MicroServiceConfig.getMsbServerAddr()).thenReturn("host_url");
+        when(MicroServiceConfig.getMsbServerAddrWithHttpPrefix()).thenReturn("host_url");
 
         PowerMock.expectPrivate(aaiQuery, "getResponse", anyObject(String.class)).andReturn("").anyTimes();
         PowerMock.replayAll();
@@ -235,7 +235,7 @@ public class AaiQueryTest {
         Whitebox.setInternalState(aaiQuery, "aaiResponseUtil", aaiResponseUtil);
 
         PowerMockito.mockStatic(MicroServiceConfig.class);
-        when(MicroServiceConfig.getMsbServerAddr()).thenReturn("host_url");
+        when(MicroServiceConfig.getMsbServerAddrWithHttpPrefix()).thenReturn("host_url");
 
         PowerMock.expectPrivate(aaiQuery, "getResponse", anyObject(String.class)).andReturn("").anyTimes();
         PowerMock.replayAll();
@@ -307,8 +307,8 @@ public class AaiQueryTest {
         aaiQuery = new AaiQuery();
 
         PowerMockito.mockStatic(MicroServiceConfig.class);
-        when(MicroServiceConfig.getMsbServerAddr()).thenReturn("http://10.96.33.33:80");
-        when(MicroServiceConfig.getServiceAddrInfoFromCBS("nihao")).thenReturn("");
+        when(MicroServiceConfig.getMsbServerAddrWithHttpPrefix()).thenReturn("http://10.96.33.33:80");
+        when(MicroServiceConfig.getServiceConfigInfoFromCBS("nihao")).thenReturn("");
 
         PowerMock.replayAll();
         String actual = Whitebox.invokeMethod(aaiQuery,"getBaseUrl", "/url");
@@ -322,8 +322,8 @@ public class AaiQueryTest {
         aaiQuery = new AaiQuery();
 
         PowerMockito.mockStatic(MicroServiceConfig.class);
-        when(MicroServiceConfig.getMsbServerAddr()).thenThrow(new NullPointerException());
-        when(MicroServiceConfig.getServiceAddrInfoFromCBS("aai_config")).thenReturn("aai");
+        when(MicroServiceConfig.getMsbServerAddrWithHttpPrefix()).thenThrow(new NullPointerException());
+        when(MicroServiceConfig.getServiceConfigInfoFromCBS("aai_config")).thenReturn("aai");
 
         PowerMock.replayAll();
         String actual = Whitebox.invokeMethod(aaiQuery,"getBaseUrl", "url");
@@ -338,8 +338,8 @@ public class AaiQueryTest {
         aaiQuery = new AaiQuery();
 
         PowerMockito.mockStatic(MicroServiceConfig.class);
-        when(MicroServiceConfig.getMsbServerAddr()).thenThrow(new NullPointerException());
-        when(MicroServiceConfig.getServiceAddrInfoFromCBS("aai_config"))
+        when(MicroServiceConfig.getMsbServerAddrWithHttpPrefix()).thenThrow(new NullPointerException());
+        when(MicroServiceConfig.getServiceConfigInfoFromCBS("aai_config"))
                 .thenThrow(new NullPointerException());
 
         PowerMock.replayAll();

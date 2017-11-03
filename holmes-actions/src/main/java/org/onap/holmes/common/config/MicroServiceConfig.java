@@ -43,22 +43,22 @@ public class MicroServiceConfig {
     }
 
     public static String getConsulAddrInfo() {
-        return getEnv(CONSUL_HOST) + CONSUL_ADDR_SUF;
+        return "http://" + getEnv(CONSUL_HOST) + CONSUL_ADDR_SUF;
     }
 
-    public static String getConfigBindingServiceAddrInfo() {
+    public static String getServiceAddrInfoFromDcaeConsulByHostName(String hostname) {
         String ret = null;
-        String queryString = getConsulAddrInfo() + CONFIG_BINDING_SERVICE;
-        log.info("Query the CBS address using the URL: " + queryString);
+        String queryString = getConsulAddrInfo() + hostname;
+        log.info("Query the " + hostname + " address using the URL: " + queryString);
         try {
             JSONObject addrJson = (JSONObject) JSONArray.fromObject(execQuery(queryString)).get(0);
             if (addrJson.has("ServiceAddress") && addrJson.has("ServicePort")) {
-                ret = addrJson.getString("ServiceAddress") + ":" + addrJson.getString("ServicePort");
+                ret = "http://" + addrJson.getString("ServiceAddress") + ":" + addrJson.getString("ServicePort");
             }
         } catch (Exception e) {
             log.warn(e.getMessage(), e);
         }
-        log.info("The CBS address is " + ret);
+        log.info("The " + hostname + " address is " + ret);
         return ret;
     }
 
@@ -68,23 +68,20 @@ public class MicroServiceConfig {
         return response.readEntity(String.class);
     }
 
-    public static String getServiceAddrInfoFromCBS(String serviceName) {
+    public static String getServiceConfigInfoFromCBS(String hostname) {
         String ret = null;
-        String url = getConfigBindingServiceAddrInfo() + "/service_component/" +serviceName;
+        String url = getServiceAddrInfoFromDcaeConsulByHostName(getEnv(CONFIG_BINDING_SERVICE)) + "/service_component/" + hostname;
         try {
-            JSONObject jsonObject = JSONObject.fromObject(execQuery(url));
-            log.info("The origin configurations (" + url + ") returned by DCAE is: " + jsonObject.toString());
-            if (jsonObject.has(serviceName)) {
-                ret = (String) jsonObject.getJSONArray(serviceName).get(0);
-            }
+            ret = execQuery(url);
         } catch (Exception e) {
             log.warn(e.getMessage(), e);
         }
+        log.info("The query url is: " + url + ". The corresponding configurations are " + ret);
         return ret;
     }
 
-    public static String getMsbServerAddr() {
-        String[] addrInfo = getMsbAddrInfo();
+    public static String getMsbServerAddrWithHttpPrefix() {
+        String[] addrInfo = getMsbIpAndPort();
         String ret = addrInfo[0] + ":" + addrInfo[1];
         if (!ret.startsWith(AlarmConst.HTTP) || !ret.startsWith(AlarmConst.HTTPS)){
             ret = AlarmConst.HTTP + ret;
@@ -92,33 +89,15 @@ public class MicroServiceConfig {
         return ret;
     }
 
-    public static String[] getMsbAddrInfo() {
-        String[] msbServerInfo = null;
-
-        //String info = getServiceAddrInfoFromCBS(MSB_ADDR);
-        String info = getServiceAddrInfoFromCBS(getEnv(HOSTNAME));
-        log.info("Got the service information of \"" + getEnv(HOSTNAME) + "\" from CBS. The response is " + info + ".");
-
-        if (info != null){
-            JSONObject infoObj = JSONObject.fromObject(info);
-            String msbInfoTmp = infoObj.has("msb.hostname") ? infoObj.getString("msb.hostname") : null;
-            if (msbInfoTmp != null) {
-                msbServerInfo = split(msbInfoTmp);
-            } else {
-                msbServerInfo = split(getEnv(MSB_ADDR));
-            }
-        } else {
-            msbServerInfo = split(getEnv(MSB_ADDR));
-        }
-
-        return msbServerInfo;
+    public static String[] getMsbIpAndPort() {
+        return split(getEnv(MSB_ADDR));
     }
 
-    public static String[] getServiceAddrInfo() {
+    public static String[] getMicroServiceIpAndPort() {
         String[] serviceAddrInfo = null;
-        String info = getServiceAddrInfoFromCBS(getEnv(HOSTNAME));
-        log.info("Got the service information of \"" + getEnv(HOSTNAME) + "\" from CBS. The response is " + info + ".");
-        if (info != null){
+        String info = getServiceAddrInfoFromDcaeConsulByHostName(getEnv(HOSTNAME));
+        log.info("Got the service information of \"" + getEnv(HOSTNAME) + "\" from Consul. The response is " + info + ".");
+        if (info != null && !info.isEmpty()){
             serviceAddrInfo = split(info);
         } else {
             serviceAddrInfo = split(getEnv(HOSTNAME));

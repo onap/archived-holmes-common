@@ -16,17 +16,12 @@
 
 package org.onap.holmes.common.utils;
 
-import static org.onap.holmes.common.config.MicroServiceConfig.HOSTNAME;
-
 import com.eclipsesource.jaxrs.consumer.ConsumerFactory;
 import javax.ws.rs.QueryParam;
-import org.easymock.EasyMock;
 import org.junit.Rule;
-import org.junit.Test;
 import org.onap.holmes.common.msb.MicroserviceBusRest;
 import org.onap.holmes.common.api.entity.ServiceRegisterEntity;
 import org.onap.holmes.common.config.MicroServiceConfig;
-import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
@@ -41,7 +36,7 @@ public class MSBRegisterUtilTest {
     private MicroserviceBusRest microserviceBusRest = new MicroserviceBusRestProxy();
 
     private ServiceRegisterEntity initServiceEntity() {
-        String[] serviceAddrInfo = MicroServiceConfig.getServiceAddrInfo();
+        String[] serviceAddrInfo = MicroServiceConfig.getMicroServiceIpAndPort();
         ServiceRegisterEntity serviceRegisterEntity = new ServiceRegisterEntity();
         serviceRegisterEntity.setServiceName("holmes-rule-mgmt");
         serviceRegisterEntity.setProtocol("REST");

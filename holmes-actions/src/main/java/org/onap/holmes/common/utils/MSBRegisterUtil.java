@@ -18,14 +18,10 @@ package org.onap.holmes.common.utils;
 
 import static jdk.nashorn.internal.runtime.regexp.joni.Config.log;
 
-import com.eclipsesource.jaxrs.consumer.ConsumerFactory;
-import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.jvnet.hk2.annotations.Service;
-import org.onap.holmes.common.api.entity.ServiceRegisterEntity;
 import org.onap.holmes.common.config.MicroServiceConfig;
 import org.onap.holmes.common.exception.CorrelationException;
-import org.onap.holmes.common.msb.MicroserviceBusRest;
 import org.onap.msb.sdk.discovery.common.RouteException;
 import org.onap.msb.sdk.discovery.entity.MicroServiceFullInfo;
 import org.onap.msb.sdk.discovery.entity.MicroServiceInfo;
@@ -36,7 +32,7 @@ import org.onap.msb.sdk.httpclient.msb.MSBServiceClient;
 public class MSBRegisterUtil {
 
     public void register2Msb(MicroServiceInfo msinfo) throws CorrelationException {
-        String[] msbAddrInfo = MicroServiceConfig.getMsbAddrInfo();
+        String[] msbAddrInfo = MicroServiceConfig.getMsbIpAndPort();
         MSBServiceClient msbClient = new MSBServiceClient(msbAddrInfo[0],
                 Integer.parseInt(msbAddrInfo[1]));
 
