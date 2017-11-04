@@ -16,7 +16,6 @@
 package org.onap.holmes.common.dcae.utils;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -38,7 +37,7 @@ public class DcaeConfigurationParser {
     public static DcaeConfigurations parse(String jsonStr) throws CorrelationException {
         if (StringUtils.isEmpty(jsonStr)) {
             throw new CorrelationException(
-                    "Can not resolve configurations from DCAE. The configuration string is empty");
+                    "Can not resolve configurations from DCAE. The configuration string is empty.");
         }
 
         DcaeConfigurations ret = new DcaeConfigurations();
@@ -52,10 +51,7 @@ public class DcaeConfigurationParser {
 
         fillInRules(ret, jsonObject);
         fillInPublishesInfo(ret, jsonObject);
-
-        if (jsonObject.containsKey("streams_subscribes")) {
-
-        }
+        fillInSubscribesInfo(ret, jsonObject);
 
         JSONObject finalJsonObject = jsonObject;
         Stream.of(jsonObject.keySet().toArray(new String[0]))
@@ -74,13 +70,25 @@ public class DcaeConfigurationParser {
         }
     }
 
+    private static void fillInSubscribesInfo(DcaeConfigurations ret, JSONObject jsonObject) {
+        if (jsonObject.containsKey("streams_subscribes")) {
+            JSONObject subscribes = jsonObject.getJSONObject("streams_subscribes");
+            for (Object key : subscribes.keySet()) {
+                ret.addSubSecInfo((String) key,
+                        createSecurityInfo((String) key, subscribes.getJSONObject((String) key)));
+            }
+        }
+    }
+
     private static SecurityInfo createSecurityInfo(String key, JSONObject entity) {
         SecurityInfo securityInfo = new SecurityInfo();
-        securityInfo.setType(entity.getString("type"));
-        if (!entity.get("aaf_password").equals("null")) {
+        if (entity.containsKey("type")) {
+            securityInfo.setType(entity.getString("type"));
+        }
+        if (entity.containsKey("aaf_password")) {
             securityInfo.setAafPassword(entity.getString("aaf_password"));
         }
-        if (!entity.get("aaf_username").equals("null")) {
+        if (entity.containsKey("aaf_username")) {
             securityInfo.setAafUsername(entity.getString("aaf_username"));
         }
         securityInfo.setSecureTopic(!key.endsWith("unsecure"));
@@ -90,13 +98,20 @@ public class DcaeConfigurationParser {
 
     private static void fillInDmaapInfo(SecurityInfo securityInfo, JSONObject jsonDmaapInfo) {
         SecurityInfo.DmaapInfo dmaapInfo = securityInfo.getDmaapInfo();
-        dmaapInfo.setLocation(jsonDmaapInfo.getString("location"));
-        dmaapInfo.setTopicUrl(jsonDmaapInfo.getString("topic_url"));
-        if (!jsonDmaapInfo.get("client_id").equals("null")) {
+        if (jsonDmaapInfo.containsKey("location")){
+            dmaapInfo.setLocation(jsonDmaapInfo.getString("location"));
+        }
+        if (jsonDmaapInfo.containsKey("topic_url")) {
+            dmaapInfo.setTopicUrl(jsonDmaapInfo.getString("topic_url"));
+        }
+        if (jsonDmaapInfo.containsKey("client_id")) {
             dmaapInfo.setClientId(jsonDmaapInfo.getString("client_id"));
         }
-        if (!jsonDmaapInfo.get("client_role").equals("null")) {
+        if (jsonDmaapInfo.containsKey("client_role")) {
             dmaapInfo.setClientRole(jsonDmaapInfo.getString("client_role"));
+        }
+        if (jsonDmaapInfo.containsKey("type")) {
+            dmaapInfo.setType(jsonDmaapInfo.getString("type"));
         }
     }
 

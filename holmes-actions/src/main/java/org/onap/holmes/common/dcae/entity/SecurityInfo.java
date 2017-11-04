@@ -35,5 +35,6 @@ public class SecurityInfo {
         private String clientId;
         private String clientRole;
         private String topicUrl;
+        private String type;
     }
 }

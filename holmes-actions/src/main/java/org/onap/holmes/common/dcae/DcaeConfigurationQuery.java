@@ -28,22 +28,7 @@ public class DcaeConfigurationQuery {
 
     public static DcaeConfigurations getDcaeConfigurations(String hostname)
             throws CorrelationException {
-        String serviceAddrInfo = MicroServiceConfig.getServiceConfigInfoFromCBS(hostname);
-        String response;
-        try {
-            response = getDcaeResponse(serviceAddrInfo);
-        } catch (Exception e) {
-            throw new CorrelationException("Failed to connect to DCAE. ", e);
-        }
-        DcaeConfigurations dcaeConfigurations = null;
-        dcaeConfigurations = DcaeConfigurationParser.parse(response);
-        return dcaeConfigurations;
-    }
-
-    private static String getDcaeResponse(String serviceAddrInfo) {
-        Client client = ClientBuilder.newClient(new ClientConfig());
-        WebTarget webTarget = client.target(serviceAddrInfo);
-        return webTarget.request("application/json").get()
-                .readEntity(String.class);
+        String serviceConfig = MicroServiceConfig.getServiceConfigInfoFromCBS(hostname);
+        return DcaeConfigurationParser.parse(serviceConfig);
     }
 }
