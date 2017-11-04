@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
@@ -53,5 +54,9 @@ public class DcaeConfigurations extends HashMap<String, Object>{
 
     public SecurityInfo getSubSecInfo(String key) {
         return this.streamsSubscribes.get(key);
+    }
+
+    public Set<String> getSubKeys(){
+        return this.streamsSubscribes.keySet();
     }
 }

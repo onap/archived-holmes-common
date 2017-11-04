@@ -34,7 +34,7 @@ public class MicroServiceConfig {
     final static public String DOCKER_HOST = "DOCKER_HOST";
     final static public String MSB_ADDR = "MSB_ADDR";
 
-    private static String getEnv(String name) {
+    public static String getEnv(String name) {
         String value = System.getenv(name);
         if (value == null) {
             value = System.getProperty(name);
