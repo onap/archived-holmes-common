@@ -23,40 +23,47 @@ import java.util.Map;
 import java.util.Set;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
 public class DcaeConfigurations extends HashMap<String, Object>{
-    private Map<String, SecurityInfo> streamsPublishes = new HashMap<>();
-    private Map<String, SecurityInfo> streamsSubscribes = new HashMap<>();
-    private List<Rule> rules = new ArrayList<>();
+
+    private static final String STREAMS_PUBLISHES = "streamsPublishes";
+    private static final String STREAMS_SUBSCRIBES = "streamsSubscribes";
+    private static final String RULES = "rules";
+
+    public DcaeConfigurations(){
+        super();
+        this.put(STREAMS_PUBLISHES, new HashMap<String, SecurityInfo>());
+        this.put(STREAMS_SUBSCRIBES, new HashMap<String, SecurityInfo>());
+        this.put(RULES, new ArrayList<Rule>());
+    }
 
     public void addDefaultRule(Rule rule) {
         if (null == rule) {
             return;
         }
-        this.rules.add(rule);
+        ((List<Rule>)(this.get(RULES))).add(rule);
     }
 
     public List<Rule> getDefaultRules() {
-        return this.rules;
+        return (List<Rule>)(this.get(RULES));
     }
 
     public SecurityInfo addPubSecInfo(String key, SecurityInfo value) {
-        return this.streamsPublishes.put(key, value);
+        return ((Map<String, SecurityInfo>)(this.get(STREAMS_PUBLISHES))).put(key, value);
     }
 
     public SecurityInfo getPubSecInfo(String key) {
-        return this.streamsPublishes.get(key);
+        return ((Map<String, SecurityInfo>)(this.get(STREAMS_PUBLISHES))).get(key);
     }
 
     public SecurityInfo addSubSecInfo(String key, SecurityInfo value) {
-        return this.streamsSubscribes.put(key, value);
+        return ((Map<String, SecurityInfo>)(this.get(STREAMS_SUBSCRIBES))).put(key, value);
     }
 
     public SecurityInfo getSubSecInfo(String key) {
-        return this.streamsSubscribes.get(key);
+        return ((Map<String, SecurityInfo>)(this.get(STREAMS_SUBSCRIBES))).get(key);
     }
 
     public Set<String> getSubKeys(){
-        return this.streamsSubscribes.keySet();
+        return ((Map<String, SecurityInfo>)(this.get(STREAMS_SUBSCRIBES))).keySet();
     }
 }

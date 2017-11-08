@@ -32,7 +32,7 @@ public class PolicyMsg {
     private EVENT_STATUS closedLoopEventStatus = EVENT_STATUS.ONSET;
     private long closedLoopAlarmStart;
     private long closedLoopAlarmEnd;
-    private String closedLoopEventClient;
+    private String closedLoopEventClient = "DCAE.HolmesInstance";
     private String policyVersion;
     private String policyName;
     private String policyScope;
