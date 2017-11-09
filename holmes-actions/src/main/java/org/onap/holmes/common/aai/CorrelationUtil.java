@@ -60,7 +60,7 @@ public class CorrelationUtil {
         try {
             vmEntity = aaiQuery.getAaiVmData(rootSourceId, rootSourceName);
         } catch (CorrelationException e) {
-            log.error("Failed to get vm data", e.getMessage());
+            log.error("Failed to get the VM data.", e);
         }
         return vmEntity;
     }

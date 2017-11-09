@@ -50,11 +50,11 @@ public class DmaapService {
             publisher.publish(policyMsg);
             log.info("send policyMsg: " + JacksonUtil.beanToJson(policyMsg));
         } catch (CorrelationException e) {
-            log.error("Failed to publish policyMsg to dmaap", e.getMessage());
+            log.error("Failed to publish the control loop event to DMaaP", e);
         } catch (JsonProcessingException e) {
-            log.info("Failed to convert policyMsg to json");
+            log.info("Failed to convert the control loop event to json");
         } catch (NullPointerException e) {
-            log.error("DMaaP configurations does not exist!");
+            log.error("DMaaP configurations do not exist!");
         }
     }
 
@@ -155,7 +155,7 @@ public class DmaapService {
         try {
             vnfEntity = aaiQuery.getAaiVnfData(vnfId, vnfName);
         } catch (CorrelationException e) {
-            log.error("Failed to get vnf data", e.getMessage());
+            log.error("Failed to get the VNF data.", e);
         }
         return vnfEntity;
     }
@@ -165,7 +165,7 @@ public class DmaapService {
         try {
             vmEntity = aaiQuery.getAaiVmData(sourceId, sourceName);
         } catch (CorrelationException e) {
-            log.error("Failed to get vm data", e.getMessage());
+            log.error("Failed to get the VM data.", e);
         }
         return vmEntity;
     }

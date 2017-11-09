@@ -84,13 +84,13 @@ public class MQProducer {
             messageProducer.send(message);
             session.commit();
         } catch (Exception e) {
-            log.error("Failed send correlation." + e.getMessage(), e);
+            log.error("Failed send correlation. " + e.getMessage(), e);
         } finally {
             if (connection != null) {
                 try {
                     connection.close();
                 } catch (JMSException e) {
-                    log.error("Failed close connection." + e.getMessage(), e);
+                    log.error("Failed close connection. " + e.getMessage(), e);
                 }
             }
         }

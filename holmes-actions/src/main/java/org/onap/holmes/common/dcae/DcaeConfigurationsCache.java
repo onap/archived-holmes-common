@@ -15,9 +15,11 @@
  */
 package org.onap.holmes.common.dcae;
 
+import lombok.extern.slf4j.Slf4j;
 import org.onap.holmes.common.dcae.entity.DcaeConfigurations;
 import org.onap.holmes.common.dcae.entity.SecurityInfo;
 
+@Slf4j
 public class DcaeConfigurationsCache {
 
     private static DcaeConfigurations dcaeConfigurations = new DcaeConfigurations();
