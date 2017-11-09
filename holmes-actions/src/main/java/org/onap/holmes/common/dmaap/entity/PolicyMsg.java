@@ -41,7 +41,7 @@ public class PolicyMsg {
     private String targetType = "VM";
     private String target;
     @JsonProperty(value = "AAI")
-    private Map<String, String> aai = new HashMap<>();
+    private Map<String, Object> aai = new HashMap<>();
 
     public static enum EVENT_STATUS {
         ONSET, ABATED;
