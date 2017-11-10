@@ -71,7 +71,12 @@ public class DmaapService {
         if (rootAlarm.getAlarmIsCleared() == PolicyMassgeConstant.POLICY_MESSAGE_ONSET) {
             enrichVnfInfo(vmEntity, childAlarm, policyMsg);
             policyMsg.setClosedLoopEventStatus(EVENT_STATUS.ONSET);
-            policyMsg.getAai().put("vserver.in-maint", String.valueOf(vmEntity.getInMaint()));
+            try {
+                policyMsg.getAai().put("vserver.in-maint", Boolean.valueOf(vmEntity.getInMaint()).booleanValue());
+            } catch (Exception e) {
+                log.error("Failed to parse the field \"in-maint\". A boolean string (\"true\"/\"false\")"
+                        + " is expected but the actual value is " + vmEntity.getInMaint() + ".", e);
+            }
             try {
                 policyMsg.getAai().put("vserver.is-closed-loop-disabled",
                         Boolean.valueOf(vmEntity.getClosedLoopDisable()).booleanValue());
