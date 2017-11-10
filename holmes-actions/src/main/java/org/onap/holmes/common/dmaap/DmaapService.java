@@ -61,13 +61,13 @@ public class DmaapService {
     public PolicyMsg getPolicyMsg(VesAlarm rootAlarm, VesAlarm childAlarm, String packgeName) {
         return Optional.ofNullable(getVmEntity(rootAlarm.getSourceId(), rootAlarm.getSourceName()))
                 .map(vmEntity -> getEnrichedPolicyMsg(vmEntity, rootAlarm, childAlarm, packgeName))
-                .orElse(getDefaultPolicyMsg(rootAlarm.getSourceName()));
+                .orElse(getDefaultPolicyMsg(rootAlarm, packgeName));
     }
 
     private PolicyMsg getEnrichedPolicyMsg(VmEntity vmEntity, VesAlarm rootAlarm, VesAlarm childAlarm,
             String packageName) {
         PolicyMsg policyMsg = new PolicyMsg();
-        policyMsg.setRequestID(getUniqueRequestId(rootAlarm, policyMsg));
+        policyMsg.setRequestID(getUniqueRequestId(rootAlarm));
         if (rootAlarm.getAlarmIsCleared() == PolicyMassgeConstant.POLICY_MESSAGE_ONSET) {
             enrichVnfInfo(vmEntity, childAlarm, policyMsg);
             policyMsg.setClosedLoopEventStatus(EVENT_STATUS.ONSET);
@@ -95,15 +95,22 @@ public class DmaapService {
         return policyMsg;
     }
 
-    private PolicyMsg getDefaultPolicyMsg(String sourceName) {
+    private PolicyMsg getDefaultPolicyMsg(VesAlarm rootAlarm, String packageName) {
         PolicyMsg policyMsg = new PolicyMsg();
-        policyMsg.setTarget("vserver.vserver-id");
+        policyMsg.setRequestID(getUniqueRequestId(rootAlarm));
+        policyMsg.setClosedLoopControlName(loopControlNames.get(packageName));
+        policyMsg.setClosedLoopAlarmStart(rootAlarm.getStartEpochMicrosec());
+        policyMsg.setTarget("vserver.vserver-name");
         policyMsg.setTargetType("VM");
-        policyMsg.getAai().put("vserver.vserver-name", sourceName);
+        policyMsg.getAai().put("vserver.vserver-name", rootAlarm.getSourceName());
+        if (rootAlarm.getAlarmIsCleared() == PolicyMassgeConstant.POLICY_MESSAGE_ABATED) {
+            policyMsg.setClosedLoopAlarmEnd(rootAlarm.getLastEpochMicrosec());
+            policyMsg.setClosedLoopEventStatus(EVENT_STATUS.ABATED);
+        }
         return policyMsg;
     }
 
-    private String getUniqueRequestId(VesAlarm rootAlarm, PolicyMsg policyMsg) {
+    private String getUniqueRequestId(VesAlarm rootAlarm) {
         String alarmUniqueKey = "";
         if (rootAlarm.getAlarmIsCleared() == PolicyMassgeConstant.POLICY_MESSAGE_ABATED) {
             alarmUniqueKey =

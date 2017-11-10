@@ -17,29 +17,28 @@ package org.onap.holmes.common.dmaap;
 
 import static org.easymock.EasyMock.anyObject;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.easymock.EasyMock;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.omg.CORBA.Any;
 import org.onap.holmes.common.aai.AaiQuery;
 import org.onap.holmes.common.aai.entity.RelationshipList.Relationship;
 import org.onap.holmes.common.aai.entity.RelationshipList.RelationshipData;
 import org.onap.holmes.common.aai.entity.VmEntity;
 import org.onap.holmes.common.aai.entity.VnfEntity;
 import org.onap.holmes.common.api.stat.VesAlarm;
-import org.onap.holmes.common.exception.CorrelationException;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.onap.holmes.common.dmaap.entity.PolicyMsg;
+import org.onap.holmes.common.dmaap.entity.PolicyMsg.EVENT_STATUS;
+import org.onap.holmes.common.exception.CorrelationException;
 import org.powermock.api.easymock.PowerMock;
+import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
@@ -63,16 +62,32 @@ public class DmaapServiceTest {
 
     @Test
     public void testDmaapService_getDefaultPolicyMsg_ok() throws Exception {
+        String packageName = "org.onap.holmes.rule";
+        DmaapService.loopControlNames.put(packageName, "Control-loop-VoLTE");
+        long startTime = System.currentTimeMillis();
+        long endTime = System.currentTimeMillis() + 1000000;
+        VesAlarm vesAlarm = new VesAlarm();
+        vesAlarm.setStartEpochMicrosec(startTime);
+        vesAlarm.setLastEpochMicrosec(endTime);
+        vesAlarm.setAlarmIsCleared(1);
+        vesAlarm.setSourceName("test");
+        vesAlarm.setSourceId("782d-4dfa-88ef");
+        vesAlarm.setEventName("alarmCleared");
         PowerMock.resetAll();
 
         PowerMock.replayAll();
         PolicyMsg policyMsg = Whitebox
-                .invokeMethod(dmaapService, "getDefaultPolicyMsg", "tetss");
+                .invokeMethod(dmaapService, "getDefaultPolicyMsg", vesAlarm, packageName);
         PowerMock.verifyAll();
 
-        assertThat(policyMsg.getTarget(), equalTo("vserver.vserver-id"));
+        assertThat(policyMsg.getTarget(), equalTo("vserver.vserver-name"));
         assertThat(policyMsg.getTargetType(), equalTo("VM"));
-        assertThat(policyMsg.getAai().get("vserver.vserver-name"), equalTo("tetss"));
+        assertThat(policyMsg.getAai().get("vserver.vserver-name"), equalTo("test"));
+        assertThat(policyMsg.getClosedLoopEventStatus(), is(EVENT_STATUS.ABATED));
+        assertThat(policyMsg.getClosedLoopControlName(), equalTo("Control-loop-VoLTE"));
+        assertThat(policyMsg.getClosedLoopAlarmStart(), is(startTime));
+        assertThat(policyMsg.getClosedLoopAlarmEnd(), is(endTime));
+        assertThat(policyMsg.getRequestID(), notNullValue());
     }
 
     @Test
