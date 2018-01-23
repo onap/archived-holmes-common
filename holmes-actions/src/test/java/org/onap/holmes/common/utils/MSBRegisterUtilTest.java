@@ -18,41 +18,55 @@ package org.onap.holmes.common.utils;
 
 import com.eclipsesource.jaxrs.consumer.ConsumerFactory;
 import javax.ws.rs.QueryParam;
+
+import org.easymock.EasyMock;
 import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.onap.holmes.common.exception.CorrelationException;
 import org.onap.holmes.common.msb.MicroserviceBusRest;
 import org.onap.holmes.common.api.entity.ServiceRegisterEntity;
 import org.onap.holmes.common.config.MicroServiceConfig;
+import org.onap.msb.sdk.discovery.entity.MicroServiceFullInfo;
+import org.onap.msb.sdk.discovery.entity.MicroServiceInfo;
+import org.onap.msb.sdk.httpclient.msb.MSBServiceClient;
+import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 
-@PrepareForTest({ConsumerFactory.class, MicroServiceConfig.class})
+@PrepareForTest({MicroServiceConfig.class, MSBServiceClient.class, MSBRegisterUtil.class})
 @PowerMockIgnore({"javax.ws.*"})
 public class MSBRegisterUtilTest {
 
     @Rule
     public PowerMockRule powerMockRule = new PowerMockRule();
     private MSBRegisterUtil msbRegisterUtil = new MSBRegisterUtil();
-    private MicroserviceBusRest microserviceBusRest = new MicroserviceBusRestProxy();
 
-    private ServiceRegisterEntity initServiceEntity() {
-        String[] serviceAddrInfo = MicroServiceConfig.getMicroServiceIpAndPort();
-        ServiceRegisterEntity serviceRegisterEntity = new ServiceRegisterEntity();
-        serviceRegisterEntity.setServiceName("holmes-rule-mgmt");
-        serviceRegisterEntity.setProtocol("REST");
-        serviceRegisterEntity.setVersion("v1");
-        serviceRegisterEntity.setUrl("/api/holmes-rule-mgmt/v1");
-        serviceRegisterEntity.setSingleNode(serviceAddrInfo[0], serviceAddrInfo[1], 0);
-        serviceRegisterEntity.setVisualRange("1|0");
-        return serviceRegisterEntity;
-    }
+    @Test
+    public void test_register2Msb_normal() throws Exception {
+        MicroServiceInfo msi = new MicroServiceInfo();
+        String[] msbAddrInfo = {"127.0.0.1", "80"};
 
-    class MicroserviceBusRestProxy implements MicroserviceBusRest {
+        PowerMock.mockStatic(MicroServiceConfig.class);
+        EasyMock.expect(MicroServiceConfig.getMsbIpAndPort()).andReturn(msbAddrInfo);
 
-        @Override
-        public ServiceRegisterEntity registerServce(@QueryParam("createOrUpdate") String createOrUpdate,
-                ServiceRegisterEntity entity) {
-            return null;
+        MSBServiceClient client = PowerMock.createMock(MSBServiceClient.class);
+        PowerMock.expectNew(MSBServiceClient.class, msbAddrInfo[0], Integer.parseInt(msbAddrInfo[1])).andReturn(client);
+
+        EasyMock.expect(client.registerMicroServiceInfo(msi, false)).andReturn(null);
+
+        EasyMock.expect(client.registerMicroServiceInfo(msi, false)).andReturn(new MicroServiceFullInfo());
+
+        PowerMock.replayAll();
+
+        try {
+            msbRegisterUtil.register2Msb(msi);
+        } catch (CorrelationException e) {
+            // Do nothing
         }
+
+        PowerMock.verifyAll();
     }
 }
