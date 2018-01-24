@@ -190,18 +190,4 @@ public class AlarmTest {
         alarm.setCenterType(centerType);
         assertThat(centerType, equalTo(alarm.getCenterType()));
     }
-
-    @Test
-    public void valueOf_exception() {
-        thrown.expect(Exception.class);
-        String xmlString = "";
-        Alarm.valueOf(xmlString);
-    }
-
-    @Test
-    public void valueOf_normal() {
-        String xmlString = alarm.toString();
-        Alarm alarmValue = Alarm.valueOf(xmlString);
-        assertThat(alarmValue, equalTo(alarm));
-    }
 }

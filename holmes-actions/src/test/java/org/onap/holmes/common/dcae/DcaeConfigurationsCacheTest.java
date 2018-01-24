@@ -16,6 +16,7 @@
 package org.onap.holmes.common.dcae;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
@@ -38,5 +39,16 @@ public class DcaeConfigurationsCacheTest {
         DcaeConfigurationsCache.setDcaeConfigurations(dcaeConfigurations);
         assertThat(DcaeConfigurationsCache.getPubSecInfo("test").getAafUsername(),
                 equalTo(securityInfo.getAafUsername()));
+    }
+
+    @Test
+    public void testDcaeConfigurationCacheNull() {
+        DcaeConfigurationsCache.setDcaeConfigurations(null);
+        assertThat(DcaeConfigurationsCache.getPubSecInfo("test"), nullValue());
+    }
+
+    @Test
+    public void testAddPubSecInfo() {
+        DcaeConfigurationsCache.addPubSecInfo("test", new SecurityInfo());
     }
 }

@@ -57,12 +57,12 @@ public class Publisher {
             response = webTarget.request(MediaType.APPLICATION_JSON)
                     .post(Entity.entity(content, MediaType.APPLICATION_JSON));
         } catch (Exception e) {
-            throw new CorrelationException("Failed to connect dcae.", e);
+            throw new CorrelationException("Failed to connect to DCAE.", e);
         }
         return checkStatus(response);
     }
 
     private boolean checkStatus(Response response) {
-        return (response.getStatus() == HttpStatus.SC_OK) ? true : false;
+        return response.getStatus() == HttpStatus.SC_OK;
     }
 }
