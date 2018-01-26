@@ -16,21 +16,12 @@
 
 package org.onap.holmes.common.api.stat;
 
-import java.io.Serializable;
-import java.io.StringReader;
-import java.lang.reflect.Field;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
-import org.jdom.Attribute;
-import org.jdom.Element;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.XMLOutputter;
+import net.sf.json.JSONObject;
+
+import java.io.Serializable;
+import java.util.*;
 
 
 @Getter
@@ -83,47 +74,6 @@ public class Alarm implements AplusData, Cloneable, Serializable {
     private int linkType = -1;
     private int centerType;
 
-    public static Alarm valueOf(String xmlString) {
-        Element element;
-        try {
-            StringReader sb = new StringReader(xmlString);
-            element = new SAXBuilder().build(sb).getRootElement();
-            sb.close();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        Alarm alarm = new Alarm();
-        @SuppressWarnings("unchecked")
-        List<Attribute> list = element.getAttributes();
-        for (Attribute attr : list) {
-            String attrName = attr.getName();
-            try {
-                Field field = Alarm.class.getDeclaredField(attrName);
-                if (!attrName.endsWith("Time")) {
-                    String type = field.getType().getSimpleName();
-                    if ("byte".equals(type)) {
-                        field.set(alarm, Byte.parseByte(attr.getValue()));
-                    } else if ("long".equals(type)) {
-                        field.set(alarm, Long.parseLong(attr.getValue()));
-                    } else if ("String".equals(type)) {
-                        field.set(alarm, attr.getValue());
-                    } else {
-                        throw new RuntimeException("unknow attr type: " + type.toString());
-                    }
-                } else {
-                    Date date = new Date();
-                    date.setTime(Long.parseLong(attr.getValue()));
-                    field.set(alarm, date);
-                }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        return alarm;
-    }
-
     public void addLinkIdNodeIdx(int linkId, int index) {
         linkIdNodeIdxMap.put(linkId, index);
     }
@@ -161,37 +111,8 @@ public class Alarm implements AplusData, Cloneable, Serializable {
 
     @Override
     public String toString() {
-        final String nullStr = "<null>";
 
-        Element el = new Element("Alarm");
-        el.setAttribute("id", String.valueOf(id));
-        el.setAttribute("aid", String.valueOf(aid));
-        el.setAttribute("alarmKey", String.valueOf(alarmKey));
-        el.setAttribute("eventType", String.valueOf(eventType));
-        el.setAttribute("region", region == null ? nullStr : region);
-        el.setAttribute("site", site == null ? nullStr : site);
-        el.setAttribute("network", network);
-        el.setAttribute("neType", neType);
-        el.setAttribute("equipType", equipType);
-        el.setAttribute("position1", position1);
-        el.setAttribute("subPosition1", subPosition1 == null ? nullStr : subPosition1);
-        el.setAttribute("position2", position2 == null ? nullStr : position2);
-        el.setAttribute("subPosition2", subPosition2 == null ? nullStr : subPosition2);
-        el.setAttribute("severity", String.valueOf(severity));
-        el.setAttribute("alarmType", String.valueOf(alarmType));
-        el.setAttribute("probableCause", String.valueOf(probableCause));
-        el.setAttribute("specificProblem", specificProblem == null ? nullStr : specificProblem);
-        el.setAttribute("additionalText", additionalText == null ? nullStr : additionalText);
-        el.setAttribute("raisedTime", String.valueOf(raisedTime.getTime()));
-        el.setAttribute("raisedServerTime", String.valueOf(raisedServerTime.getTime()));
-        if (clearedTime != null) {
-            el.setAttribute("clearedTime", String.valueOf(clearedTime.getTime()));
-        }
-        if (clearedServerTime != null) {
-            el.setAttribute("clearedServerTime", String.valueOf(clearedServerTime.getTime()));
-        }
-
-        return new XMLOutputter().outputString(el);
+        return JSONObject.fromObject(this).toString();
     }
 
     @Override

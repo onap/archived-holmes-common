@@ -15,10 +15,6 @@
  */
 package org.onap.holmes.common.dcae;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import org.glassfish.jersey.client.ClientConfig;
 import org.onap.holmes.common.config.MicroServiceConfig;
 import org.onap.holmes.common.dcae.entity.DcaeConfigurations;
 import org.onap.holmes.common.dcae.utils.DcaeConfigurationParser;
