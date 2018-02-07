@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_a436ad50",
+        "filename": "holmes-actions/src/main/java/org/onap/holmes/common/utils/GsonUtil.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1515
+      },
+      "writtenOn": "2018-02-07T10:11:52Z",
+      "side": 1,
+      "message": "Remove all comments in Chinese.",
+      "revId": "99bfd21b82081a35eed4b76e9500bd166e905c12",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
