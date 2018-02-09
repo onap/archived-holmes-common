@@ -15,7 +15,7 @@
  */
 package org.onap.holmes.common.api.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 import java.util.Date;
 import java.util.Properties;
 import lombok.Getter;
@@ -25,35 +25,36 @@ import lombok.Setter;
 @Setter
 public class CorrelationRule {
 
-    @JsonProperty(value = "ruleid")
+    @SerializedName(value = "ruleid")
     private String rid;
-    @JsonProperty(value = "rulename")
+    @SerializedName(value = "rulename")
     private String name;
-    @JsonProperty
+
     private String description;
-    @JsonProperty
+
     private int enabled;
-    @JsonProperty
+
     private long templateID;
+
     private String engineID;
-    @JsonProperty
+
     private String engineType;
-    @JsonProperty
+
     private String creator;
-    @JsonProperty
+
     private String modifier;
-    @JsonProperty
+
     private Properties params;
-    @JsonProperty
+
     private String content;
-    @JsonProperty
+
     private String vendor;
-    @JsonProperty(value = "createtime")
+    @SerializedName(value = "createtime")
     private Date createTime;
-    @JsonProperty(value = "updatetime")
+    @SerializedName(value = "updatetime")
     private Date updateTime;
-    @JsonProperty(value = "package")
+    @SerializedName(value = "package")
     private String packageName;
-    @JsonProperty(value = "controlloopname")
+    @SerializedName(value = "controlloopname")
     private String closedControlLoopName;
 }

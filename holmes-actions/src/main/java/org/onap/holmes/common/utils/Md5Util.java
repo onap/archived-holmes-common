@@ -16,12 +16,10 @@
 
 package org.onap.holmes.common.utils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 import java.nio.charset.Charset;
-import net.sf.json.JSONObject;
 
 public class Md5Util {
 
@@ -38,8 +36,8 @@ public class Md5Util {
         return hash.toString();
     }
 
-    public static String md5(Object data) throws JsonProcessingException {
-        String actualData = data == null ? "{}" : JacksonUtil.beanToJson(data);
+    public static String md5(Object data) {
+        String actualData = data == null ? "{}" : GsonUtil.beanToJson(data);
         return md5(actualData);
     }
 }

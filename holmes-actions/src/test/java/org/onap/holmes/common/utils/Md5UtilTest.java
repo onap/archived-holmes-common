@@ -26,8 +26,9 @@ import org.onap.holmes.common.dcae.entity.DcaeConfigurations;
 import org.onap.holmes.common.dcae.entity.SecurityInfo;
 
 public class Md5UtilTest {
+
     @Test
-    public void testMd5NormalDiff(){
+    public void testMd5NormalDiff() {
         String contents1 = "contents1";
         String contents2 = "contents2";
 
@@ -35,7 +36,7 @@ public class Md5UtilTest {
     }
 
     @Test
-    public void testMd5NormalSame(){
+    public void testMd5NormalSame() {
         String contents1 = "contents";
         String contents2 = "contents";
 
@@ -43,7 +44,7 @@ public class Md5UtilTest {
     }
 
     @Test
-    public void testMd5Null(){
+    public void testMd5Null() {
         String contents1 = null;
         String contents2 = null;
 
@@ -51,32 +52,25 @@ public class Md5UtilTest {
     }
 
     @Test
-    public void testMd5ObjDiff(){
+    public void testMd5ObjDiff() {
         DcaeConfigurations config1 = new DcaeConfigurations();
         DcaeConfigurations config2 = new DcaeConfigurations();
 
         config1.addPubSecInfo("config1", new SecurityInfo());
         config2.addPubSecInfo("config2", new SecurityInfo());
+        assertThat(Md5Util.md5(config1), not(equalTo(Md5Util.md5(config2))));
 
-        try {
-            assertThat(Md5Util.md5(config1), not(equalTo(Md5Util.md5(config2))));
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
     }
 
     @Test
-    public void testMd5ObjSame(){
+    public void testMd5ObjSame() {
         DcaeConfigurations config1 = new DcaeConfigurations();
         DcaeConfigurations config2 = new DcaeConfigurations();
 
         config1.addPubSecInfo("config", new SecurityInfo());
         config2.addPubSecInfo("config", new SecurityInfo());
 
-        try {
-            assertThat(Md5Util.md5(config1), equalTo(Md5Util.md5(config2)));
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        assertThat(Md5Util.md5(config1), equalTo(Md5Util.md5(config2)));
+
     }
 }

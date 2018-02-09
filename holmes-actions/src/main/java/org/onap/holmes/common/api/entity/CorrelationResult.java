@@ -15,14 +15,12 @@
  */
 package org.onap.holmes.common.api.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
-import org.onap.holmes.common.api.stat.Alarm;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.onap.holmes.common.api.stat.Alarm;
 
 @Setter
 @Getter
@@ -30,15 +28,11 @@ import lombok.ToString;
 @ToString
 public class CorrelationResult implements Serializable{
 
-  @JsonProperty
   private String ruleId;
 
-  @JsonProperty
   private long createTimeL;
 
-  @JsonProperty
   private byte resultType;
 
-  @JsonProperty
   private Alarm[] affectedAlarms;
 }
