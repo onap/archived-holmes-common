@@ -16,20 +16,39 @@
 package org.onap.holmes.common.utils;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
 public class GsonUtil {
     private static Gson gson = null;
     static {
-        if (gson == null) {;
-            gson = new Gson();
+        if (gson == null) {
+            gson = new GsonBuilder()
+                    .registerTypeAdapter(Integer.class, new JsonDeserializer<Integer>() {
+                        @Override
+                        public Integer deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+                            try {
+                                return json.getAsInt();
+                            } catch (NumberFormatException e) {
+                                return 0;
+                            }
+                        }
+                    })
+                    .create();
         }
     }
 
     private GsonUtil() {
     }
+
+
     public static String beanToJson(Object object) {
         String gsonString = null;
         if (gson != null) {

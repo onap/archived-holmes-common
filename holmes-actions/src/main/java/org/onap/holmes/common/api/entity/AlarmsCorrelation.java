@@ -15,7 +15,7 @@
  */
 package org.onap.holmes.common.api.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 import java.util.Date;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,30 +24,27 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AlarmsCorrelation {
 
-    @JsonProperty(value = "ruleid")
+    @SerializedName(value = "ruleid")
     private String ruleId;
 
-    @JsonProperty(value = "ruleinfo")
+    @SerializedName(value = "ruleinfo")
     private String ruleInfo;
 
-    @JsonProperty(value = "resulttype")
+    @SerializedName(value = "resulttype")
     private byte resultType;
 
-    @JsonProperty(value = "createtime")
+    @SerializedName(value = "createtime")
     private Date createTime;
 
-    @JsonProperty(value = "parentalarmid")
+    @SerializedName(value = "parentalarmid")
     private long parentAlarmId;
 
-    @JsonProperty(value = "childalarmid")
+    @SerializedName(value = "childalarmid")
     private long childAlarmId;
 
-    @JsonProperty(defaultValue = "-1")
     private long reserve1 = -1;
 
-    @JsonProperty(defaultValue = "-1")
     private long reserve2 = -1;
 
-    @JsonProperty(defaultValue = "-1")
     private long reserve3 = -1;
 }

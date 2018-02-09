@@ -15,7 +15,6 @@
  */
 package org.onap.holmes.common.dmaap;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,7 +30,7 @@ import org.onap.holmes.common.dcae.DcaeConfigurationsCache;
 import org.onap.holmes.common.dmaap.entity.PolicyMsg;
 import org.onap.holmes.common.dmaap.entity.PolicyMsg.EVENT_STATUS;
 import org.onap.holmes.common.exception.CorrelationException;
-import org.onap.holmes.common.utils.JacksonUtil;
+import org.onap.holmes.common.utils.GsonUtil;
 
 @Slf4j
 @Service
@@ -48,11 +47,9 @@ public class DmaapService {
             publisher.setUrl(DcaeConfigurationsCache.getPubSecInfo(dmaapConfigKey).getDmaapInfo()
                     .getTopicUrl());
             publisher.publish(policyMsg);
-            log.info("send policyMsg: " + JacksonUtil.beanToJson(policyMsg));
+            log.info("send policyMsg: " + GsonUtil.beanToJson(policyMsg));
         } catch (CorrelationException e) {
             log.error("Failed to publish the control loop event to DMaaP", e);
-        } catch (JsonProcessingException e) {
-            log.info("Failed to convert the control loop event to json");
         } catch (NullPointerException e) {
             log.error("DMaaP configurations do not exist!");
         }

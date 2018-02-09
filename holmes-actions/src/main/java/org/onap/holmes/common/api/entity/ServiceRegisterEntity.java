@@ -16,7 +16,6 @@
 
 package org.onap.holmes.common.api.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -28,7 +27,6 @@ import lombok.Setter;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Setter
 @Getter
 public class ServiceRegisterEntity {
