@@ -65,11 +65,7 @@ public class AaiQuery {
 
     private String getVmResourceLinks(String vserverId, String vserverName) throws CorrelationException {
         String response = getResourceLinksResponse(vserverId, vserverName);
-        try {
-            return aaiResponseUtil.convertJsonToVmResourceLink(response).get(0).getResourceLink();
-        } catch (Exception e) {
-            throw new CorrelationException("Failed to get aai resource link", e);
-        }
+        return aaiResponseUtil.convertJsonToVmResourceLink(response).get(0).getResourceLink();
     }
 
     private String getResourceLinksResponse(String vserverId, String vserverName) throws CorrelationException {
