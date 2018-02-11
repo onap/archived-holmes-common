@@ -16,6 +16,11 @@
 
 package org.onap.holmes.common.api.stat;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import java.util.Date;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertFalse;
@@ -29,6 +34,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.onap.holmes.common.api.entity.ServiceNode;
 
 public class AlarmTest {
 
@@ -189,5 +195,17 @@ public class AlarmTest {
         final int centerType = 1;
         alarm.setCenterType(centerType);
         assertThat(centerType, equalTo(alarm.getCenterType()));
+    }
+    @Test
+    public void TestJson(){
+        ServiceNode serviceNode = new ServiceNode();
+        serviceNode.setIp("111");
+        String jsonString = "{\"uid\":\"189024\", \"region\":\"SouthChina\", \"order\":123}";
+        String  COMPLEX_JSON_STR = "{\"teacherName\":\"crystall\",\"teacherAge\":27,\"course\":{\"courseName\":\"english\",\"code\":1270},\"students\":[{\"studentName\":\"lily\",\"studentAge\":12},{\"studentName\":\"lucy\",\"studentAge\":15}]}";
+
+        JSONObject jsonObject = JSON.parseObject(COMPLEX_JSON_STR);
+        JSONArray jsonArray = jsonObject.getJSONArray("students");
+         System.out.printf("jsonObject:"+jsonArray);
+//     System.out.println("uid:" + retMap.get("uid") + ", " + "region:" + retMap.get("region") + ", " + "order:" + retMap.get("order"));
     }
 }
