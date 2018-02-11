@@ -16,8 +16,8 @@
 
 package org.onap.holmes.common.aai;
 import static org.easymock.EasyMock.anyObject;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertThat;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 import java.util.HashMap;
@@ -110,36 +110,7 @@ public class AaiQueryTest {
 
 
 
-    @Test
-    public void testAaiQuery_getAaiVmData_exception() throws Exception {
-        PowerMock.resetAll();
-        thrown.expect(CorrelationException.class);
-        thrown.expectMessage("Failed to convert aai vm response data to vm entity");
-        aaiQuery = PowerMock.createPartialMock(AaiQuery.class, "getVmResourceLinks");
 
-        aaiResponseUtil = new AaiResponseUtil();
-        Whitebox.setInternalState(aaiQuery, "aaiResponseUtil", aaiResponseUtil);
-
-        PowerMockito.mockStatic(HttpsUtils.class);
-        Map<String, String> headers = new HashMap<>();
-        headers.put("X-TransactionId", AaiConfig.X_TRANSACTION_ID);
-        headers.put("X-FromAppId", AaiConfig.X_FROMAPP_ID);
-        headers.put("Authorization", AaiConfig.getAuthenticationCredentials());
-        headers.put("Accept", "application/json");
-        String url = "http://10.96.33.33/api/aai-cloudInfrastructure/v11";
-
-        when(HttpsUtils.get(url, headers)).thenReturn("");
-
-        PowerMockito.mockStatic(MicroServiceConfig.class);
-        when(MicroServiceConfig.getMsbServerAddrWithHttpPrefix()).thenReturn("http://10.96.33.33:80");
-
-        PowerMock.expectPrivate(aaiQuery, "getVmResourceLinks", "test1", "test2")
-                .andReturn("/aai/v11/cloud-infrastructure");
-
-        PowerMock.replayAll();
-        Whitebox.invokeMethod(aaiQuery, "getAaiVmData", "test1", "test2");
-        PowerMock.verifyAll();
-    }
 
     @Test
     public void testAaiQuery_getAaiVmData_httpsutils_exception() throws Exception {
@@ -189,23 +160,7 @@ public class AaiQueryTest {
         assertThat(resource, equalTo("le-vserver-id-val-51834"));
     }
 
-    @Test
-    public void testAaiQuery_getVmResourceLinks_exception() throws Exception {
-        PowerMock.resetAll();
-        thrown.expect(CorrelationException.class);
-        thrown.expectMessage("Failed to get aai resource link");
-        aaiQuery = PowerMock.createPartialMock(AaiQuery.class, "getResourceLinksResponse");
 
-        aaiResponseUtil = new AaiResponseUtil();
-        Whitebox.setInternalState(aaiQuery, "aaiResponseUtil", aaiResponseUtil);
-
-        PowerMock.expectPrivate(aaiQuery, "getResourceLinksResponse", "test1", "test2").andReturn("");
-        PowerMock.replayAll();
-        String resource = Whitebox.invokeMethod(aaiQuery, "getVmResourceLinks", "test1", "test2");
-        PowerMock.verifyAll();
-
-        assertThat(resource, equalTo("le-vserver-id-val-51834"));
-    }
 
     @Test
     public void testAaiQuery_getResourceLinksResponse() throws Exception {

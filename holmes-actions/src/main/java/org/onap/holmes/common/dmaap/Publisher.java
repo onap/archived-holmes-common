@@ -15,8 +15,7 @@
  */
 package org.onap.holmes.common.dmaap;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.alibaba.fastjson.JSON;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -43,14 +42,7 @@ public class Publisher {
 
     public boolean publish(PolicyMsg msg) throws CorrelationException {
         Client client = ClientBuilder.newClient(new ClientConfig());
-        ObjectMapper mapper = new ObjectMapper();
-        String content = null;
-        try {
-            content = mapper.writeValueAsString(msg);
-        } catch (JsonProcessingException e) {
-            throw new CorrelationException("Failed to convert the message object to a json string.",
-                    e);
-        }
+        String content = JSON.toJSONString(msg);
         WebTarget webTarget = client.target(url);
         Response response = null;
         try {

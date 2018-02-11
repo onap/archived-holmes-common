@@ -21,7 +21,6 @@ import javax.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.glassfish.jersey.client.ClientConfig;
 import org.onap.holmes.common.constant.AlarmConst;
 
 @Slf4j
@@ -63,7 +62,7 @@ public class MicroServiceConfig {
     }
 
     private static String execQuery(String queryString) {
-        Client client = ClientBuilder.newClient(new ClientConfig());
+        Client client = ClientBuilder.newBuilder().build();
         Response response = client.target(queryString).request().get();
         return response.readEntity(String.class);
     }

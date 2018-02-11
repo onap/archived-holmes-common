@@ -16,8 +16,9 @@
 
 package org.onap.holmes.common.aai;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
+
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.util.List;
@@ -112,12 +113,6 @@ public class AaiResponseUtilTest {
         assertThat(actual.isEmpty(), equalTo(true));
     }
 
-    @Test
-    public void testAaiResponseUtil_convert_resource_link_throw_IOException() throws IOException {
-        thrown.expect(IOException.class);
-        String json = "{**}";
-        aaiResponseUtil.convertJsonToVmResourceLink(json);
-    }
 
     @Test
     public void testAaiResponseUtil_convert_VmEntity_success() throws IOException {
@@ -142,12 +137,6 @@ public class AaiResponseUtilTest {
         assertThat(actual.getVserverSelflink(), equalTo("example-vserver-selflink-val-2"));
     }
 
-    @Test
-    public void testAaiResponseUtil_convert_VmEntity_throw_IOException() throws IOException {
-        thrown.expect(IOException.class);
-        String json = "{**}";
-        aaiResponseUtil.convertJsonToVmEntity(json);
-    }
 
     @Test
     public void testAaiResponseUtil_convert_VmEntity_input_empty() throws IOException {
@@ -219,13 +208,6 @@ public class AaiResponseUtilTest {
                         .getRelationshipKey(), equalTo("custome"));
         assertThat(actual.getRelationshipList().getRelationships().get(0).getRelationshipDataList().get(0)
                         .getRelationshipValue(), equalTo("Demonstration3"));
-    }
-
-    @Test
-    public void testAaiResponseUtil_throw_IOException() throws IOException {
-        thrown.expect(IOException.class);
-        String json = "{**}";
-        aaiResponseUtil.convertJsonToVnfEntity(json);
     }
 
     @Test
