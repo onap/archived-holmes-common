@@ -15,16 +15,23 @@
  */
 package org.onap.holmes.common.dropwizard.ioc.bundle;
 
+import com.codahale.metrics.health.HealthCheck;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
+import io.dropwizard.Configuration;
+import io.dropwizard.ConfiguredBundle;
+import io.dropwizard.lifecycle.ServerLifecycleListener;
+import io.dropwizard.servlets.tasks.Task;
+import io.dropwizard.setup.Bootstrap;
+import io.dropwizard.setup.Environment;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import javax.ws.rs.Path;
 import javax.ws.rs.ext.Provider;
-
 import org.eclipse.jetty.util.component.LifeCycle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
@@ -48,19 +55,6 @@ import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.codahale.metrics.health.HealthCheck;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
-
-import io.dropwizard.Configuration;
-import io.dropwizard.ConfiguredBundle;
-import io.dropwizard.configuration.ConfigurationSourceProvider;
-import io.dropwizard.lifecycle.Managed;
-import io.dropwizard.lifecycle.ServerLifecycleListener;
-import io.dropwizard.servlets.tasks.Task;
-import io.dropwizard.setup.Bootstrap;
-import io.dropwizard.setup.Environment;
 
 /**
  * complete the integration of hK2 container and dropwizard

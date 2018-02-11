@@ -44,11 +44,7 @@ public class AaiQuery {
     public VmEntity getAaiVmData(String vserverId, String vserverName) throws CorrelationException {
         String url = getVmUrl(vserverId, vserverName);
         String response = getResponse(url);
-        try {
             return aaiResponseUtil.convertJsonToVmEntity(response);
-        } catch (Exception e) {
-            throw new CorrelationException("Failed to convert aai vm response data to vm entity", e);
-        }
     }
 
     private String getVmUrl(String vserverId, String vserverName) throws CorrelationException {
@@ -65,11 +61,7 @@ public class AaiQuery {
 
     private String getVmResourceLinks(String vserverId, String vserverName) throws CorrelationException {
         String response = getResourceLinksResponse(vserverId, vserverName);
-        try {
-            return aaiResponseUtil.convertJsonToVmResourceLink(response).get(0).getResourceLink();
-        } catch (Exception e) {
-            throw new CorrelationException("Failed to get aai resource link", e);
-        }
+        return aaiResponseUtil.convertJsonToVmResourceLink(response).get(0).getResourceLink();
     }
 
     private String getResourceLinksResponse(String vserverId, String vserverName) throws CorrelationException {
