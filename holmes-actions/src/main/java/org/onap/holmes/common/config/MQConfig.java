@@ -16,24 +16,13 @@
 
 package org.onap.holmes.common.config;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.HashMap;
-import java.util.Map;
-import javax.validation.constraints.NotNull;
-
 public class MQConfig {
 
-    @JsonProperty
-    @NotNull
     public String brokerIp;
 
-    @JsonProperty
-    @NotNull
     public int brokerPort;
 
-    @JsonProperty
     public String brokerUsername;
 
-    @JsonProperty
     public String brokerPassword;
 }

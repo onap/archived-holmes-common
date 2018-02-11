@@ -16,7 +16,7 @@
 
 package org.onap.holmes.common.dmaap.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
@@ -37,10 +37,10 @@ public class PolicyMsg {
     private String policyName;
     private String policyScope;
     private String from = "DCAE";
-    @JsonProperty(value = "target_type")
+    @SerializedName(value = "target_type")
     private String targetType = "VM";
     private String target;
-    @JsonProperty(value = "AAI")
+    @SerializedName(value = "AAI")
     private Map<String, Object> aai = new HashMap<>();
 
     public static enum EVENT_STATUS {
