@@ -15,9 +15,18 @@
  */
 package org.onap.holmes.common.dmaap;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation.Builder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.apache.http.HttpStatus;
 import org.easymock.EasyMock;
-import org.glassfish.jersey.client.ClientConfig;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -27,17 +36,6 @@ import org.onap.holmes.common.exception.CorrelationException;
 import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation.Builder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.client.Entity;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 
 @PrepareForTest({Client.class, WebTarget.class, ClientBuilder.class, Response.class, Builder.class})
 @RunWith(PowerMockRunner.class)
@@ -72,7 +70,7 @@ public class PublisherTest {
         Response response = PowerMock.createMock(Response.class);
         PowerMock.mockStatic(ClientBuilder.class);
 
-        EasyMock.expect(ClientBuilder.newClient(EasyMock.anyObject(ClientConfig.class))).andReturn(client);
+        EasyMock.expect(ClientBuilder.newClient()).andReturn(client);
         EasyMock.expect(client.target(publisher.getUrl())).andReturn(target);
         EasyMock.expect(target.request(MediaType.APPLICATION_JSON)).andReturn(builder);
         EasyMock.expect(builder.post(EasyMock.anyObject(Entity.class))).andReturn(response);

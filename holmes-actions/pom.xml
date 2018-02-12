@@ -22,6 +22,12 @@
         <dependency>
             <groupId>org.onap.msb.java-sdk</groupId>
             <artifactId>msb-java-sdk</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.eclipsesource.jaxrs</groupId>
+                    <artifactId>jersey-all</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
@@ -166,7 +172,7 @@
         <dependency>
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
-            <version>1.9.3</version>
+            <version>1.8.3</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>

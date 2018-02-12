@@ -38,15 +38,15 @@ public class AutoConfigBundleTest {
         assertThat(AutoConfigBundle.newBuilder(), instanceOf(AutoConfigBundleBuider.class));
     }
 
-    @Test
-    public void initialize() throws Exception {
-        AutoConfigBundle.newBuilder().build().initialize(new Bootstrap<>(new IOCApplication<Configuration>() {
-            @Override
-            public void initialize(Bootstrap<Configuration> bootstrap) {
-                super.initialize(bootstrap);
-            }
-        }));
-    }
+//    @Test
+//    public void initialize() throws Exception {
+//        AutoConfigBundle.newBuilder().build().initialize(new Bootstrap<>(new IOCApplication<Configuration>() {
+//            @Override
+//            public void initialize(Bootstrap<Configuration> bootstrap) {
+//                super.initialize(bootstrap);
+//            }
+//        }));
+//    }
 
     @Test
     public void run() throws Exception {
