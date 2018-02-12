@@ -25,7 +25,6 @@ import javax.ws.rs.core.Response;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.http.HttpStatus;
-import org.glassfish.jersey.client.ClientConfig;
 import org.jvnet.hk2.annotations.Service;
 import org.onap.holmes.common.dmaap.entity.PolicyMsg;
 import org.onap.holmes.common.exception.CorrelationException;
@@ -41,7 +40,7 @@ public class Publisher {
     private String authExpDate;
 
     public boolean publish(PolicyMsg msg) throws CorrelationException {
-        Client client = ClientBuilder.newClient(new ClientConfig());
+        Client client = ClientBuilder.newClient();
         String content = JSON.toJSONString(msg);
         WebTarget webTarget = client.target(url);
         Response response = null;
