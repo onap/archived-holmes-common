@@ -14,6 +14,7 @@
 package org.onap.holmes.common.aai;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -65,7 +66,11 @@ public class AaiQuery {
 
     private String getVmResourceLinks(String vserverId, String vserverName) throws CorrelationException {
         String response = getResourceLinksResponse(vserverId, vserverName);
-        return aaiResponseUtil.convertJsonToVmResourceLink(response).get(0).getResourceLink();
+        List linkList = aaiResponseUtil.convertJsonToVmResourceLink(response);
+        if (linkList.size() != 0) {
+            return aaiResponseUtil.convertJsonToVmResourceLink(response).get(0).getResourceLink();
+        }
+        return  "";
     }
 
     private String getResourceLinksResponse(String vserverId, String vserverName) throws CorrelationException {
@@ -108,6 +113,9 @@ public class AaiQuery {
     }
 
     private String getMsbSuffixAddr(String suffixUrl) {
+        if (suffixUrl.length() <= 0) {
+            return "";
+        }
         String[] addrSplits = suffixUrl.substring(1).split("/");
         String[] conv = addrSplits[2].split("-");
         addrSplits[2] = conv[0];

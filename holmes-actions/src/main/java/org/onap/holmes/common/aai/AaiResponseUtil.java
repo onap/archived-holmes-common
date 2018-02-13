@@ -41,7 +41,7 @@ public class AaiResponseUtil {
         List<VmResourceLink> vmResourceLinkList = new ArrayList<>();
         String resultDataKey = "result-data";
         JSONObject jsonNode = JSON.parseObject(responseJson);
-        if (jsonNode.get(resultDataKey) != null) {
+        if (jsonNode != null && jsonNode.get(resultDataKey) != null) {
             JSONArray resultData = jsonNode.getJSONArray(resultDataKey);
             vmResourceLinkList = convertResultDataList(resultData);
         }
