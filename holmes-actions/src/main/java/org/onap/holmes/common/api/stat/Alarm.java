@@ -16,9 +16,9 @@
 
 package org.onap.holmes.common.api.stat;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.Getter;
 import lombok.Setter;
-import net.sf.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.*;
@@ -112,7 +112,7 @@ public class Alarm implements AplusData, Cloneable, Serializable {
     @Override
     public String toString() {
 
-        return JSONObject.fromObject(this).toString();
+        return JSONObject.toJSONString(this);
     }
 
     @Override

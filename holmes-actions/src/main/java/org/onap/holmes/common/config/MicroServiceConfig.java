@@ -15,12 +15,12 @@
  */
 package org.onap.holmes.common.config;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.onap.holmes.common.constant.AlarmConst;
 
 @Slf4j
@@ -50,9 +50,11 @@ public class MicroServiceConfig {
         String queryString = getConsulAddrInfo() + hostname;
         log.info("Query the " + hostname + " address using the URL: " + queryString);
         try {
-            JSONObject addrJson = (JSONObject) JSONArray.fromObject(execQuery(queryString)).get(0);
-            if (addrJson.has("ServiceAddress") && addrJson.has("ServicePort")) {
-                ret = "http://" + addrJson.getString("ServiceAddress") + ":" + addrJson.getString("ServicePort");
+            JSONObject addrJson = (JSONObject) JSON.parseArray(execQuery(queryString)).get(0);
+            if (addrJson != null && addrJson.get("ServiceAddress") != null
+                    && addrJson.get("ServicePort") != null) {
+                ret = "http://" + addrJson.getString("ServiceAddress") + ":" + addrJson
+                        .getString("ServicePort");
             }
         } catch (Exception e) {
             log.warn(e.getMessage(), e);
