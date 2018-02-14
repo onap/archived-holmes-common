@@ -35,10 +35,10 @@ public class DcaeConfigurationParser {
             .asList(new String[]{"streams_subscribes", "streams_publishes", "services_calls", "services_provides"});
 
     public static DcaeConfigurations parse(String jsonStr) throws CorrelationException {
-        if (StringUtils.isEmpty(jsonStr)) {
-            throw new CorrelationException(
-                    "Can not resolve configurations from DCAE. The configuration string is empty.");
-        }
+//        if (StringUtils.isEmpty(jsonStr)) {
+//            throw new CorrelationException(
+//                    "Can not resolve configurations from DCAE. The configuration string is empty.");
+//        }
 
         DcaeConfigurations ret = new DcaeConfigurations();
 
