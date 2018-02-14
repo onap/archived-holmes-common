@@ -100,7 +100,7 @@ public class AlarmTest {
         alarmTempB.setClearedTime(date);
         alarmTempB.setRaisedTime(date);
         alarmTempB.setRaisedServerTime(date);
-        assertThat(alarmTempA.toString(),equalTo(alarmTempB.toString()));
+        assertThat(alarmTempA,equalTo(alarmTempB));
     }
 
     @Test
