@@ -15,8 +15,7 @@
  */
 package org.onap.holmes.common.dcae.utils;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import net.sf.json.JSONObject;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
@@ -45,7 +44,7 @@ public class DcaeConfigurationParser {
 
         JSONObject jsonObject = null;
         try {
-            jsonObject = JSON.parseObject(jsonStr);
+            jsonObject = JSONObject.fromObject(jsonStr);
         } catch (Exception e) {
             throw new CorrelationException(e.getMessage(), e);
         }

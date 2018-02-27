@@ -16,17 +16,15 @@
 
 package org.onap.holmes.common.api.stat;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import java.util.Date;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.After;
