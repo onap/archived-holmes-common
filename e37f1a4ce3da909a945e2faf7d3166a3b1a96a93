@@ -1,0 +1,8 @@
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review-1: Jessica Wagantall <jwagantall@linuxfoundation.org>
+Code-Review+2: Guangrong Fu <fu.guangrong@zte.com.cn>
+Submitted-by: Guangrong Fu <fu.guangrong@zte.com.cn>
+Submitted-at: Thu, 01 Mar 2018 04:28:06 +0000
+Reviewed-on: https://gerrit.onap.org/r/33349
+Project: holmes/common
+Branch: refs/heads/master
