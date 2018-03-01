@@ -15,7 +15,7 @@ issue_tracking:
     key: 'HOLMES'
 meetings:
     - type: 'zoom'
-        agenda: ''
+        agenda: 'https://wiki.onap.org/pages/viewpage.action?pageId=8231935'
         url: 'https://wiki.onap.org/pages/viewpage.action?pageId=8231935'
         server: 'n/a'
         channel: 'n/a'
