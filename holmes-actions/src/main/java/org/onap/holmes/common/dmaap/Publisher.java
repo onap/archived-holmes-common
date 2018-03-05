@@ -15,19 +15,18 @@
  */
 package org.onap.holmes.common.dmaap;
 
-import com.alibaba.fastjson.JSON;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.http.HttpStatus;
-import org.jvnet.hk2.annotations.Service;
 import org.onap.holmes.common.dmaap.entity.PolicyMsg;
 import org.onap.holmes.common.exception.CorrelationException;
+import com.alibaba.fastjson.JSON;
+import java.util.HashMap;
+import javax.ws.rs.core.MediaType;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.entity.StringEntity;
+import org.jvnet.hk2.annotations.Service;
+import org.onap.holmes.common.utils.HttpsUtils;
 
 @Getter
 @Setter
@@ -40,20 +39,26 @@ public class Publisher {
     private String authExpDate;
 
     public boolean publish(PolicyMsg msg) throws CorrelationException {
-        Client client = ClientBuilder.newClient();
-        String content = JSON.toJSONString(msg);
-        WebTarget webTarget = client.target(url);
-        Response response = null;
+        String content;
         try {
-            response = webTarget.request(MediaType.APPLICATION_JSON)
-                    .post(Entity.entity(content, MediaType.APPLICATION_JSON));
+            content = JSON.toJSONString(msg);
+        } catch (Exception e) {
+            throw new CorrelationException("Failed to convert the message object to a json string.",
+                    e);
+        }
+        HttpResponse httpResponse;
+        HashMap<String, String> headers = new HashMap<>();
+        headers.put("Accept", MediaType.APPLICATION_JSON);
+        headers.put("Content-Type", MediaType.APPLICATION_JSON);
+        try {
+            httpResponse = HttpsUtils.post(url, headers, new HashMap<>(), new StringEntity(content, "utf-8"));
         } catch (Exception e) {
             throw new CorrelationException("Failed to connect to DCAE.", e);
         }
-        return checkStatus(response);
+        return checkStatus(httpResponse);
     }
 
-    private boolean checkStatus(Response response) {
-        return response.getStatus() == HttpStatus.SC_OK;
+    private boolean checkStatus(HttpResponse httpResponse) {
+        return (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) ? true : false;
     }
 }

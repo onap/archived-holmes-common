@@ -22,6 +22,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.http.HttpResponse;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -94,7 +95,9 @@ public class AaiQueryTest {
         headers.put("Authorization", AaiConfig.getAuthenticationCredentials());
         headers.put("Accept", "application/json");
         String url = "http://10.96.33.33/api/aai-cloudInfrastructure/v11";
-        when(HttpsUtils.get(url, headers)).thenReturn("{}");
+        HttpResponse httpResponse = PowerMock.createMock(HttpResponse.class);
+        when(HttpsUtils.get(url, headers)).thenReturn(httpResponse);
+        when(HttpsUtils.extractResponseEntity(httpResponse)).thenReturn("{}");
 
         PowerMockito.mockStatic(MicroServiceConfig.class);
         when(MicroServiceConfig.getMsbServerAddrWithHttpPrefix()).thenReturn("http://10.96.33.33:80");
@@ -107,10 +110,6 @@ public class AaiQueryTest {
 
         assertThat(vmEntity == null, equalTo(true));
     }
-
-
-
-
 
     @Test
     public void testAaiQuery_getAaiVmData_httpsutils_exception() throws Exception {
@@ -212,7 +211,9 @@ public class AaiQueryTest {
         headers.put("Accept", "application/json");
         String url = "host_url";
 
-        when(HttpsUtils.get(url, headers)).thenReturn("");
+        HttpResponse httpResponse = PowerMock.createMock(HttpResponse.class);
+        when(HttpsUtils.get(url, headers)).thenReturn(httpResponse);
+        when(HttpsUtils.extractResponseEntity(httpResponse)).thenReturn("");
 
         PowerMock.replayAll();
         String resource = Whitebox.invokeMethod(aaiQuery, "getResponse", "host_url");

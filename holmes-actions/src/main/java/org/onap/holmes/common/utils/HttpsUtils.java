@@ -26,9 +26,13 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
@@ -51,6 +55,7 @@ import org.onap.holmes.common.exception.CorrelationException;
 public class HttpsUtils {
     private static final String HTTP = "http";
     private static final String HTTPS = "https";
+    private static final int DEFUALT_TIMEOUT = 30000;
     private static SSLConnectionSocketFactory sslConnectionSocketFactory = null;
     private static PoolingHttpClientConnectionManager connectionManager = null;
     private static SSLContextBuilder sslContextBuilder = null;
@@ -78,50 +83,87 @@ public class HttpsUtils {
         }
     }
 
-    public static String post(String url, Map<String, String> header, Map<String, String> param,
-            HttpEntity entity) throws Exception {
-        HttpResponse httpResponse = null;
-        try {
-            CloseableHttpClient httpClient = getHttpClient();
-            HttpPost httpPost = getHttpPost(url, header, param, entity);
-            httpResponse = getHttpResponse(httpClient, httpPost);
-        } catch (Exception e) {
-            throw new CorrelationException("Failed to use post method query data from server");
-        }
-        return getResponseEntity(httpResponse);
+    public static HttpResponse post(String url, Map<String, String> header, Map<String, String> param,
+            HttpEntity entity) throws CorrelationException {
+        return post(url, header, param, entity, DEFUALT_TIMEOUT);
     }
 
-    public static String get(String url, Map<String, String> header) throws Exception {
-        HttpResponse httpResponse = null;
-        CloseableHttpClient httpClient = null;
-        HttpGet httpGet = null;
-        String response = "";
+    public static HttpResponse post(String url, Map<String, String> header, Map<String, String> param,
+            HttpEntity entity, int timeout) throws CorrelationException {
+        HttpResponse response;
+        HttpPost httpPost = new HttpPost(url);
         try {
-            httpClient = getHttpClient();
-            httpGet = getHttpGet(url, header);
-            httpResponse = getHttpResponse(httpClient, httpGet);
-            response = getResponseEntity(httpResponse);
+            CloseableHttpClient httpClient = getHttpClient(timeout);
+            addHeaders(header, httpPost);
+            addParams(param, httpPost);
+            if (entity != null) {
+                httpPost.setEntity(entity);
+            }
+            response = executeRequest(httpClient, httpPost);
         } catch (Exception e) {
-            throw new CorrelationException("Failed to use get method query data from server");
-        } finally {
-            if (httpGet != null) {
-                httpGet.releaseConnection();
-            }
-            if (httpResponse != null) {
-                httpClient.close();
-            }
+            throw new CorrelationException("Failed to query data from server through POST method!");
         }
         return response;
     }
 
-    private static HttpPost getHttpPost(String url, Map<String, String> header,
-            Map<String, String> param, HttpEntity entity) {
-        HttpPost httpPost = new HttpPost(url);
-        if (!header.isEmpty()) {
-            for (Map.Entry<String, String> entry : header.entrySet()) {
-                httpPost.addHeader(entry.getKey(), entry.getValue());
+    public static HttpResponse put(String url, Map<String, String> header, Map<String, String> param,
+            HttpEntity entity) throws CorrelationException {
+        return put(url, header, param, entity, DEFUALT_TIMEOUT);
+    }
+
+    public static HttpResponse put(String url, Map<String, String> header, Map<String, String> param,
+            HttpEntity entity, int timeout) throws CorrelationException {
+        HttpResponse response;
+        HttpPut httpPut = new HttpPut(url);
+        try {
+            CloseableHttpClient httpClient = getHttpClient(timeout);
+            addHeaders(header, httpPut);
+            addParams(param, httpPut);
+            if (entity != null) {
+                httpPut.setEntity(entity);
             }
+            response = executeRequest(httpClient, httpPut);
+        } catch (Exception e) {
+            throw new CorrelationException("Failed to query data from server through PUT method!");
         }
+        return response;
+    }
+
+    public static HttpResponse get(String url, Map<String, String> header) throws CorrelationException {
+        return get(url, header, DEFUALT_TIMEOUT);
+    }
+
+    public static HttpResponse get(String url, Map<String, String> header, int timeout) throws CorrelationException {
+        HttpResponse response;
+        HttpGet httpGet = new HttpGet(url);
+        try {
+            CloseableHttpClient httpClient = getHttpClient(timeout);
+            addHeaders(header, httpGet);
+            response = executeRequest(httpClient, httpGet);
+        } catch (Exception e) {
+            throw new CorrelationException("Failed to query data from server through GET method!");
+        }
+        return response;
+    }
+
+    public static HttpResponse delete(String url, Map<String, String> header) throws CorrelationException {
+        return delete(url, header, DEFUALT_TIMEOUT);
+    }
+
+    public static HttpResponse delete(String url, Map<String, String> header, int timeout) throws CorrelationException {
+        HttpResponse response;
+        HttpDelete httpDelete = new HttpDelete(url);
+        try {
+            CloseableHttpClient httpClient = getHttpClient(timeout);
+            addHeaders(header, httpDelete);
+            response = executeRequest(httpClient, httpDelete);
+        } catch (Exception e) {
+            throw new CorrelationException("Failed to query data from server through DELETE method!");
+        }
+        return response;
+    }
+
+    private static void addParams(Map<String, String> param, HttpEntityEnclosingRequestBase requestBase) {
         if (!param.isEmpty()) {
             List<NameValuePair> formparams = new ArrayList<>();
             for (Map.Entry<String, String> entry : param.entrySet()) {
@@ -129,49 +171,60 @@ public class HttpsUtils {
             }
             UrlEncodedFormEntity urlEncodedFormEntity = new UrlEncodedFormEntity(formparams,
                     Consts.UTF_8);
-            httpPost.setEntity(urlEncodedFormEntity);
+            requestBase.setEntity(urlEncodedFormEntity);
         }
-        if (entity != null) {
-            httpPost.setEntity(entity);
-        }
-        return httpPost;
     }
 
-    private static HttpGet getHttpGet(String url, Map<String, String> header) {
-        HttpGet httpGet = new HttpGet(url);
+    private static HttpRequestBase addHeaders(Map<String, String> header, HttpRequestBase httpRequestBase) {
         if (!header.isEmpty()) {
             for (Map.Entry<String, String> entry : header.entrySet()) {
-                httpGet.addHeader(entry.getKey(), entry.getValue());
+                httpRequestBase.addHeader(entry.getKey(), entry.getValue());
             }
         }
-        return httpGet;
+        return httpRequestBase;
     }
 
-    private static String getResponseEntity(HttpResponse httpResponse) throws IOException {
+    public static String extractResponseEntity(HttpResponse httpResponse)
+            throws CorrelationException, IOException {
         String result = "";
         if (httpResponse != null) {
             int statusCode = httpResponse.getStatusLine().getStatusCode();
             if (statusCode == HttpStatus.SC_OK) {
                 HttpEntity resEntity = httpResponse.getEntity();
                 result = EntityUtils.toString(resEntity);
+            } else {
+                throw new CorrelationException("Get a error status from server : " + statusCode);
             }
         }
         return result;
     }
 
-    private static HttpResponse getHttpResponse(CloseableHttpClient httpClient, HttpRequestBase httpRequest)
+    private static HttpResponse executeRequest(CloseableHttpClient httpClient, HttpRequestBase httpRequest)
             throws Exception {
-        HttpResponse httpResponse = null;
+        HttpResponse httpResponse;
         try {
             httpResponse = httpClient.execute(httpRequest);
         } catch (Exception e) {
             throw new CorrelationException("Failed to get data from server");
+        } finally {
+            if (httpRequest != null) {
+                httpRequest.releaseConnection();
+            }
+            if (httpClient != null) {
+                httpClient.close();
+            }
         }
         return httpResponse;
     }
 
-    private static CloseableHttpClient getHttpClient() throws Exception {
+    private static CloseableHttpClient getHttpClient(int timeout) throws Exception {
+        RequestConfig defaultRequestConfig = RequestConfig.custom()
+                .setSocketTimeout(timeout)
+                .setConnectTimeout(timeout)
+                .setConnectionRequestTimeout(timeout)
+                .build();
         CloseableHttpClient httpClient = HttpClients.custom()
+                .setDefaultRequestConfig(defaultRequestConfig)
                 .setSSLSocketFactory(sslConnectionSocketFactory)
                 .setConnectionManager(connectionManager)
                 .setConnectionManagerShared(true)

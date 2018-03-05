@@ -18,6 +18,7 @@ package org.onap.holmes.common.dmaap;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.HashMap;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -25,19 +26,25 @@ import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
+import org.apache.http.entity.StringEntity;
 import org.easymock.EasyMock;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.mockito.Matchers;
 import org.onap.holmes.common.dmaap.entity.PolicyMsg;
 import org.onap.holmes.common.exception.CorrelationException;
+import org.onap.holmes.common.utils.HttpsUtils;
 import org.powermock.api.easymock.PowerMock;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-@PrepareForTest({Client.class, WebTarget.class, ClientBuilder.class, Response.class, Builder.class})
+@PrepareForTest({HttpsUtils.class, HttpResponse.class})
 @RunWith(PowerMockRunner.class)
 public class PublisherTest {
 
@@ -64,17 +71,13 @@ public class PublisherTest {
         Publisher publisher = new Publisher();
         publisher.setUrl(URL);
 
-        WebTarget target = PowerMock.createMock(WebTarget.class);
-        Client client = PowerMock.createMock(Client.class);
-        Builder builder = PowerMock.createMock(Builder.class);
-        Response response = PowerMock.createMock(Response.class);
-        PowerMock.mockStatic(ClientBuilder.class);
-
-        EasyMock.expect(ClientBuilder.newClient()).andReturn(client);
-        EasyMock.expect(client.target(publisher.getUrl())).andReturn(target);
-        EasyMock.expect(target.request(MediaType.APPLICATION_JSON)).andReturn(builder);
-        EasyMock.expect(builder.post(EasyMock.anyObject(Entity.class))).andReturn(response);
-        EasyMock.expect(response.getStatus()).andReturn(HttpStatus.SC_OK);
+        PowerMockito.mockStatic(HttpsUtils.class);
+        HttpResponse httpResponse = PowerMockito.mock(HttpResponse.class);
+        PowerMockito.when(HttpsUtils.post(Matchers.eq("http://localhost/dmaapTopic"),
+                Matchers.any(HashMap.class), Matchers.any(HashMap.class), Matchers.any(StringEntity.class))).thenReturn(httpResponse);
+        StatusLine statusLine = PowerMockito.mock(StatusLine.class);
+        PowerMockito.when(httpResponse.getStatusLine()).thenReturn(statusLine);
+        PowerMockito.when(statusLine.getStatusCode()).thenReturn(HttpStatus.SC_OK);
 
         PowerMock.replayAll();
 

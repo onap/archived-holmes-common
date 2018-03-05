@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpResponse;
 import org.jvnet.hk2.annotations.Service;
 import org.onap.holmes.common.aai.config.AaiConfig;
 import org.onap.holmes.common.aai.entity.VmEntity;
@@ -137,9 +138,10 @@ public class AaiQuery {
     }
 
     private String getResponse(String url) throws CorrelationException {
-        String response = "";
+        String response;
         try {
-            response = HttpsUtils.get(url, getHeaders());
+            HttpResponse httpResponse = HttpsUtils.get(url, getHeaders());
+            response = HttpsUtils.extractResponseEntity(httpResponse);
         } catch (Exception e) {
             throw new CorrelationException("Failed to get data from aai", e);
         }
