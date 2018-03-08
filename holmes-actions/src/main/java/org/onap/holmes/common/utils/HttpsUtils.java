@@ -200,7 +200,7 @@ public class HttpsUtils {
     }
 
     private static HttpResponse executeRequest(CloseableHttpClient httpClient, HttpRequestBase httpRequest)
-            throws Exception {
+            throws CorrelationException, IOException {
         HttpResponse httpResponse;
         try {
             httpResponse = httpClient.execute(httpRequest);
