@@ -70,10 +70,10 @@ public class MQProducerTest {
     @Test
     public void init() {
         MQConfig mqConfig = new MQConfig();
-        mqConfig.brokerIp = "127.0.0.1";
-        mqConfig.brokerPort = 61616;
-        mqConfig.brokerPassword = "admin";
-        mqConfig.brokerUsername = "admin";
+        mqConfig.setBrokerIp("127.0.0.1");
+        mqConfig.setBrokerPort(61616);
+        mqConfig.setBrokerPassword("admin");
+        mqConfig.setBrokerUsername("admin");
         expect(mqConfigProvider.get()).andReturn(mqConfig).anyTimes();
 
         PowerMock.replayAll();

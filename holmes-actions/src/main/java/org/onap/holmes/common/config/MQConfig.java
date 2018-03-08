@@ -16,13 +16,20 @@
 
 package org.onap.holmes.common.config;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
 public class MQConfig {
 
-    public String brokerIp;
+    private String brokerIp;
 
-    public int brokerPort;
+    private int brokerPort;
 
-    public String brokerUsername;
+    private String brokerUsername;
 
-    public String brokerPassword;
+    private String brokerPassword;
 }

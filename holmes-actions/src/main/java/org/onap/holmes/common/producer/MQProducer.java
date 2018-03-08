@@ -48,9 +48,9 @@ public class MQProducer {
     public void init() {
 
         String brokerURL =
-            "tcp://" + mqConfigProvider.get().brokerIp + ":" + mqConfigProvider.get().brokerPort;
-        connectionFactory = new ActiveMQConnectionFactory(mqConfigProvider.get().brokerUsername,
-            mqConfigProvider.get().brokerPassword, brokerURL);
+            "tcp://" + mqConfigProvider.get().getBrokerIp() + ":" + mqConfigProvider.get().getBrokerPort();
+        connectionFactory = new ActiveMQConnectionFactory(mqConfigProvider.get().getBrokerUsername(),
+            mqConfigProvider.get().getBrokerPassword(), brokerURL);
     }
 
     public void sendAlarmMQTopicMsg(VesAlarm alarm) {
