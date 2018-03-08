@@ -58,7 +58,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * complete the integration of hK2 container and dropwizard
- * 
+ *
  * @author hu.rui
  *
  */
@@ -276,12 +276,9 @@ public class AutoConfigBundle<T extends Configuration> implements ConfiguredBund
         bind(configuration);
         LOG.info("Registering Dropwizard Configuration class name:{}",
             configuration.getClass().getName());
-        if (configuration instanceof Configuration) {
           bind((Configuration) configuration).to(Configuration.class);
           LOG.info("Registering Dropwizard Configuration class name:{}",
               Configuration.class.getName());
-        }
-
       }
     });
 

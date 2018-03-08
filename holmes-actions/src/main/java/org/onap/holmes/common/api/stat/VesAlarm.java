@@ -29,7 +29,8 @@ public class VesAlarm implements Cloneable, Serializable{
     private String eventId;
     private String eventName;
     private String eventType;
-    private Object internalHeaderFields;
+    //Temporarily make it transient cuz no details of this field is provided and it is not used for now.
+    transient private Object internalHeaderFields;
     private Long lastEpochMicrosec;
     private String nfcNamingCode;
     private String nfNamingCode;
