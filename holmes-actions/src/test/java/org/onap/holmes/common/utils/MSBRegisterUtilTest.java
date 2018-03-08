@@ -16,24 +16,17 @@
 
 package org.onap.holmes.common.utils;
 
-import com.eclipsesource.jaxrs.consumer.ConsumerFactory;
-import javax.ws.rs.QueryParam;
-
 import org.easymock.EasyMock;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.onap.holmes.common.exception.CorrelationException;
-import org.onap.holmes.common.msb.MicroserviceBusRest;
-import org.onap.holmes.common.api.entity.ServiceRegisterEntity;
 import org.onap.holmes.common.config.MicroServiceConfig;
+import org.onap.holmes.common.exception.CorrelationException;
 import org.onap.msb.sdk.discovery.entity.MicroServiceFullInfo;
 import org.onap.msb.sdk.discovery.entity.MicroServiceInfo;
 import org.onap.msb.sdk.httpclient.msb.MSBServiceClient;
 import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 
 @PrepareForTest({MicroServiceConfig.class, MSBServiceClient.class, MSBRegisterUtil.class})
