@@ -44,6 +44,7 @@ public class CorrelationRuleMapper implements ResultSetMapper<CorrelationRule> {
         correlationRule.setVendor(resultSet.getString("vendor"));
         correlationRule.setPackageName(resultSet.getString("package"));
         correlationRule.setClosedControlLoopName(resultSet.getString("ctrlloop"));
+        correlationRule.setEngineInstance((resultSet.getString("engineinstance")));
         return correlationRule;
     }
 

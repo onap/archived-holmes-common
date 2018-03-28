@@ -57,4 +57,6 @@ public class CorrelationRule {
     private String packageName;
     @SerializedName(value = "controlloopname")
     private String closedControlLoopName;
+    @SerializedName(value = "engineinstance")
+    private String engineInstance;
 }

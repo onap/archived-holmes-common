@@ -143,4 +143,11 @@ public class CorrelationRuleTest {
         correlationRule.setPackageName(packageName);
         assertThat(correlationRule.getPackageName(), equalTo(packageName));
     }
+
+    @Test
+    public void getterAndSetter4EngineInstance(){
+        final String engineInstance = "engineInstance";
+        correlationRule.setEngineInstance(engineInstance);
+        assertThat(correlationRule.getEngineInstance(), equalTo(engineInstance));
+    }
 } 
