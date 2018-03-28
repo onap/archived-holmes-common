@@ -70,7 +70,7 @@ public class HttpsUtils {
                 }
             });
             sslConnectionSocketFactory = new SSLConnectionSocketFactory(sslContextBuilder.build(),
-                    new String[]{"SSLv2Hello", "SSLv3", "TLSv1", "TLSv1.2"}, null,
+                    new String[]{"SSLv3", "TLSv1", "TLSv1.2"}, null,
                     NoopHostnameVerifier.INSTANCE);
             Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
                     .register(HTTP, new PlainConnectionSocketFactory())
@@ -205,7 +205,8 @@ public class HttpsUtils {
         try {
             httpResponse = httpClient.execute(httpRequest);
         } catch (Exception e) {
-            throw new CorrelationException("Failed to get data from server");
+            e.printStackTrace();
+            throw new CorrelationException("Failed to get data from server" ,e);
         } finally {
             if (httpRequest != null) {
                 httpRequest.releaseConnection();
