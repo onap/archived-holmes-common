@@ -193,7 +193,7 @@ public class HttpsUtils {
                 HttpEntity resEntity = httpResponse.getEntity();
                 result = EntityUtils.toString(resEntity);
             } else {
-                throw new CorrelationException("Get a error status from server : " + statusCode);
+                throw new CorrelationException("Get an error status from server : " + statusCode);
             }
         }
         return result;
