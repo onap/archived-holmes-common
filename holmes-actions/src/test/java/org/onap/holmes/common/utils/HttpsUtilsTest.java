@@ -43,6 +43,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.onap.holmes.common.exception.CorrelationException;
 import org.powermock.api.easymock.PowerMock;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
@@ -50,6 +51,7 @@ import org.powermock.reflect.Whitebox;
 @PrepareForTest({CloseableHttpClient.class, HttpClientBuilder.class, HttpClients.class, CloseableHttpResponse.class,
         StatusLine.class})
 @RunWith(PowerMockRunner.class)
+@PowerMockIgnore("javax.net.ssl.*")
 public class HttpsUtilsTest {
 
     @Rule
@@ -64,28 +66,22 @@ public class HttpsUtilsTest {
 
     @Test
     public void testHttpsUtil_get_excepiton() throws Exception {
+        PowerMock.resetAll();
         thrown.expect(CorrelationException.class);
         thrown.expectMessage("Failed to query data from server through GET method!");
         String url = "host";
         Map<String, String> header = new HashMap<>();
         header.put("accept", "application/json");
-        HttpResponse httpResponse = HttpsUtils.get(url, header);
+        CloseableHttpClient httpClient = HttpsUtils.getHttpClient(HttpsUtils.DEFUALT_TIMEOUT);
+        HttpResponse httpResponse = HttpsUtils.get(url, header, httpClient);
         String response = HttpsUtils.extractResponseEntity(httpResponse);
         assertThat(response, equalTo(""));
     }
 
     @Test
     public void testHttpsUtil_get_normal() throws Exception {
-        HttpClientBuilder hcb = PowerMock.createMock(HttpClientBuilder.class);
+        PowerMock.resetAll();
         CloseableHttpClient httpClient = PowerMock.createMock(CloseableHttpClient.class);
-        PowerMock.mockStatic(HttpClients.class);
-        EasyMock.expect(HttpClients.custom()).andReturn(hcb);
-        EasyMock.expect(hcb.setDefaultRequestConfig(EasyMock.anyObject(RequestConfig.class))).andReturn(hcb);
-        EasyMock.expect(hcb.setSSLSocketFactory(EasyMock.anyObject(SSLConnectionSocketFactory.class))).andReturn(hcb);
-        EasyMock.expect(hcb.setConnectionManager(EasyMock.anyObject(PoolingHttpClientConnectionManager.class))).andReturn(hcb);
-        EasyMock.expect(hcb.setConnectionManagerShared(true)).andReturn(hcb);
-        EasyMock.expect(hcb.build()).andReturn(httpClient);
-
         CloseableHttpResponse response = PowerMock.createMock(CloseableHttpResponse.class);
         EasyMock.expect(httpClient.execute(EasyMock.anyObject(HttpRequestBase.class))).andReturn(response);
         StatusLine sl = PowerMock.createMock(StatusLine.class);
@@ -105,7 +101,7 @@ public class HttpsUtilsTest {
         header.put("accept", "application/json");
 
         HttpEntity entity = new StringEntity("Test");
-        HttpResponse httpResponse = HttpsUtils.get(url, header);
+        HttpResponse httpResponse = HttpsUtils.get(url, header, httpClient);
         String res = HttpsUtils.extractResponseEntity(httpResponse);
 
         PowerMock.verifyAll();
@@ -115,28 +111,22 @@ public class HttpsUtilsTest {
 
     @Test
     public void testHttpsUtil_delete_excepiton() throws Exception {
+        PowerMock.resetAll();
         thrown.expect(CorrelationException.class);
         thrown.expectMessage("Failed to query data from server through DELETE method!");
         String url = "host";
         Map<String, String> header = new HashMap<>();
         header.put("accept", "application/json");
-        HttpResponse httpResponse = HttpsUtils.delete(url, header);
+        CloseableHttpClient httpClient = HttpsUtils.getHttpClient(HttpsUtils.DEFUALT_TIMEOUT);
+        HttpResponse httpResponse = HttpsUtils.delete(url, header, httpClient);
         String response = HttpsUtils.extractResponseEntity(httpResponse);
         assertThat(response, equalTo(""));
     }
 
     @Test
     public void testHttpsUtil_delete_normal() throws Exception {
-        HttpClientBuilder hcb = PowerMock.createMock(HttpClientBuilder.class);
+        PowerMock.resetAll();
         CloseableHttpClient httpClient = PowerMock.createMock(CloseableHttpClient.class);
-        PowerMock.mockStatic(HttpClients.class);
-        EasyMock.expect(HttpClients.custom()).andReturn(hcb);
-        EasyMock.expect(hcb.setDefaultRequestConfig(EasyMock.anyObject(RequestConfig.class))).andReturn(hcb);
-        EasyMock.expect(hcb.setSSLSocketFactory(EasyMock.anyObject(SSLConnectionSocketFactory.class))).andReturn(hcb);
-        EasyMock.expect(hcb.setConnectionManager(EasyMock.anyObject(PoolingHttpClientConnectionManager.class))).andReturn(hcb);
-        EasyMock.expect(hcb.setConnectionManagerShared(true)).andReturn(hcb);
-        EasyMock.expect(hcb.build()).andReturn(httpClient);
-
         CloseableHttpResponse response = PowerMock.createMock(CloseableHttpResponse.class);
         EasyMock.expect(httpClient.execute(EasyMock.anyObject(HttpRequestBase.class))).andReturn(response);
         StatusLine sl = PowerMock.createMock(StatusLine.class);
@@ -156,7 +146,7 @@ public class HttpsUtilsTest {
         header.put("accept", "application/json");
 
         HttpEntity entity = new StringEntity("Test");
-        HttpResponse httpResponse = HttpsUtils.delete(url, header);
+        HttpResponse httpResponse = HttpsUtils.delete(url, header, httpClient);
         String res = HttpsUtils.extractResponseEntity(httpResponse);
 
         PowerMock.verifyAll();
@@ -166,6 +156,7 @@ public class HttpsUtilsTest {
 
     @Test
     public void testHttpsUtil_post_excepiton() throws Exception {
+        PowerMock.resetAll();
         thrown.expect(CorrelationException.class);
         thrown.expectMessage("Failed to query data from server through POST method!");
         String url = "host";
@@ -173,24 +164,16 @@ public class HttpsUtilsTest {
         header.put("accept", "application/json");
         Map<String, String> para = new HashMap<>();
         para.put("tset", "1111");
-
-        HttpResponse httpResponse = HttpsUtils.post(url, header, para, null);
+        CloseableHttpClient httpClient = HttpsUtils.getHttpClient(HttpsUtils.DEFUALT_TIMEOUT);
+        HttpResponse httpResponse = HttpsUtils.post(url, header, para, null, httpClient);
         String response = HttpsUtils.extractResponseEntity(httpResponse);
         assertThat(response, equalTo(""));
     }
 
     @Test
     public void testHttpsUtil_post_normal() throws Exception {
-        HttpClientBuilder hcb = PowerMock.createMock(HttpClientBuilder.class);
+        PowerMock.resetAll();
         CloseableHttpClient httpClient = PowerMock.createMock(CloseableHttpClient.class);
-        PowerMock.mockStatic(HttpClients.class);
-        EasyMock.expect(HttpClients.custom()).andReturn(hcb);
-        EasyMock.expect(hcb.setDefaultRequestConfig(EasyMock.anyObject(RequestConfig.class))).andReturn(hcb);
-        EasyMock.expect(hcb.setSSLSocketFactory(EasyMock.anyObject(SSLConnectionSocketFactory.class))).andReturn(hcb);
-        EasyMock.expect(hcb.setConnectionManager(EasyMock.anyObject(PoolingHttpClientConnectionManager.class))).andReturn(hcb);
-        EasyMock.expect(hcb.setConnectionManagerShared(true)).andReturn(hcb);
-        EasyMock.expect(hcb.build()).andReturn(httpClient);
-
         CloseableHttpResponse response = PowerMock.createMock(CloseableHttpResponse.class);
         EasyMock.expect(httpClient.execute(EasyMock.anyObject(HttpRequestBase.class))).andReturn(response);
         StatusLine sl = PowerMock.createMock(StatusLine.class);
@@ -212,7 +195,7 @@ public class HttpsUtilsTest {
         para.put("tset", "1111");
 
         HttpEntity entity = new StringEntity("Test");
-        HttpResponse httpResponse = HttpsUtils.post(url, header, para, entity);
+        HttpResponse httpResponse = HttpsUtils.post(url, header, para, entity, httpClient);
         String res = HttpsUtils.extractResponseEntity(httpResponse);
 
         PowerMock.verifyAll();
@@ -229,24 +212,16 @@ public class HttpsUtilsTest {
         header.put("accept", "application/json");
         Map<String, String> para = new HashMap<>();
         para.put("tset", "1111");
-
-        HttpResponse httpResponse = HttpsUtils.put(url, header, para, null);
+        CloseableHttpClient httpClient = HttpsUtils.getHttpClient(HttpsUtils.DEFUALT_TIMEOUT);
+        HttpResponse httpResponse = HttpsUtils.put(url, header, para, null, httpClient);
         String response = HttpsUtils.extractResponseEntity(httpResponse);
         assertThat(response, equalTo(""));
     }
 
     @Test
     public void testHttpsUtil_put_normal() throws Exception {
-        HttpClientBuilder hcb = PowerMock.createMock(HttpClientBuilder.class);
+        PowerMock.resetAll();
         CloseableHttpClient httpClient = PowerMock.createMock(CloseableHttpClient.class);
-        PowerMock.mockStatic(HttpClients.class);
-        EasyMock.expect(HttpClients.custom()).andReturn(hcb);
-        EasyMock.expect(hcb.setDefaultRequestConfig(EasyMock.anyObject(RequestConfig.class))).andReturn(hcb);
-        EasyMock.expect(hcb.setSSLSocketFactory(EasyMock.anyObject(SSLConnectionSocketFactory.class))).andReturn(hcb);
-        EasyMock.expect(hcb.setConnectionManager(EasyMock.anyObject(PoolingHttpClientConnectionManager.class))).andReturn(hcb);
-        EasyMock.expect(hcb.setConnectionManagerShared(true)).andReturn(hcb);
-        EasyMock.expect(hcb.build()).andReturn(httpClient);
-
         CloseableHttpResponse response = PowerMock.createMock(CloseableHttpResponse.class);
         EasyMock.expect(httpClient.execute(EasyMock.anyObject(HttpRequestBase.class))).andReturn(response);
         StatusLine sl = PowerMock.createMock(StatusLine.class);
@@ -268,7 +243,7 @@ public class HttpsUtilsTest {
         para.put("tset", "1111");
 
         HttpEntity entity = new StringEntity("Test");
-        HttpResponse httpResponse = HttpsUtils.put(url, header, para, entity);
+        HttpResponse httpResponse = HttpsUtils.put(url, header, para, entity, httpClient);
         String res = HttpsUtils.extractResponseEntity(httpResponse);
 
         PowerMock.verifyAll();
@@ -292,6 +267,13 @@ public class HttpsUtilsTest {
         PowerMock.resetAll();
         thrown.expect(Exception.class);
         Whitebox.invokeMethod(HttpsUtils.class, "getHttpClient");
+        PowerMock.verifyAll();
+    }
+
+    @Test
+    public void testHttpsUtil_getHttpClient_ok() throws Exception {
+        PowerMock.resetAll();
+        HttpsUtils.getHttpClient(HttpsUtils.DEFUALT_TIMEOUT);
         PowerMock.verifyAll();
     }
 

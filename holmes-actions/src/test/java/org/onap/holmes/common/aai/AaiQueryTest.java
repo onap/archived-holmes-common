@@ -23,6 +23,8 @@ import static org.powermock.api.mockito.PowerMockito.when;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.http.HttpResponse;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.easymock.EasyMock;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -96,7 +98,9 @@ public class AaiQueryTest {
         headers.put("Accept", "application/json");
         String url = "http://10.96.33.33/api/aai-cloudInfrastructure/v11";
         HttpResponse httpResponse = PowerMock.createMock(HttpResponse.class);
-        when(HttpsUtils.get(url, headers)).thenReturn(httpResponse);
+        CloseableHttpClient httpClient = PowerMock.createMock(CloseableHttpClient.class);
+        when(HttpsUtils.getHttpClient(30000)).thenReturn(httpClient);
+        when(HttpsUtils.get(url, headers, httpClient)).thenReturn(httpResponse);
         when(HttpsUtils.extractResponseEntity(httpResponse)).thenReturn("{}");
 
         PowerMockito.mockStatic(MicroServiceConfig.class);
@@ -104,6 +108,8 @@ public class AaiQueryTest {
 
         PowerMock.expectPrivate(aaiQuery, "getVmResourceLinks", "test1", "test2")
                 .andReturn("/aai/v11/cloud-infrastructure");
+        PowerMock.expectPrivate(httpClient, "close");
+        EasyMock.expectLastCall();
         PowerMock.replayAll();
         VmEntity vmEntity = Whitebox.invokeMethod(aaiQuery, "getAaiVmData", "test1", "test2");
         PowerMock.verifyAll();
@@ -128,14 +134,15 @@ public class AaiQueryTest {
         headers.put("Authorization", AaiConfig.getAuthenticationCredentials());
         headers.put("Accept", "application/json");
         String url = "http://10.96.33.33/api/aai-cloudInfrastructure/v11";
-
-        when(HttpsUtils.get(url, headers)).thenThrow(new CorrelationException(""));
-
+        CloseableHttpClient httpClient = PowerMock.createMock(CloseableHttpClient.class);
+        when(HttpsUtils.getHttpClient(30000)).thenReturn(httpClient);
+        when(HttpsUtils.get(url, headers, httpClient)).thenThrow(new CorrelationException(""));
         PowerMockito.mockStatic(MicroServiceConfig.class);
         when(MicroServiceConfig.getMsbServerAddrWithHttpPrefix()).thenReturn("http://10.96.33.33:80");
-
         PowerMock.expectPrivate(aaiQuery, "getVmResourceLinks", "test1", "test2")
                 .andReturn("/aai/v11/cloud-infrastructure");
+        PowerMock.expectPrivate(httpClient,"close");
+        EasyMock.expectLastCall();
         PowerMock.replayAll();
         Whitebox.invokeMethod(aaiQuery, "getAaiVmData", "test1", "test2");
         PowerMock.verifyAll();
@@ -212,8 +219,12 @@ public class AaiQueryTest {
         String url = "host_url";
 
         HttpResponse httpResponse = PowerMock.createMock(HttpResponse.class);
-        when(HttpsUtils.get(url, headers)).thenReturn(httpResponse);
+        CloseableHttpClient httpClient = PowerMock.createMock(CloseableHttpClient.class);
+        when(HttpsUtils.getHttpClient(30000)).thenReturn(httpClient);
+        when(HttpsUtils.get(url, headers, httpClient)).thenReturn(httpResponse);
         when(HttpsUtils.extractResponseEntity(httpResponse)).thenReturn("");
+        PowerMock.expectPrivate(httpClient, "close");
+        EasyMock.expectLastCall();
 
         PowerMock.replayAll();
         String resource = Whitebox.invokeMethod(aaiQuery, "getResponse", "host_url");
@@ -236,7 +247,11 @@ public class AaiQueryTest {
         headers.put("Authorization", AaiConfig.getAuthenticationCredentials());
         headers.put("Accept", "application/json");
         String url = "host_url";
-        when(HttpsUtils.get(url, headers)).thenThrow(new CorrelationException(""));
+        CloseableHttpClient httpClient = PowerMock.createMock(CloseableHttpClient.class);
+        when(HttpsUtils.getHttpClient(30000)).thenReturn(httpClient);
+        when(HttpsUtils.get(url, headers, httpClient)).thenThrow(new CorrelationException(""));
+        PowerMock.expectPrivate(httpClient, "close");
+        EasyMock.expectLastCall();
         PowerMock.replayAll();
         String resource = Whitebox.invokeMethod(aaiQuery, "getResponse", "host_url");
         PowerMock.verifyAll();
