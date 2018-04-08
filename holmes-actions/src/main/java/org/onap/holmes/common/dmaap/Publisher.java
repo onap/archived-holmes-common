@@ -15,6 +15,9 @@
  */
 package org.onap.holmes.common.dmaap;
 
+import java.io.IOException;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.onap.holmes.common.dmaap.entity.PolicyMsg;
 import org.onap.holmes.common.exception.CorrelationException;
 import com.alibaba.fastjson.JSON;
@@ -31,6 +34,7 @@ import org.onap.holmes.common.utils.HttpsUtils;
 @Getter
 @Setter
 @Service
+@Slf4j
 public class Publisher {
 
     private String topic;
@@ -50,10 +54,20 @@ public class Publisher {
         HashMap<String, String> headers = new HashMap<>();
         headers.put("Accept", MediaType.APPLICATION_JSON);
         headers.put("Content-Type", MediaType.APPLICATION_JSON);
+        CloseableHttpClient httpClient = null;
         try {
-            httpResponse = HttpsUtils.post(url, headers, new HashMap<>(), new StringEntity(content, "utf-8"));
+            httpClient = HttpsUtils.getHttpClient(HttpsUtils.DEFUALT_TIMEOUT);
+            httpResponse = HttpsUtils.post(url, headers, new HashMap<>(), new StringEntity(content, "utf-8"), httpClient);
         } catch (Exception e) {
             throw new CorrelationException("Failed to connect to DCAE.", e);
+        } finally {
+            if (httpClient != null) {
+                try {
+                    httpClient.close();
+                } catch (IOException e) {
+                    log.warn("Failed to close http client!");
+                }
+            }
         }
         return checkStatus(httpResponse);
     }

@@ -13,12 +13,14 @@
  */
 package org.onap.holmes.common.aai;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpResponse;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.jvnet.hk2.annotations.Service;
 import org.onap.holmes.common.aai.config.AaiConfig;
 import org.onap.holmes.common.aai.entity.VmEntity;
@@ -139,11 +141,21 @@ public class AaiQuery {
 
     private String getResponse(String url) throws CorrelationException {
         String response;
+        CloseableHttpClient httpClient = null;
         try {
-            HttpResponse httpResponse = HttpsUtils.get(url, getHeaders());
+            httpClient = HttpsUtils.getHttpClient(HttpsUtils.DEFUALT_TIMEOUT);
+            HttpResponse httpResponse = HttpsUtils.get(url, getHeaders(), httpClient);
             response = HttpsUtils.extractResponseEntity(httpResponse);
         } catch (Exception e) {
             throw new CorrelationException("Failed to get data from aai", e);
+        } finally {
+            if (httpClient != null) {
+                try {
+                    httpClient.close();
+                } catch (IOException e) {
+                    log.warn("Failed to close http client!");
+                }
+            }
         }
         return response;
     }

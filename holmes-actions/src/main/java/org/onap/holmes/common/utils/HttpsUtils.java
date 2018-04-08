@@ -55,10 +55,10 @@ import org.onap.holmes.common.exception.CorrelationException;
 public class HttpsUtils {
     private static final String HTTP = "http";
     private static final String HTTPS = "https";
-    private static final int DEFUALT_TIMEOUT = 30000;
     private static SSLConnectionSocketFactory sslConnectionSocketFactory = null;
     private static PoolingHttpClientConnectionManager connectionManager = null;
     private static SSLContextBuilder sslContextBuilder = null;
+    public static final int DEFUALT_TIMEOUT = 30000;
 
     static{
         try {
@@ -84,16 +84,10 @@ public class HttpsUtils {
     }
 
     public static HttpResponse post(String url, Map<String, String> header, Map<String, String> param,
-            HttpEntity entity) throws CorrelationException {
-        return post(url, header, param, entity, DEFUALT_TIMEOUT);
-    }
-
-    public static HttpResponse post(String url, Map<String, String> header, Map<String, String> param,
-            HttpEntity entity, int timeout) throws CorrelationException {
+            HttpEntity entity, CloseableHttpClient httpClient) throws CorrelationException {
         HttpResponse response;
         HttpPost httpPost = new HttpPost(url);
         try {
-            CloseableHttpClient httpClient = getHttpClient(timeout);
             addHeaders(header, httpPost);
             addParams(param, httpPost);
             if (entity != null) {
@@ -107,16 +101,10 @@ public class HttpsUtils {
     }
 
     public static HttpResponse put(String url, Map<String, String> header, Map<String, String> param,
-            HttpEntity entity) throws CorrelationException {
-        return put(url, header, param, entity, DEFUALT_TIMEOUT);
-    }
-
-    public static HttpResponse put(String url, Map<String, String> header, Map<String, String> param,
-            HttpEntity entity, int timeout) throws CorrelationException {
+            HttpEntity entity, CloseableHttpClient httpClient) throws CorrelationException {
         HttpResponse response;
         HttpPut httpPut = new HttpPut(url);
         try {
-            CloseableHttpClient httpClient = getHttpClient(timeout);
             addHeaders(header, httpPut);
             addParams(param, httpPut);
             if (entity != null) {
@@ -129,15 +117,10 @@ public class HttpsUtils {
         return response;
     }
 
-    public static HttpResponse get(String url, Map<String, String> header) throws CorrelationException {
-        return get(url, header, DEFUALT_TIMEOUT);
-    }
-
-    public static HttpResponse get(String url, Map<String, String> header, int timeout) throws CorrelationException {
+    public static HttpResponse get(String url, Map<String, String> header, CloseableHttpClient httpClient) throws CorrelationException {
         HttpResponse response;
         HttpGet httpGet = new HttpGet(url);
         try {
-            CloseableHttpClient httpClient = getHttpClient(timeout);
             addHeaders(header, httpGet);
             response = executeRequest(httpClient, httpGet);
         } catch (Exception e) {
@@ -146,15 +129,10 @@ public class HttpsUtils {
         return response;
     }
 
-    public static HttpResponse delete(String url, Map<String, String> header) throws CorrelationException {
-        return delete(url, header, DEFUALT_TIMEOUT);
-    }
-
-    public static HttpResponse delete(String url, Map<String, String> header, int timeout) throws CorrelationException {
+    public static HttpResponse delete(String url, Map<String, String> header, CloseableHttpClient httpClient) throws CorrelationException {
         HttpResponse response;
         HttpDelete httpDelete = new HttpDelete(url);
         try {
-            CloseableHttpClient httpClient = getHttpClient(timeout);
             addHeaders(header, httpDelete);
             response = executeRequest(httpClient, httpDelete);
         } catch (Exception e) {
@@ -218,7 +196,7 @@ public class HttpsUtils {
         return httpResponse;
     }
 
-    private static CloseableHttpClient getHttpClient(int timeout) throws Exception {
+    public static CloseableHttpClient getHttpClient(int timeout) {
         RequestConfig defaultRequestConfig = RequestConfig.custom()
                 .setSocketTimeout(timeout)
                 .setConnectTimeout(timeout)

@@ -30,6 +30,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.easymock.EasyMock;
 import org.junit.Rule;
 import org.junit.Test;
@@ -73,8 +74,10 @@ public class PublisherTest {
 
         PowerMockito.mockStatic(HttpsUtils.class);
         HttpResponse httpResponse = PowerMockito.mock(HttpResponse.class);
-        PowerMockito.when(HttpsUtils.post(Matchers.eq("http://localhost/dmaapTopic"),
-                Matchers.any(HashMap.class), Matchers.any(HashMap.class), Matchers.any(StringEntity.class))).thenReturn(httpResponse);
+        PowerMockito.when(HttpsUtils
+                .post(Matchers.eq("http://localhost/dmaapTopic"), Matchers.any(HashMap.class),
+                        Matchers.any(HashMap.class), Matchers.any(StringEntity.class),
+                        Matchers.any(CloseableHttpClient.class))).thenReturn(httpResponse);
         StatusLine statusLine = PowerMockito.mock(StatusLine.class);
         PowerMockito.when(httpResponse.getStatusLine()).thenReturn(statusLine);
         PowerMockito.when(statusLine.getStatusCode()).thenReturn(HttpStatus.SC_OK);
