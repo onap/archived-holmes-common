@@ -90,9 +90,6 @@ public class HttpsUtilsTest {
         HttpEntity responseEntity = new StringEntity("Test");
         EasyMock.expect(response.getEntity()).andReturn(responseEntity);
 
-        httpClient.close();
-        EasyMock.expectLastCall();
-
         PowerMock.replayAll();
 
 
@@ -134,9 +131,6 @@ public class HttpsUtilsTest {
         EasyMock.expect(sl.getStatusCode()).andReturn(HttpStatus.SC_OK);
         HttpEntity responseEntity = new StringEntity("Test");
         EasyMock.expect(response.getEntity()).andReturn(responseEntity);
-
-        httpClient.close();
-        EasyMock.expectLastCall();
 
         PowerMock.replayAll();
 
@@ -182,9 +176,6 @@ public class HttpsUtilsTest {
         HttpEntity responseEntity = new StringEntity("Test");
         EasyMock.expect(response.getEntity()).andReturn(responseEntity);
 
-        httpClient.close();
-        EasyMock.expectLastCall();
-
         PowerMock.replayAll();
 
 
@@ -229,9 +220,6 @@ public class HttpsUtilsTest {
         EasyMock.expect(sl.getStatusCode()).andReturn(HttpStatus.SC_OK);
         HttpEntity responseEntity = new StringEntity("Test");
         EasyMock.expect(response.getEntity()).andReturn(responseEntity);
-
-        httpClient.close();
-        EasyMock.expectLastCall();
 
         PowerMock.replayAll();
 

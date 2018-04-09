@@ -183,15 +183,7 @@ public class HttpsUtils {
         try {
             httpResponse = httpClient.execute(httpRequest);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new CorrelationException("Failed to get data from server" ,e);
-        } finally {
-            if (httpRequest != null) {
-                httpRequest.releaseConnection();
-            }
-            if (httpClient != null) {
-                httpClient.close();
-            }
         }
         return httpResponse;
     }
