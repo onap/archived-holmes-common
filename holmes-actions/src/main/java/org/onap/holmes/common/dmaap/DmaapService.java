@@ -47,6 +47,7 @@ public class DmaapService {
             publisher.setUrl(DcaeConfigurationsCache.getPubSecInfo(dmaapConfigKey).getDmaapInfo()
                     .getTopicUrl());
             publisher.publish(policyMsg);
+            deleteRequestId(policyMsg);
             log.info("send policyMsg: " + GsonUtil.beanToJson(policyMsg));
         } catch (CorrelationException e) {
             log.error("Failed to publish the control loop event to DMaaP", e);
@@ -182,5 +183,18 @@ public class DmaapService {
             log.error("Failed to get the VM data.", e);
         }
         return vmEntity;
+    }
+
+    private void deleteRequestId(PolicyMsg policyMsg){
+        String status = policyMsg.getClosedLoopEventStatus().toString();
+        if(status == "ABATED"){
+            String requestId = policyMsg.getRequestID();
+            for(String key: alarmUniqueRequestID.keySet()){
+                if(alarmUniqueRequestID.get(key).equals(requestId)){
+                    alarmUniqueRequestID.remove(key);
+                }
+            }
+            log.info("Clear alarm, requestId deleted successful");
+        }
     }
 }
