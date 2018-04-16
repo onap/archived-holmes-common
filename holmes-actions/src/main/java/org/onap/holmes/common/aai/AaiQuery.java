@@ -20,6 +20,8 @@ import java.util.Map;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.jvnet.hk2.annotations.Service;
 import org.onap.holmes.common.aai.config.AaiConfig;
@@ -142,13 +144,15 @@ public class AaiQuery {
     private String getResponse(String url) throws CorrelationException {
         String response;
         CloseableHttpClient httpClient = null;
+        HttpGet httpGet = new HttpGet(url);
         try {
             httpClient = HttpsUtils.getHttpClient(HttpsUtils.DEFUALT_TIMEOUT);
-            HttpResponse httpResponse = HttpsUtils.get(url, getHeaders(), httpClient);
+            HttpResponse httpResponse = HttpsUtils.get(httpGet, getHeaders(), httpClient);
             response = HttpsUtils.extractResponseEntity(httpResponse);
         } catch (Exception e) {
             throw new CorrelationException("Failed to get data from aai", e);
         } finally {
+            httpGet.releaseConnection();
             if (httpClient != null) {
                 try {
                     httpClient.close();

@@ -28,6 +28,11 @@ import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.StringEntity;
@@ -68,12 +73,13 @@ public class HttpsUtilsTest {
     public void testHttpsUtil_get_excepiton() throws Exception {
         PowerMock.resetAll();
         thrown.expect(CorrelationException.class);
-        thrown.expectMessage("Failed to query data from server through GET method!");
+        thrown.expectMessage("Failed to connect to server");
         String url = "host";
         Map<String, String> header = new HashMap<>();
         header.put("accept", "application/json");
         CloseableHttpClient httpClient = HttpsUtils.getHttpClient(HttpsUtils.DEFUALT_TIMEOUT);
-        HttpResponse httpResponse = HttpsUtils.get(url, header, httpClient);
+        HttpGet httpRequestBase = new HttpGet(url);
+        HttpResponse httpResponse = HttpsUtils.get(httpRequestBase, header, httpClient);
         String response = HttpsUtils.extractResponseEntity(httpResponse);
         assertThat(response, equalTo(""));
     }
@@ -97,8 +103,8 @@ public class HttpsUtilsTest {
         Map<String, String> header = new HashMap<>();
         header.put("accept", "application/json");
 
-        HttpEntity entity = new StringEntity("Test");
-        HttpResponse httpResponse = HttpsUtils.get(url, header, httpClient);
+        HttpGet httpRequestBase = new HttpGet(url);
+        HttpResponse httpResponse = HttpsUtils.get(httpRequestBase, header, httpClient);
         String res = HttpsUtils.extractResponseEntity(httpResponse);
 
         PowerMock.verifyAll();
@@ -110,12 +116,13 @@ public class HttpsUtilsTest {
     public void testHttpsUtil_delete_excepiton() throws Exception {
         PowerMock.resetAll();
         thrown.expect(CorrelationException.class);
-        thrown.expectMessage("Failed to query data from server through DELETE method!");
+        thrown.expectMessage("Failed to connect to server");
         String url = "host";
         Map<String, String> header = new HashMap<>();
         header.put("accept", "application/json");
+        HttpDelete httpRequestBase = new HttpDelete(url);
         CloseableHttpClient httpClient = HttpsUtils.getHttpClient(HttpsUtils.DEFUALT_TIMEOUT);
-        HttpResponse httpResponse = HttpsUtils.delete(url, header, httpClient);
+        HttpResponse httpResponse = HttpsUtils.delete(httpRequestBase, header, httpClient);
         String response = HttpsUtils.extractResponseEntity(httpResponse);
         assertThat(response, equalTo(""));
     }
@@ -139,8 +146,8 @@ public class HttpsUtilsTest {
         Map<String, String> header = new HashMap<>();
         header.put("accept", "application/json");
 
-        HttpEntity entity = new StringEntity("Test");
-        HttpResponse httpResponse = HttpsUtils.delete(url, header, httpClient);
+        HttpDelete httpRequestBase = new HttpDelete(url);
+        HttpResponse httpResponse = HttpsUtils.delete(httpRequestBase, header, httpClient);
         String res = HttpsUtils.extractResponseEntity(httpResponse);
 
         PowerMock.verifyAll();
@@ -152,14 +159,15 @@ public class HttpsUtilsTest {
     public void testHttpsUtil_post_excepiton() throws Exception {
         PowerMock.resetAll();
         thrown.expect(CorrelationException.class);
-        thrown.expectMessage("Failed to query data from server through POST method!");
+        thrown.expectMessage("Failed to connect to server");
         String url = "host";
         Map<String, String> header = new HashMap<>();
         header.put("accept", "application/json");
         Map<String, String> para = new HashMap<>();
         para.put("tset", "1111");
         CloseableHttpClient httpClient = HttpsUtils.getHttpClient(HttpsUtils.DEFUALT_TIMEOUT);
-        HttpResponse httpResponse = HttpsUtils.post(url, header, para, null, httpClient);
+        HttpPost httpPost = new HttpPost(url);
+        HttpResponse httpResponse = HttpsUtils.post(httpPost, header, para, null, httpClient);
         String response = HttpsUtils.extractResponseEntity(httpResponse);
         assertThat(response, equalTo(""));
     }
@@ -186,7 +194,8 @@ public class HttpsUtilsTest {
         para.put("tset", "1111");
 
         HttpEntity entity = new StringEntity("Test");
-        HttpResponse httpResponse = HttpsUtils.post(url, header, para, entity, httpClient);
+        HttpPost httpPost = new HttpPost(url);
+        HttpResponse httpResponse = HttpsUtils.post(httpPost, header, para, entity, httpClient);
         String res = HttpsUtils.extractResponseEntity(httpResponse);
 
         PowerMock.verifyAll();
@@ -197,14 +206,15 @@ public class HttpsUtilsTest {
     @Test
     public void testHttpsUtil_put_excepiton() throws Exception {
         thrown.expect(CorrelationException.class);
-        thrown.expectMessage("Failed to query data from server through PUT method!");
+        thrown.expectMessage("Failed to connect to server");
         String url = "host";
         Map<String, String> header = new HashMap<>();
         header.put("accept", "application/json");
         Map<String, String> para = new HashMap<>();
         para.put("tset", "1111");
         CloseableHttpClient httpClient = HttpsUtils.getHttpClient(HttpsUtils.DEFUALT_TIMEOUT);
-        HttpResponse httpResponse = HttpsUtils.put(url, header, para, null, httpClient);
+        HttpPut httpPut = new HttpPut(url);
+        HttpResponse httpResponse = HttpsUtils.put(httpPut, header, para, null, httpClient);
         String response = HttpsUtils.extractResponseEntity(httpResponse);
         assertThat(response, equalTo(""));
     }
@@ -231,7 +241,8 @@ public class HttpsUtilsTest {
         para.put("tset", "1111");
 
         HttpEntity entity = new StringEntity("Test");
-        HttpResponse httpResponse = HttpsUtils.put(url, header, para, entity, httpClient);
+        HttpPut httpPut = new HttpPut(url);
+        HttpResponse httpResponse = HttpsUtils.put(httpPut, header, para, entity, httpClient);
         String res = HttpsUtils.extractResponseEntity(httpResponse);
 
         PowerMock.verifyAll();

@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -83,62 +84,22 @@ public class HttpsUtils {
         }
     }
 
-    public static HttpResponse post(String url, Map<String, String> header, Map<String, String> param,
+    public static HttpResponse get(HttpGet httpGet, Map<String, String> header, CloseableHttpClient httpClient) throws CorrelationException {
+        return getGetAndDeleteResponse(httpGet, header, httpClient);
+    }
+
+    public static HttpResponse post(HttpPost httpPost, Map<String, String> header, Map<String, String> param,
             HttpEntity entity, CloseableHttpClient httpClient) throws CorrelationException {
-        HttpResponse response;
-        HttpPost httpPost = new HttpPost(url);
-        try {
-            addHeaders(header, httpPost);
-            addParams(param, httpPost);
-            if (entity != null) {
-                httpPost.setEntity(entity);
-            }
-            response = executeRequest(httpClient, httpPost);
-        } catch (Exception e) {
-            throw new CorrelationException("Failed to query data from server through POST method!");
-        }
-        return response;
+        return getPostAndPutResponse(httpPost, header, param, entity, httpClient);
     }
 
-    public static HttpResponse put(String url, Map<String, String> header, Map<String, String> param,
+    public static HttpResponse put(HttpPut httpPut, Map<String, String> header, Map<String, String> param,
             HttpEntity entity, CloseableHttpClient httpClient) throws CorrelationException {
-        HttpResponse response;
-        HttpPut httpPut = new HttpPut(url);
-        try {
-            addHeaders(header, httpPut);
-            addParams(param, httpPut);
-            if (entity != null) {
-                httpPut.setEntity(entity);
-            }
-            response = executeRequest(httpClient, httpPut);
-        } catch (Exception e) {
-            throw new CorrelationException("Failed to query data from server through PUT method!");
-        }
-        return response;
+        return getPostAndPutResponse(httpPut, header, param, entity, httpClient);
     }
 
-    public static HttpResponse get(String url, Map<String, String> header, CloseableHttpClient httpClient) throws CorrelationException {
-        HttpResponse response;
-        HttpGet httpGet = new HttpGet(url);
-        try {
-            addHeaders(header, httpGet);
-            response = executeRequest(httpClient, httpGet);
-        } catch (Exception e) {
-            throw new CorrelationException("Failed to query data from server through GET method!");
-        }
-        return response;
-    }
-
-    public static HttpResponse delete(String url, Map<String, String> header, CloseableHttpClient httpClient) throws CorrelationException {
-        HttpResponse response;
-        HttpDelete httpDelete = new HttpDelete(url);
-        try {
-            addHeaders(header, httpDelete);
-            response = executeRequest(httpClient, httpDelete);
-        } catch (Exception e) {
-            throw new CorrelationException("Failed to query data from server through DELETE method!");
-        }
-        return response;
+    public static HttpResponse delete(HttpDelete httpDelete, Map<String, String> header, CloseableHttpClient httpClient) throws CorrelationException {
+        return getGetAndDeleteResponse(httpDelete, header, httpClient);
     }
 
     private static void addParams(Map<String, String> param, HttpEntityEnclosingRequestBase requestBase) {
@@ -160,6 +121,31 @@ public class HttpsUtils {
             }
         }
         return httpRequestBase;
+    }
+
+    private static HttpResponse getPostAndPutResponse(HttpEntityEnclosingRequestBase requestBase,
+            Map<String, String> header, Map<String, String> param, HttpEntity entity,
+            CloseableHttpClient httpClient) throws CorrelationException {
+        try {
+            addHeaders(header, requestBase);
+            addParams(param, requestBase);
+            if (entity != null) {
+                requestBase.setEntity(entity);
+            }
+            return executeRequest(httpClient, requestBase);
+        } catch (Exception e) {
+            throw new CorrelationException("Failed to connect to server", e);
+        }
+    }
+
+    private static HttpResponse getGetAndDeleteResponse(HttpRequestBase requestBase,
+            Map<String, String> header, CloseableHttpClient httpClient) throws CorrelationException {
+        try {
+            addHeaders(header, requestBase);
+            return executeRequest(httpClient, requestBase);
+        } catch (Exception e) {
+            throw new CorrelationException("Failed to connect to server", e);
+        }
     }
 
     public static String extractResponseEntity(HttpResponse httpResponse)

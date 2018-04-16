@@ -23,6 +23,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.easymock.EasyMock;
 import org.junit.Rule;
@@ -42,7 +43,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
 
-@PrepareForTest({AaiQuery.class, HttpsUtils.class, MicroServiceConfig.class})
+@PrepareForTest({AaiQuery.class, HttpsUtils.class, MicroServiceConfig.class, HttpGet.class})
 @RunWith(PowerMockRunner.class)
 public class AaiQueryTest {
 
@@ -100,7 +101,9 @@ public class AaiQueryTest {
         HttpResponse httpResponse = PowerMock.createMock(HttpResponse.class);
         CloseableHttpClient httpClient = PowerMock.createMock(CloseableHttpClient.class);
         when(HttpsUtils.getHttpClient(30000)).thenReturn(httpClient);
-        when(HttpsUtils.get(url, headers, httpClient)).thenReturn(httpResponse);
+        HttpGet httpGet = new HttpGet(url);
+        PowerMock.expectNew(HttpGet.class, url).andReturn(httpGet);
+        when(HttpsUtils.get(httpGet, headers, httpClient)).thenReturn(httpResponse);
         when(HttpsUtils.extractResponseEntity(httpResponse)).thenReturn("{}");
 
         PowerMockito.mockStatic(MicroServiceConfig.class);
@@ -136,7 +139,9 @@ public class AaiQueryTest {
         String url = "http://10.96.33.33/api/aai-cloudInfrastructure/v11";
         CloseableHttpClient httpClient = PowerMock.createMock(CloseableHttpClient.class);
         when(HttpsUtils.getHttpClient(30000)).thenReturn(httpClient);
-        when(HttpsUtils.get(url, headers, httpClient)).thenThrow(new CorrelationException(""));
+        HttpGet httpGet = new HttpGet(url);
+        PowerMock.expectNew(HttpGet.class, url).andReturn(httpGet);
+        when(HttpsUtils.get(httpGet, headers, httpClient)).thenThrow(new CorrelationException(""));
         PowerMockito.mockStatic(MicroServiceConfig.class);
         when(MicroServiceConfig.getMsbServerAddrWithHttpPrefix()).thenReturn("http://10.96.33.33:80");
         PowerMock.expectPrivate(aaiQuery, "getVmResourceLinks", "test1", "test2")
@@ -221,7 +226,9 @@ public class AaiQueryTest {
         HttpResponse httpResponse = PowerMock.createMock(HttpResponse.class);
         CloseableHttpClient httpClient = PowerMock.createMock(CloseableHttpClient.class);
         when(HttpsUtils.getHttpClient(30000)).thenReturn(httpClient);
-        when(HttpsUtils.get(url, headers, httpClient)).thenReturn(httpResponse);
+        HttpGet httpGet = new HttpGet(url);
+        PowerMock.expectNew(HttpGet.class, url).andReturn(httpGet);
+        when(HttpsUtils.get(httpGet, headers, httpClient)).thenReturn(httpResponse);
         when(HttpsUtils.extractResponseEntity(httpResponse)).thenReturn("");
         PowerMock.expectPrivate(httpClient, "close");
         EasyMock.expectLastCall();
@@ -249,7 +256,9 @@ public class AaiQueryTest {
         String url = "host_url";
         CloseableHttpClient httpClient = PowerMock.createMock(CloseableHttpClient.class);
         when(HttpsUtils.getHttpClient(30000)).thenReturn(httpClient);
-        when(HttpsUtils.get(url, headers, httpClient)).thenThrow(new CorrelationException(""));
+        HttpGet httpGet = new HttpGet(url);
+        PowerMock.expectNew(HttpGet.class, url).andReturn(httpGet);
+        when(HttpsUtils.get(httpGet, headers, httpClient)).thenThrow(new CorrelationException(""));
         PowerMock.expectPrivate(httpClient, "close");
         EasyMock.expectLastCall();
         PowerMock.replayAll();

@@ -29,6 +29,8 @@ import javax.ws.rs.core.Response;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.easymock.EasyMock;
@@ -75,7 +77,7 @@ public class PublisherTest {
         PowerMockito.mockStatic(HttpsUtils.class);
         HttpResponse httpResponse = PowerMockito.mock(HttpResponse.class);
         PowerMockito.when(HttpsUtils
-                .post(Matchers.eq("http://localhost/dmaapTopic"), Matchers.any(HashMap.class),
+                .post(Matchers.any(HttpPost.class), Matchers.any(HashMap.class),
                         Matchers.any(HashMap.class), Matchers.any(StringEntity.class),
                         Matchers.any(CloseableHttpClient.class))).thenReturn(httpResponse);
         StatusLine statusLine = PowerMockito.mock(StatusLine.class);
