@@ -23,6 +23,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.onap.holmes.common.dmaap.entity.PolicyMsg;
 import org.onap.holmes.common.exception.CorrelationException;
 import com.alibaba.fastjson.JSON;
+import com.google.gson.Gson;
 import java.util.HashMap;
 import javax.ws.rs.core.MediaType;
 import lombok.Getter;
@@ -47,7 +48,8 @@ public class Publisher {
     public boolean publish(PolicyMsg msg) throws CorrelationException {
         String content;
         try {
-            content = JSON.toJSONString(msg);
+            //content = JSON.toJSONString(msg);
+        	content = new Gson().toJson(msg);
         } catch (Exception e) {
             throw new CorrelationException("Failed to convert the message object to a json string.",
                     e);
