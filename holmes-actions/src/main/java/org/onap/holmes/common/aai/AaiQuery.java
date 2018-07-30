@@ -72,7 +72,7 @@ public class AaiQuery {
     private String getVmResourceLinks(String vserverId, String vserverName) throws CorrelationException {
         String response = getResourceLinksResponse(vserverId, vserverName);
         List linkList = aaiResponseUtil.convertJsonToVmResourceLink(response);
-        if (linkList.size() != 0) {
+        if (!linkList.isEmpty()) {
             return aaiResponseUtil.convertJsonToVmResourceLink(response).get(0).getResourceLink();
         }
         return  "";
@@ -134,7 +134,7 @@ public class AaiQuery {
         addrSplits[1] = addrSplits[0] + "-" + addrSplits[2];
         addrSplits[2] = ret;
         addrSplits[0] = "api";
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuffer = new StringBuilder();
         for (String split : addrSplits) {
             stringBuffer.append("/" + split);
         }

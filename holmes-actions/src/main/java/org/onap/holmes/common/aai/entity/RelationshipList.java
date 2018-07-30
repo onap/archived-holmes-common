@@ -28,7 +28,7 @@ public class RelationshipList {
 
     public Relationship getRelationship(String relatedTo) {
         Relationship relationship = null;
-        if(null == relationships || relationships.size() == 0)
+        if(null == relationships || relationships.isEmpty())
             return  relationship;
         for(int i = 0; i < relationships.size(); i++) {
             if (relatedTo.equals(relationships.get(i).getRelatedTo())) {
@@ -49,7 +49,7 @@ public class RelationshipList {
 
         public String getRelatedToPropertyValue(String key) {
             String value = "";
-            if (null == relatedToPropertyList || relatedToPropertyList.size() == 0) {
+            if (null == relatedToPropertyList || relatedToPropertyList.isEmpty()) {
                 return "";
             }
             for(int i = 0; i < relatedToPropertyList.size(); i++) {
@@ -63,7 +63,7 @@ public class RelationshipList {
 
         public String getRelationshipDataValue(String key) {
             String value = "";
-            if (null == relationshipDataList || relationshipDataList.size() == 0) {
+            if (null == relationshipDataList || relationshipDataList.isEmpty()) {
                 return "";
             }
             for(int i = 0; i < relationshipDataList.size(); i++) {

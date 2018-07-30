@@ -57,7 +57,7 @@ public class DcaeConfigurationParser {
         JSONObject finalJsonObject = jsonObject;
         Stream.of(jsonObject.keySet().toArray(new String[0]))
                 .filter(key -> !OBJECT_ATTRS.contains(key))
-                .forEach(key -> ret.put(key.toString(), finalJsonObject.getString(String.valueOf(key))));
+                .forEach(key -> ret.put(key, finalJsonObject.getString(String.valueOf(key))));
         return ret;
     }
 
