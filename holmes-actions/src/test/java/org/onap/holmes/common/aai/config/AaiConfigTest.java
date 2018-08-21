@@ -28,8 +28,8 @@ public class AaiConfigTest {
         String aaiVmAddr = "/aai/v11/search/nodes-query?search-node-type=vserver&filter=";
         String xTransactionId = "9999";
         String xFromAppId = "jimmy-postman";
-        assertThat(aaiVnfAddr, equalTo(AaiConfig.AAI_VNF_ADDR));
-        assertThat(aaiVmAddr, equalTo(AaiConfig.AAI_VM_ADDR));
+        assertThat(aaiVnfAddr, equalTo(AaiConfig.AaiConsts.AAI_VNF_ADDR));
+        assertThat(aaiVmAddr, equalTo(AaiConfig.AaiConsts.AAI_VM_ADDR));
         assertThat(xTransactionId, equalTo(AaiConfig.X_TRANSACTION_ID));
         assertThat(xFromAppId, equalTo(AaiConfig.X_FROMAPP_ID));
     }
