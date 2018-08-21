@@ -79,20 +79,20 @@ public class AaiQuery {
     }
 
     private String getResourceLinksResponse(String vserverId, String vserverName) throws CorrelationException {
-        String url = getBaseUrl(getMsbSuffixAddr(AaiConfig.AAI_VM_ADDR) + "vserver-id:EQUALS:" + vserverId);
+        String url = getBaseUrl(getMsbSuffixAddr(AaiConfig.AaiConsts.AAI_VM_ADDR) + "vserver-id:EQUALS:" + vserverId);
         String response = getResponse(url);
         if ("".equals(response) || "{}".equals(response)) {
-            url = getBaseUrl(getMsbSuffixAddr(AaiConfig.AAI_VM_ADDR) + "vserver-name:EQUALS:" + vserverName);
+            url = getBaseUrl(getMsbSuffixAddr(AaiConfig.AaiConsts.AAI_VM_ADDR) + "vserver-name:EQUALS:" + vserverName);
             response = getResponse(url);
         }
         return response;
     }
 
     private String getVnfDataResponse(String vnfId, String vnfName) throws CorrelationException {
-        String url = getBaseUrl(getMsbSuffixAddr(AaiConfig.AAI_VNF_ADDR)+  "/" + vnfId);
+        String url = getBaseUrl(getMsbSuffixAddr(AaiConfig.AaiConsts.AAI_VNF_ADDR)+  "/" + vnfId);
         String response = getResponse(url);
         if ("".equals(response) || "{}".equals(response)) {
-            url = getBaseUrl(getMsbSuffixAddr(AaiConfig.AAI_VNF_ADDR) + "vnf-name=" + vnfName);
+            url = getBaseUrl(getMsbSuffixAddr(AaiConfig.AaiConsts.AAI_VNF_ADDR) + "vnf-name=" + vnfName);
             response = getResponse(url);
         }
         return response;
