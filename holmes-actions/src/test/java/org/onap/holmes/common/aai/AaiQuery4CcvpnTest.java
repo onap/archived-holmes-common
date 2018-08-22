@@ -211,14 +211,15 @@ public class AaiQuery4CcvpnTest {
     }
 
     @Test
-    public void test_getServiceInstances_1() throws CorrelationException {
+    public void test_getServiceInstances_1() throws Exception {
         mockGetMethod();
         EasyMock.expect(response.getEntity()).andReturn(data.getJSONObject("service-instances-by-service-type"));
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
 
         PowerMock.replayAll();
 
-        JSONArray instances = aai.getServiceInstances("custom-1", "service-type-1");
+        JSONArray instances = (JSONArray)Whitebox.invokeMethod(aai, "getServiceInstances",
+                "custom-1", "service-type-1");
 
         PowerMock.verifyAll();
 
@@ -228,7 +229,7 @@ public class AaiQuery4CcvpnTest {
     }
 
     @Test
-    public void test_getServiceInstances_1_exception() throws CorrelationException {
+    public void test_getServiceInstances_1_exception() throws Exception {
         mockGetMethod();
         EasyMock.expect(response.getEntity()).andReturn(data.getJSONObject("service-instances-by-service-type"));
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.NOT_FOUND).times(2);
@@ -237,7 +238,8 @@ public class AaiQuery4CcvpnTest {
 
         PowerMock.replayAll();
 
-        JSONArray instances = aai.getServiceInstances("custom-1", "service-type-1");
+        JSONArray instances = (JSONArray)Whitebox.invokeMethod(aai, "getServiceInstances",
+                "custom-1", "service-type-1");
 
         PowerMock.verifyAll();
 
