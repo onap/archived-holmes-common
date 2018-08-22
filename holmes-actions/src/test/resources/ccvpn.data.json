@@ -13,10 +13,12 @@
               {
                 "related-to": "logical-link",
                 "related-link": "url of logical-link",
-                "relationship-data": {
-                  "relationship-key": "logical-link.link-name",
-                  "relationship-value": "logic-link-1"
-                }
+                "relationship-data": [
+                  {
+                    "relationship-key": "logical-link.link-name",
+                    "relationship-value": "logic-link-1"
+                  }
+                ]
               }
             ]
           }
@@ -38,10 +40,12 @@
               {
                 "related-to": "vpn-binding",
                 "related-link": "url of vpn-binding",
-                "relationship-data": {
-                  "relationship-key": "vpn-binding.vpn-id",
-                  "relationship-value": "some id"
-                }
+                "relationship-data": [
+                  {
+                    "relationship-key": "vpn-binding.vpn-id",
+                    "relationship-value": "some id"
+                  }
+                ]
               }
             ]
           }
@@ -68,10 +72,12 @@
               {
                 "related-to": "connectivity",
                 "related-link": "url of connectivity",
-                "relationship-data": {
-                  "relationship-key": "connectivity. connectivity-id",
-                  "relationship-value": "some id"
-                }
+                "relationship-data": [
+                  {
+                    "relationship-key": "connectivity. connectivity-id",
+                    "relationship-value": "some id"
+                  }
+                ]
               }
             ]
           }
@@ -106,10 +112,12 @@
               {
                 "related-to": "service-instance",
                 "related-link": "/aai/v14/business/customers/customer/{global-customer-id}/service-subscriptions/service-subscription/{service-type}/service-instances?service-instance-id=service-1",
-                "relationship-data": {
-                  "relationship-key": "service-instance.service-instance-id",
-                  "relationship-value": "some id"
-                }
+                "relationship-data": [
+                  {
+                    "relationship-key": "service-instance.service-instance-id",
+                    "relationship-value": "some id"
+                  }
+                ]
               }
             ]
           }
