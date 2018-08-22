@@ -47,6 +47,17 @@ public class AaiQuery4Ccvpn {
         headers.add("Accept", "application/json");
     }
 
+    /**
+     * Query the logic link information for AAI. This method is based on the API:
+     * https://<AAI host>:<AAI port>/aai/v14/network/network-resources/network-resource/{networkId}/pnfs/pnf/{pnfName}/p-interfaces?interface-name={ifName}&operational-status={status}
+     * provided by AAI.
+     *
+     * @param networkId
+     * @param pnfName
+     * @param ifName
+     * @param status
+     * @return the ID of the logic link
+     */
     public String getLogicLink(String networkId, String pnfName, String ifName, String status) {
         Map<String, String> params = new HashMap<>();
         params.put("networkId", networkId);
@@ -63,6 +74,19 @@ public class AaiQuery4Ccvpn {
         return extractValueFromJsonArray(linkInfo.getJSONArray("relationship-data"), "logical-link.link-name");
     }
 
+    /**
+     * Query all the instances related to a terminal point. This method is mainly based on the API:
+     * https://<AAI host>:<AAI port>/aai/v14/network/connectivities?connectivity-id={connectivityId}
+     * and
+     * https://<AAI host>:<AAI port>/aai/v14/business/customers/customer/{global-customer-id}/service-subscriptions/service-subscription/{service-type}
+     * provided by AAI. The path for getting the required instance information is: p-interface → vpn-vpnbinding → connectivity → service instance
+     *
+     * @param networkId
+     * @param pnfName
+     * @param ifName
+     * @param status
+     * @return all related service instances in JSONArray format
+     */
     public JSONArray getServiceInstances(String networkId, String pnfName, String ifName, String status) {
         try {
             JSONObject vpnBindingInfo = getVpnBindingInfo(networkId, pnfName, ifName, status);
@@ -108,8 +132,8 @@ public class AaiQuery4Ccvpn {
         }
     }
 
-    public JSONObject getVpnBindingInfo(String networkId, String pnfName,
-                                        String ifName, String status) throws CorrelationException {
+    private JSONObject getVpnBindingInfo(String networkId, String pnfName,
+                                         String ifName, String status) throws CorrelationException {
         Map<String, String> params = new HashMap();
         params.put("networkId", networkId);
         params.put("pnfName", pnfName);
@@ -123,7 +147,7 @@ public class AaiQuery4Ccvpn {
         return getInfo(JSONObject.toJSONString(response.getEntity()), "p-interface", "vpn-binding");
     }
 
-    public JSONObject getConnectivityInfo(String vpnId) throws CorrelationException {
+    private JSONObject getConnectivityInfo(String vpnId) throws CorrelationException {
         Response response = get(getHostAddr(), getPath(AaiConfig.MsbConsts.AAI_CONN_ADDR, "vpnId", vpnId));
         if (response.getStatusInfo().getFamily() != Response.Status.Family.SUCCESSFUL) {
             throw new CorrelationException("Failed to connect to AAI. Cause: "
@@ -132,7 +156,7 @@ public class AaiQuery4Ccvpn {
         return getInfo(JSONObject.toJSONString(response.getEntity()), "vpn-binding", "connectivity");
     }
 
-    public JSONObject getServiceInstanceByConn(String connectivityId) throws CorrelationException {
+    private JSONObject getServiceInstanceByConn(String connectivityId) throws CorrelationException {
         Response response = get(getHostAddr(), getPath(AaiConfig.MsbConsts.AAI_SERVICE_INSTANCE_ADDR_4_CCVPN,
                 "connectivityId", connectivityId));
         if (response.getStatusInfo().getFamily() != Response.Status.Family.SUCCESSFUL) {
@@ -142,7 +166,7 @@ public class AaiQuery4Ccvpn {
         return getInfo(JSONObject.toJSONString(response.getEntity()), "connectivity", "service-instance");
     }
 
-    public JSONArray getServiceInstances(String globalCustomerId, String serviceType) throws CorrelationException {
+    private JSONArray getServiceInstances(String globalCustomerId, String serviceType) throws CorrelationException {
         Map<String, String> params = new HashMap();
         params.put("global-customer-id", globalCustomerId);
         params.put("service-type", serviceType);
@@ -177,13 +201,13 @@ public class AaiQuery4Ccvpn {
         return ret;
     }
 
-    public Response get(String host, String path) {
+    private Response get(String host, String path) {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(host).path(path);
         return target.request().headers(getAaiHeaders()).get();
     }
 
-    public Response patch(String host, String path, Map<String, Object> body) {
+    private Response patch(String host, String path, Map<String, Object> body) {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(host).path(path);
         return target.request().headers(getAaiHeaders()).method("PATCH", Entity.json(body));
