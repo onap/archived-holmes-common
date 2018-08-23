@@ -111,7 +111,7 @@
             "relationship": [
               {
                 "related-to": "service-instance",
-                "related-link": "/aai/v14/business/customers/customer/{global-customer-id}/service-subscriptions/service-subscription/{service-type}/service-instances?service-instance-id=service-1",
+                "related-link": "/aai/v14/business/customers/customer/e151059a-d924-4629-845f-264db19e50b4/service-subscriptions/service-subscription/volte/service-instances?service-instance-id=service-1",
                 "relationship-data": [
                   {
                     "relationship-key": "service-instance.service-instance-id",
@@ -129,7 +129,7 @@
     "results": [
       {
         "service-subscription": {
-          "service-type": "{service-type}",
+          "service-type": "volte",
           "temp-ub-sub-account-id": "some sub account",
           "service-instances": {
             "service-instance": [
@@ -172,5 +172,34 @@
         }
       }
     ]
+  },
+  "service-instance": {
+    "service-instance-id": "176d9eba-1662-4289-8396-0097b50fd485",
+    "service-type": "E2E Service",
+    "service-role": "E2E Service",
+    "model-invariant-id": "c22a9483-d2b6-49cc-b1f7-ef34c93572a1",
+    "model-version-id": "71d0e396-e246-4c23-aa57-6da2043d6209",
+    "input-parameters": "This is the service instance recreation input looked up by CL.",
+    "resource-version": "1528975017336",
+    "relationship-list": {
+      "relationship": [
+        {
+          "related-to": "pnf",
+          "related-link": "/aai/v11/network/pnfs/pnf/MME-0001",
+          "relationship-data": [
+            {
+              "relationship-key": "pnf.pnf-id",
+              "relationship-value": "176d9eba-1662-4289-8396-0097b50fd466"
+            }
+          ],
+          "related-to-property": [
+            {
+              "property-key": "pnf.pnf-name",
+              "property-value": "MME-0001"
+            }
+          ]
+        }
+      ]
+    }
   }
 }

@@ -51,7 +51,7 @@ public class AaiQuery4CcvpnTest {
 
     private static JSONObject data;
 
-    private static AaiQuery4Ccvpn aai = new AaiQuery4Ccvpn();
+    private static AaiQuery4Ccvpn aai = AaiQuery4Ccvpn.newInstance();
 
     private static MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
     private static Client client;
@@ -169,6 +169,10 @@ public class AaiQuery4CcvpnTest {
         EasyMock.expect(response.getEntity()).andReturn(data.getJSONObject("service-instances-by-service-type"));
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.NOT_FOUND).times(2);
 
+        mockGetMethod();
+        EasyMock.expect(response.readEntity(String.class)).andReturn(data.getJSONObject("service-instance").toString());
+        EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.NOT_FOUND).times(2);
+
         thrown.expect(RuntimeException.class);
 
         PowerMock.replayAll();
@@ -199,6 +203,16 @@ public class AaiQuery4CcvpnTest {
         EasyMock.expect(response.getEntity()).andReturn(data.getJSONObject("service-instances-by-service-type"));
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
 
+        mockGetMethod();
+        EasyMock.expect(response.readEntity(String.class)).andReturn(data.getJSONObject("service-instance").toString());
+        EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
+        mockGetMethod();
+        EasyMock.expect(response.readEntity(String.class)).andReturn(data.getJSONObject("service-instance").toString());
+        EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
+        mockGetMethod();
+        EasyMock.expect(response.readEntity(String.class)).andReturn(data.getJSONObject("service-instance").toString());
+        EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
+
         PowerMock.replayAll();
 
         JSONArray instances = aai.getServiceInstances("network-1", "pnf-1", "interface-1", "DOWN");
@@ -208,6 +222,9 @@ public class AaiQuery4CcvpnTest {
         assertThat(instances.getJSONObject(0).getString("service-instance-id"), equalTo("some id 1"));
         assertThat(instances.getJSONObject(1).getString("service-instance-id"), equalTo("some id 2"));
         assertThat(instances.getJSONObject(2).getString("service-instance-id"), equalTo("some id 3"));
+        assertThat(instances.getJSONObject(0).getString("input-parameters"), equalTo("This is the service instance recreation input looked up by CL."));
+        assertThat(instances.getJSONObject(0).getString("globalSubscriberId"), equalTo("e151059a-d924-4629-845f-264db19e50b4"));
+        assertThat(instances.getJSONObject(0).getString("serviceType"), equalTo("volte"));
     }
 
     @Test

@@ -17,7 +17,6 @@ package org.onap.holmes.common.aai;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import lombok.extern.slf4j.Slf4j;
 import org.onap.holmes.common.aai.config.AaiConfig;
 import org.onap.holmes.common.config.MicroServiceConfig;
 import org.onap.holmes.common.exception.CorrelationException;
@@ -34,12 +33,15 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@Slf4j
 public class AaiQuery4Ccvpn {
 
     private MultivaluedMap<String, Object> headers;
 
-    public AaiQuery4Ccvpn() {
+    static public AaiQuery4Ccvpn newInstance() {
+        return new AaiQuery4Ccvpn();
+    }
+
+    private AaiQuery4Ccvpn() {
         headers = new MultivaluedHashMap<>();
         headers.add("X-TransactionId", AaiConfig.X_TRANSACTION_ID);
         headers.add("X-FromAppId", AaiConfig.X_FROMAPP_ID);
@@ -99,12 +101,36 @@ public class AaiQuery4Ccvpn {
             String serviceInstancePath = serviceInstanceInfo.getString("related-link");
             serviceInstancePath = serviceInstancePath.substring(0, serviceInstancePath.lastIndexOf('/'));
 
+            String[] params = new String[2];
+
+            Pattern pattern = Pattern.compile("/aai/v\\d+/business/customers/customer/(.+)/service-subscriptions/service-subscription/(.+)");
+            Matcher matcher = pattern.matcher(serviceInstancePath);
+            if (matcher.find()) {
+                params[0] = matcher.group(1);
+                params[1] = matcher.group(2);
+            }
+
             Response response = get(getHostAddr(), getPath(serviceInstancePath));
             if (response.getStatusInfo().getFamily() != Response.Status.Family.SUCCESSFUL) {
                 throw new RuntimeException("Failed to connect to AAI. Cause: "
                         + response.getStatusInfo().getReasonPhrase());
             }
-            return getInstances(JSONObject.toJSONString(response.getEntity()));
+            JSONArray instances = getInstances(JSONObject.toJSONString(response.getEntity()));
+            for (int i = 0; i < instances.size(); ++i) {
+                JSONObject instance = instances.getJSONObject(i);
+                Response res = get(getHostAddr(), serviceInstancePath + "/service-instances?service-instance-id="
+                        + instance.getString("service-instance-id"));
+                if (res.getStatusInfo().getFamily() != Response.Status.Family.SUCCESSFUL) {
+                    throw new RuntimeException("Failed to connect to AAI. Cause: "
+                            + response.getStatusInfo().getReasonPhrase());
+                }
+                String inputParams = JSONObject.parseObject(response.readEntity(String.class)).getString("input-parameters");
+                instance.put("input-parameters", inputParams);
+                instance.put("globalSubscriberId", params[0]);
+                instance.put("serviceType", params[1]);
+            }
+
+            return instances;
         } catch (CorrelationException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
