@@ -65,8 +65,9 @@ public class AaiQuery4Ccvpn {
         params.put("networkId", networkId);
         params.put("pnfName", pnfName);
         params.put("ifName", ifName);
-        params.put("status", status);
-        Response response = get(getHostAddr(), getPath(AaiConfig.MsbConsts.AAI_LINK_QUERY, params));
+
+        Response response = get(getHostAddr(), getPath(AaiConfig.MsbConsts.AAI_LINK_QUERY, params)
+                + (status == null ? "" : String.format("&operational-status=%s", status)));
         if (response.getStatusInfo().getFamily() != Response.Status.Family.SUCCESSFUL) {
             throw new RuntimeException("Failed to connect to AAI. Cause: "
                     + response.getStatusInfo().getReasonPhrase());

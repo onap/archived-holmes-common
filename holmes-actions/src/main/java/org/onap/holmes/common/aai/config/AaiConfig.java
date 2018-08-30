@@ -39,7 +39,7 @@ public class AaiConfig {
 
         public static final String AAI_TP_UPDATE = AAI_PREF + AAI_API_VERSION + "/network/network-resources/network-resource/{networkId}/pnfs/pnf/{pnfName}/p-interfaces/p-interface/{ifName}";
 
-        public static final String AAI_LINK_QUERY = AAI_PREF + AAI_API_VERSION + "/network-resources/network-resource/{networkId}/pnfs/pnf/{pnfName}/p-interfaces?interface-name={ifName}&operational-status={status}";
+        public static final String AAI_LINK_QUERY = AAI_PREF + AAI_API_VERSION + "/network-resources/network-resource/{networkId}/pnfs/pnf/{pnfName}/p-interfaces?interface-name={ifName}";
 
         public static final String AAI_LINK_UPDATE = AAI_PREF + AAI_API_VERSION + "/network/logical-links/logical-link/{linkName}";
 
@@ -71,7 +71,7 @@ public class AaiConfig {
 
         public static final String AAI_TP_UPDATE = AAI_MSB_PREF + AAI_NETWORK + AAI_API_VERSION + "/network-resources/network-resource/{networkId}/pnfs/pnf/{pnfName}/p-interfaces/p-interface/{ifName}";
 
-        public static final String AAI_LINK_QUERY = AAI_MSB_PREF + AAI_NETWORK + AAI_API_VERSION + "/network-resources/network-resource/{networkId}/pnfs/pnf/{pnfName}/p-interfaces?interface-name={ifName}&operational-status={status}";
+        public static final String AAI_LINK_QUERY = AAI_MSB_PREF + AAI_NETWORK + AAI_API_VERSION + "/network-resources/network-resource/{networkId}/pnfs/pnf/{pnfName}/p-interfaces?interface-name={ifName}";
 
         public static final String AAI_LINK_UPDATE = AAI_MSB_PREF + AAI_NETWORK + AAI_API_VERSION + "/logical-links/logical-link/{linkName}";
 
