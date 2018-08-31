@@ -28,6 +28,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import org.glassfish.jersey.client.HttpUrlConnectorProvider;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -237,7 +238,8 @@ public class AaiQuery4Ccvpn {
     private Response patch(String host, String path, Map<String, Object> body) {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(host).path(path);
-        return target.request().headers(getAaiHeaders()).method("PATCH", Entity.json(body));
+        return target.request().headers(getAaiHeaders()).build("PATCH", Entity.json(body))
+                .property(HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true).invoke();
     }
 
     private JSONObject getInfo(String response, String pField, String field) {

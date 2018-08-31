@@ -17,6 +17,7 @@ package org.onap.holmes.common.aai;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.easymock.EasyMock;
+import org.glassfish.jersey.client.HttpUrlConnectorProvider;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
@@ -36,6 +37,7 @@ import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -235,7 +237,7 @@ public class AaiQuery4CcvpnTest {
 
         PowerMock.replayAll();
 
-        JSONArray instances = (JSONArray)Whitebox.invokeMethod(aai, "getServiceInstances",
+        JSONArray instances = (JSONArray) Whitebox.invokeMethod(aai, "getServiceInstances",
                 "custom-1", "service-type-1");
 
         PowerMock.verifyAll();
@@ -255,7 +257,7 @@ public class AaiQuery4CcvpnTest {
 
         PowerMock.replayAll();
 
-        JSONArray instances = (JSONArray)Whitebox.invokeMethod(aai, "getServiceInstances",
+        JSONArray instances = (JSONArray) Whitebox.invokeMethod(aai, "getServiceInstances",
                 "custom-1", "service-type-1");
 
         PowerMock.verifyAll();
@@ -325,7 +327,10 @@ public class AaiQuery4CcvpnTest {
 
     private void mockPatchMethod() {
         initCommonMock();
-        EasyMock.expect(builder.method(EasyMock.anyObject(String.class), EasyMock.anyObject(Entity.class))).andReturn(response);
+        Invocation invocation = PowerMock.createMock(Invocation.class);
+        EasyMock.expect(builder.build(EasyMock.anyObject(String.class), EasyMock.anyObject(Entity.class))).andReturn(invocation);
+        EasyMock.expect(invocation.property(HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true)).andReturn(invocation);
+        EasyMock.expect(invocation.invoke()).andReturn(response);
     }
 
     private void initCommonMock() {
