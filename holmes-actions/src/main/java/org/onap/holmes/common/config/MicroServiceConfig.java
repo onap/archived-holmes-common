@@ -1,12 +1,12 @@
 /**
  * Copyright  2017 ZTE Corporation.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,9 +17,11 @@ package org.onap.holmes.common.config;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
+
 import lombok.extern.slf4j.Slf4j;
 import org.onap.holmes.common.constant.AlarmConst;
 
@@ -84,7 +86,7 @@ public class MicroServiceConfig {
     public static String getMsbServerAddrWithHttpPrefix() {
         String[] addrInfo = getMsbIpAndPort();
         String ret = addrInfo[0] + ":" + addrInfo[1];
-        if (!ret.startsWith(AlarmConst.HTTP) || !ret.startsWith(AlarmConst.HTTPS)){
+        if (!ret.startsWith(AlarmConst.HTTP) || !ret.startsWith(AlarmConst.HTTPS)) {
             ret = AlarmConst.HTTP + ret;
         }
         return ret;
@@ -98,7 +100,7 @@ public class MicroServiceConfig {
         String[] serviceAddrInfo = null;
         String info = getServiceAddrInfoFromDcaeConsulByHostName(getEnv(HOSTNAME));
         log.info("Got the service information of \"" + getEnv(HOSTNAME) + "\" from Consul. The response is " + info + ".");
-        if (info != null && !info.isEmpty()){
+        if (info != null && !info.isEmpty()) {
             serviceAddrInfo = split(info);
         } else {
             serviceAddrInfo = split(getEnv(HOSTNAME));
@@ -109,7 +111,7 @@ public class MicroServiceConfig {
     private static String[] split(String addr) {
         String ip;
         String port = "80";
-        if (addr.lastIndexOf(":") == -1){
+        if (addr.lastIndexOf(":") == -1) {
             ip = addr;
         } else if (addr.lastIndexOf(":") < 5 && addr.indexOf("://") != -1) {
             ip = addr.substring(addr.indexOf("//") + 2);    //remove the http(s):// prefix
@@ -117,7 +119,7 @@ public class MicroServiceConfig {
             ip = addr.substring(addr.indexOf("://") != -1 ? addr.indexOf("//") + 2 : 0, addr.lastIndexOf(":"));
             port = addr.substring(addr.lastIndexOf(":") + 1);
         }
-        return new String[] {ip, port};
+        return new String[]{ip, port};
     }
 
 }

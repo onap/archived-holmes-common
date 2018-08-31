@@ -101,8 +101,7 @@ public class AaiQuery {
     private String getBaseUrl(String suffixUrl) {
         String url = "";
         try {
-            String[] msbUrl = MicroServiceConfig.getMsbServerAddrWithHttpPrefix().split(":");
-            url = msbUrl[0] + ":" + msbUrl[1] + suffixUrl;
+            url = MicroServiceConfig.getMsbServerAddrWithHttpPrefix()+ suffixUrl;
         } catch (Exception e) {
             log.info("Failed to get msb address");
         }
