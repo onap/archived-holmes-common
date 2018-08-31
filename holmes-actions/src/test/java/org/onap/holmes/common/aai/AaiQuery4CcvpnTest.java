@@ -121,11 +121,12 @@ public class AaiQuery4CcvpnTest {
     }
 
     @Test
-    public void test_getLogicLink_exception() {
+    public void test_getLogicLink_exception() throws CorrelationException {
         mockGetMethod();
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.NOT_FOUND).times(2);
+        EasyMock.expect(response.readEntity(String.class)).andReturn("Error!");
 
-        thrown.expect(RuntimeException.class);
+        thrown.expect(CorrelationException.class);
 
         PowerMock.replayAll();
 
@@ -138,9 +139,9 @@ public class AaiQuery4CcvpnTest {
     }
 
     @Test
-    public void test_getLogicLink() {
+    public void test_getLogicLink() throws CorrelationException {
         mockGetMethod();
-        EasyMock.expect(response.getEntity()).andReturn(data.getJSONObject("logic-link"));
+        EasyMock.expect(response.readEntity(String.class)).andReturn(data.getJSONObject("logic-link").toJSONString());
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
 
         PowerMock.replayAll();
@@ -156,19 +157,21 @@ public class AaiQuery4CcvpnTest {
     @Test
     public void test_getServiceInstances_exception() {
         mockGetMethod();
-        EasyMock.expect(response.getEntity()).andReturn(data.getJSONObject("vpn-binding"));
+        EasyMock.expect(response.readEntity(String.class)).andReturn(data.getJSONObject("vpn-binding").toJSONString());
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
 
         mockGetMethod();
-        EasyMock.expect(response.getEntity()).andReturn(data.getJSONObject("connectivity"));
+        EasyMock.expect(response.readEntity(String.class)).andReturn(data.getJSONObject("connectivity").toJSONString());
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
 
         mockGetMethod();
-        EasyMock.expect(response.getEntity()).andReturn(data.getJSONObject("service-instance-by-connectivity"));
+        EasyMock.expect(response.readEntity(String.class))
+                .andReturn(data.getJSONObject("service-instance-by-connectivity").toJSONString());
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
 
         mockGetMethod();
-        EasyMock.expect(response.getEntity()).andReturn(data.getJSONObject("service-instances-by-service-type"));
+        EasyMock.expect(response.readEntity(String.class))
+                .andReturn(data.getJSONObject("service-instances-by-service-type").toJSONString());
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.NOT_FOUND).times(2);
 
         mockGetMethod();
@@ -190,19 +193,21 @@ public class AaiQuery4CcvpnTest {
     @Test
     public void test_getServiceInstances() {
         mockGetMethod();
-        EasyMock.expect(response.getEntity()).andReturn(data.getJSONObject("vpn-binding"));
+        EasyMock.expect(response.readEntity(String.class)).andReturn(data.getJSONObject("vpn-binding").toJSONString());
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
 
         mockGetMethod();
-        EasyMock.expect(response.getEntity()).andReturn(data.getJSONObject("connectivity"));
+        EasyMock.expect(response.readEntity(String.class)).andReturn(data.getJSONObject("connectivity").toJSONString());
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
 
         mockGetMethod();
-        EasyMock.expect(response.getEntity()).andReturn(data.getJSONObject("service-instance-by-connectivity"));
+        EasyMock.expect(response.readEntity(String.class))
+                .andReturn(data.getJSONObject("service-instance-by-connectivity").toJSONString());
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
 
         mockGetMethod();
-        EasyMock.expect(response.getEntity()).andReturn(data.getJSONObject("service-instances-by-service-type"));
+        EasyMock.expect(response.readEntity(String.class))
+                .andReturn(data.getJSONObject("service-instances-by-service-type").toJSONString());
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
 
         mockGetMethod();
@@ -232,7 +237,8 @@ public class AaiQuery4CcvpnTest {
     @Test
     public void test_getServiceInstances_1() throws Exception {
         mockGetMethod();
-        EasyMock.expect(response.getEntity()).andReturn(data.getJSONObject("service-instances-by-service-type"));
+        EasyMock.expect(response.readEntity(String.class))
+                .andReturn(data.getJSONObject("service-instances-by-service-type").toJSONString());
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
 
         PowerMock.replayAll();
@@ -250,7 +256,7 @@ public class AaiQuery4CcvpnTest {
     @Test
     public void test_getServiceInstances_1_exception() throws Exception {
         mockGetMethod();
-        EasyMock.expect(response.getEntity()).andReturn(data.getJSONObject("service-instances-by-service-type"));
+        EasyMock.expect(response.readEntity(String.class)).andReturn("Failed to get the service instance by type.");
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.NOT_FOUND).times(2);
 
         thrown.expect(CorrelationException.class);
@@ -283,6 +289,7 @@ public class AaiQuery4CcvpnTest {
     public void test_updateTerminalPointStatus_exception() throws CorrelationException {
         mockPatchMethod();
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.NOT_FOUND).times(2);
+        EasyMock.expect(response.readEntity(String.class)).andReturn("Failed to update the TP information.");
 
         thrown.expect(CorrelationException.class);
 
@@ -309,6 +316,7 @@ public class AaiQuery4CcvpnTest {
     public void test_updateLogicLinkStatus_exception() throws CorrelationException {
         mockPatchMethod();
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.NOT_FOUND).times(2);
+        EasyMock.expect(response.readEntity(String.class)).andReturn("Failed to update the logic link information.");
 
         thrown.expect(CorrelationException.class);
 
