@@ -14,7 +14,6 @@
 
 package org.onap.holmes.common.aai;
 
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.onap.holmes.common.aai.config.AaiConfig;
@@ -50,6 +49,7 @@ public class AaiQuery4Ccvpn {
         headers.add("X-FromAppId", AaiConfig.X_FROMAPP_ID);
         headers.add("Authorization", AaiConfig.getAuthenticationCredentials());
         headers.add("Accept", "application/json");
+        headers.add("Content-Type", "application/json");
     }
 
     /**
@@ -220,7 +220,7 @@ public class AaiQuery4Ccvpn {
             Response response = target.request().headers(getAaiHeaders()).build("PATCH", Entity.json(body))
                     .property(HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true).invoke();
             if (response.getStatusInfo().getFamily() != Response.Status.Family.SUCCESSFUL) {
-                throw new CorrelationException("Failed to connecto to AAI. \nCause: "
+                throw new CorrelationException("Failed to connect to AAI. \nCause: "
                         + response.getStatusInfo().getReasonPhrase() + "\nDetails: \n"
                         + getErrorMsg(String.format("%s%s", host, path), body, response));
             }

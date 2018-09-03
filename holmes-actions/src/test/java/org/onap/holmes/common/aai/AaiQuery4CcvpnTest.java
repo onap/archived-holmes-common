@@ -90,6 +90,7 @@ public class AaiQuery4CcvpnTest {
         headers.add("X-FromAppId", AaiConfig.X_FROMAPP_ID);
         headers.add("Authorization", AaiConfig.getAuthenticationCredentials());
         headers.add("Accept", "application/json");
+        headers.add("Content-Type", "application/json");
         Whitebox.setInternalState(aai, "headers", headers);
     }
 
