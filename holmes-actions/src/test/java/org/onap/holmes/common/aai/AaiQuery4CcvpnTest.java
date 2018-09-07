@@ -18,7 +18,11 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.easymock.EasyMock;
 import org.glassfish.jersey.client.HttpUrlConnectorProvider;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.onap.holmes.common.aai.config.AaiConfig;
@@ -28,16 +32,23 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
-import javax.ws.rs.client.*;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.Invocation.Builder;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -245,7 +256,7 @@ public class AaiQuery4CcvpnTest {
         PowerMock.replayAll();
 
         JSONArray instances = (JSONArray) Whitebox.invokeMethod(aai, "getServiceInstances",
-                "custom-1", "service-type-1");
+                                                                "custom-1", "service-type-1");
 
         PowerMock.verifyAll();
 
@@ -265,7 +276,7 @@ public class AaiQuery4CcvpnTest {
         PowerMock.replayAll();
 
         JSONArray instances = (JSONArray) Whitebox.invokeMethod(aai, "getServiceInstances",
-                "custom-1", "service-type-1");
+                                                                "custom-1", "service-type-1");
 
         PowerMock.verifyAll();
 
@@ -276,6 +287,10 @@ public class AaiQuery4CcvpnTest {
 
     @Test
     public void test_updateTerminalPointStatus() throws CorrelationException {
+        mockGetMethod();
+        EasyMock.expect(response.readEntity(String.class)).andReturn(data.toJSONString());
+        EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
+
         mockPatchMethod();
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
 
@@ -288,6 +303,10 @@ public class AaiQuery4CcvpnTest {
 
     @Test
     public void test_updateTerminalPointStatus_exception() throws CorrelationException {
+        mockGetMethod();
+        EasyMock.expect(response.readEntity(String.class)).andReturn(data.toJSONString());
+        EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
+
         mockPatchMethod();
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.NOT_FOUND).times(2);
         EasyMock.expect(response.readEntity(String.class)).andReturn("Failed to update the TP information.");
@@ -303,6 +322,10 @@ public class AaiQuery4CcvpnTest {
 
     @Test
     public void test_updateLogicLinkStatus() throws CorrelationException {
+        mockGetMethod();
+        EasyMock.expect(response.readEntity(String.class)).andReturn(data.toJSONString());
+        EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
+
         mockPatchMethod();
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
 
@@ -315,6 +338,10 @@ public class AaiQuery4CcvpnTest {
 
     @Test
     public void test_updateLogicLinkStatus_exception() throws CorrelationException {
+        mockGetMethod();
+        EasyMock.expect(response.readEntity(String.class)).andReturn(data.toJSONString());
+        EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
+
         mockPatchMethod();
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.NOT_FOUND).times(2);
         EasyMock.expect(response.readEntity(String.class)).andReturn("Failed to update the logic link information.");

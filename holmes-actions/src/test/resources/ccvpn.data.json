@@ -1,129 +1,114 @@
 {
+  "resource-version": "1536316872154",
   "logic-link": {
-    "results": [
-      {
-        "p-interface": {
-          "interface-name": "{ifName}",
-          "network-ref": "some ref",
-          "transparent": "some value",
-          "operational-status ": "{status}",
-          "speed-value": "some speed",
-          "relationship-list": {
-            "relationship": [
+    "p-interface": {
+      "interface-name": "{ifName}",
+      "network-ref": "some ref",
+      "transparent": "some value",
+      "operational-status ": "{status}",
+      "speed-value": "some speed",
+      "relationship-list": {
+        "relationship": [
+          {
+            "related-to": "logical-link",
+            "related-link": "url of logical-link",
+            "relationship-data": [
               {
-                "related-to": "logical-link",
-                "related-link": "url of logical-link",
-                "relationship-data": [
-                  {
-                    "relationship-key": "logical-link.link-name",
-                    "relationship-value": "logic-link-1"
-                  }
-                ]
+                "relationship-key": "logical-link.link-name",
+                "relationship-value": "logic-link-1"
               }
             ]
           }
-        }
+        ]
       }
-    ]
+    }
   },
   "vpn-binding": {
-    "results": [
-      {
-        "p-interface": {
-          "interface-name": "{ifName}",
-          "network-ref": "some ref",
-          "transparent": "some value",
-          "operational-status ": "{status}",
-          "speed-value": "some speed",
-          "relationship-list": {
-            "relationship": [
+    "p-interface": {
+      "interface-name": "{ifName}",
+      "network-ref": "some ref",
+      "transparent": "some value",
+      "operational-status ": "{status}",
+      "speed-value": "some speed",
+      "relationship-list": {
+        "relationship": [
+          {
+            "related-to": "vpn-binding",
+            "related-link": "url of vpn-binding",
+            "relationship-data": [
               {
-                "related-to": "vpn-binding",
-                "related-link": "url of vpn-binding",
-                "relationship-data": [
-                  {
-                    "relationship-key": "vpn-binding.vpn-id",
-                    "relationship-value": "some id"
-                  }
-                ]
+                "relationship-key": "vpn-binding.vpn-id",
+                "relationship-value": "some id"
               }
             ]
           }
-        }
+        ]
       }
-    ]
+    }
   },
   "connectivity": {
-    "results": [
-      {
-        "vpn-binding": {
-          "vpn-id": "{vpnId}",
-          "vpn-name": "some name",
-          "access-provider-id": "provider id",
-          "access-client-id": "client id",
-          "access-topology-id": "topology id",
-          "src-access-node-id": "src node id",
-          "src-access-ltp-id": "src ltp id",
-          "dst-access-node-id": "dst node id",
-          "dst-access-ltp-id": "dst ltp id",
-          "operational-status": "some status",
-          "relationship-list": {
-            "relationship": [
+    "vpn-binding": {
+      "vpn-id": "{vpnId}",
+      "vpn-name": "some name",
+      "access-provider-id": "provider id",
+      "access-client-id": "client id",
+      "access-topology-id": "topology id",
+      "src-access-node-id": "src node id",
+      "src-access-ltp-id": "src ltp id",
+      "dst-access-node-id": "dst node id",
+      "dst-access-ltp-id": "dst ltp id",
+      "operational-status": "some status",
+      "relationship-list": {
+        "relationship": [
+          {
+            "related-to": "connectivity",
+            "related-link": "url of connectivity",
+            "relationship-data": [
               {
-                "related-to": "connectivity",
-                "related-link": "url of connectivity",
-                "relationship-data": [
-                  {
-                    "relationship-key": "connectivity. connectivity-id",
-                    "relationship-value": "some id"
-                  }
-                ]
+                "relationship-key": "connectivity.connectivity-id",
+                "relationship-value": "some id"
               }
             ]
           }
-        }
+        ]
       }
-    ]
+    }
   },
   "service-instance-by-connectivity": {
-    "results": [
-      {
-        "connectivity": {
-          "connectivity-id": "{connectivityId}",
-          "bandwidth-profile-name": "some profile",
-          "vpn-type": "some type",
-          "cir": "cir value",
-          "eir": "eir value",
-          "cbs": "cbs value",
-          "ebs": "ebs value",
-          "color-aware": "color value",
-          "coupling-flag": "flag value",
-          "etht-svc-name": "some name",
-          "access-provider-id": "provider id",
-          "access-client-id": "client id",
-          "access-topology-id": "topology id",
-          "access-node-id": "node id",
-          "access-ltp-id": "ltp id",
-          "connectivity-selflink": "some URL",
-          "cvlan ": "some tag",
-          "operational-status": "some status",
-          "relationship-list": {
-            "relationship": [
+    "connectivity": {
+      "connectivity-id": "{connectivityId}",
+      "bandwidth-profile-name": "some profile",
+      "vpn-type": "some type",
+      "cir": "cir value",
+      "eir": "eir value",
+      "cbs": "cbs value",
+      "ebs": "ebs value",
+      "color-aware": "color value",
+      "coupling-flag": "flag value",
+      "etht-svc-name": "some name",
+      "access-provider-id": "provider id",
+      "access-client-id": "client id",
+      "access-topology-id": "topology id",
+      "access-node-id": "node id",
+      "access-ltp-id": "ltp id",
+      "connectivity-selflink": "some URL",
+      "cvlan ": "some tag",
+      "operational-status": "some status",
+      "relationship-list": {
+        "relationship": [
+          {
+            "related-to": "service-instance",
+            "related-link": "/aai/v14/business/customers/customer/e151059a-d924-4629-845f-264db19e50b4/service-subscriptions/service-subscription/volte/service-instances?service-instance-id=service-1",
+            "relationship-data": [
               {
-                "related-to": "service-instance",
-                "related-link": "/aai/v14/business/customers/customer/e151059a-d924-4629-845f-264db19e50b4/service-subscriptions/service-subscription/volte/service-instances?service-instance-id=service-1",
-                "relationship-data": [
-                  {
-                    "relationship-key": "service-instance.service-instance-id",
-                    "relationship-value": "some id"
-                  }
-                ]
+                "relationship-key": "service-instance.service-instance-id",
+                "relationship-value": "some id"
               }
             ]
           }
-        }
+        ]
       }
-    ]
+    }
   },
   "service-instances-by-service-type": {
     "results": [
