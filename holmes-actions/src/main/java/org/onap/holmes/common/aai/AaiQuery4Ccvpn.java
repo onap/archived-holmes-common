@@ -95,7 +95,7 @@ public class AaiQuery4Ccvpn {
                     "vpn-binding.vpn-id");
             JSONObject connectivityInfo = getConnectivityInfo(vpnBindingId);
             String connectivityId = extractValueFromJsonArray(connectivityInfo.getJSONArray("relationship-data"),
-                    "connectivity. connectivity-id");
+                                                              "connectivity.connectivity-id");
             JSONObject serviceInstanceInfo = getServiceInstanceByConn(connectivityId);
             String serviceInstancePath = serviceInstanceInfo.getString("related-link");
             serviceInstancePath = serviceInstancePath.substring(0, serviceInstancePath.lastIndexOf('/'));
@@ -133,14 +133,19 @@ public class AaiQuery4Ccvpn {
         params.put("networkId", networkId);
         params.put("pnfName", pnfName);
         params.put("ifName", ifName);
-        patch(getHostAddr(), getPath(AaiConfig.MsbConsts.AAI_TP_UPDATE, params), body);
+        Response r = get(getHostAddr(), getPath(AaiConfig.MsbConsts.AAI_TP_UPDATE, params));
+        JSONObject jsonObject = JSONObject.parseObject(r.readEntity(String.class));
+        body.put("resource-version", jsonObject.get("resource-version").toString());
+
+        put(getHostAddr(), getPath(AaiConfig.MsbConsts.AAI_TP_UPDATE, params), body);
     }
 
     public void updateLogicLinkStatus(String linkName, Map<String, Object> body) throws CorrelationException {
-        patch(getHostAddr(),
-                getPath(AaiConfig.MsbConsts.AAI_TP_UPDATE, "linkName", linkName), body);
+        Response r = get(getHostAddr(), getPath(AaiConfig.MsbConsts.AAI_LINK_UPDATE, "linkName", linkName));
+        JSONObject jsonObject = JSONObject.parseObject(r.readEntity(String.class));
+        body.put("resource-version", jsonObject.get("resource-version").toString());
+        put(getHostAddr(), getPath(AaiConfig.MsbConsts.AAI_LINK_UPDATE, "linkName", linkName), body);
     }
-
     private JSONObject getVpnBindingInfo(String networkId, String pnfName,
                                          String ifName, String status) throws CorrelationException {
         Map<String, String> params = new HashMap();
@@ -213,11 +218,11 @@ public class AaiQuery4Ccvpn {
         }
     }
 
-    private void patch(String host, String path, Map<String, Object> body) throws CorrelationException {
+    private void put(String host, String path, Map<String, Object> body) throws CorrelationException {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(host).path(path);
         try {
-            Response response = target.request().headers(getAaiHeaders()).build("PATCH", Entity.json(body))
+            Response response = target.request().headers(getAaiHeaders()).build("PUT", Entity.json(body))
                     .property(HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true).invoke();
             if (response.getStatusInfo().getFamily() != Response.Status.Family.SUCCESSFUL) {
                 throw new CorrelationException("Failed to connect to AAI. \nCause: "
@@ -233,8 +238,11 @@ public class AaiQuery4Ccvpn {
     }
 
     private JSONObject getInfo(String response, String pField, String field) {
-        JSONArray results = extractJsonArray(JSONObject.parseObject(response), "results");
-        JSONObject pInterface = extractJsonObject(results.getJSONObject(0), pField);
+        JSONObject jObject = JSONObject.parseObject(response);
+        JSONObject pInterface = extractJsonObject(jObject, pField);
+        if (pInterface == null) {
+            pInterface = jObject;
+        }
         JSONObject relationshipList = extractJsonObject(pInterface, "relationship-list");
         JSONArray relationShip = extractJsonArray(relationshipList, "relationship");
         if (relationShip != null) {
