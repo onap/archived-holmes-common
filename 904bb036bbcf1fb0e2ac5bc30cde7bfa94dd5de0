@@ -1,0 +1,9 @@
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review+1: Gaurav Agrawal <gaurav.agrawal@huawei.com>
+Code-Review+1: Xin Miao <xin.miao@huawei.com>
+Code-Review+2: Guangrong Fu <fu.guangrong@zte.com.cn>
+Submitted-by: Guangrong Fu <fu.guangrong@zte.com.cn>
+Submitted-at: Mon, 10 Sep 2018 00:42:29 +0000
+Reviewed-on: https://gerrit.onap.org/r/65187
+Project: holmes/common
+Branch: refs/heads/master
