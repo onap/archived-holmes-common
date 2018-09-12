@@ -14,7 +14,6 @@
 
 package org.onap.holmes.common.aai;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.easymock.EasyMock;
 import org.glassfish.jersey.client.HttpUrlConnectorProvider;
@@ -194,16 +193,16 @@ public class AaiQuery4CcvpnTest {
 
         PowerMock.replayAll();
 
-        JSONArray instances = aai.getServiceInstances("network-1", "pnf-1", "interface-1", "DOWN");
+        JSONObject instance = aai.getServiceInstance("network-1", "pnf-1", "interface-1", "DOWN");
 
         PowerMock.verifyAll();
 
-        assertThat(instances, equalTo("logic-link-1"));
+        assertThat(instance, equalTo("logic-link-1"));
 
     }
 
     @Test
-    public void test_getServiceInstances() {
+    public void test_getServiceInstance() {
         mockGetMethod();
         EasyMock.expect(response.readEntity(String.class)).andReturn(data.getJSONObject("vpn-binding").toJSONString());
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
@@ -222,32 +221,19 @@ public class AaiQuery4CcvpnTest {
                 .andReturn(data.getJSONObject("service-instances-by-service-type").toJSONString());
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
 
-        mockGetMethod();
-        EasyMock.expect(response.readEntity(String.class)).andReturn(data.getJSONObject("service-instance").toString());
-        EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
-        mockGetMethod();
-        EasyMock.expect(response.readEntity(String.class)).andReturn(data.getJSONObject("service-instance").toString());
-        EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
-        mockGetMethod();
-        EasyMock.expect(response.readEntity(String.class)).andReturn(data.getJSONObject("service-instance").toString());
-        EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
-
         PowerMock.replayAll();
 
-        JSONArray instances = aai.getServiceInstances("network-1", "pnf-1", "interface-1", "DOWN");
+        JSONObject instance = aai.getServiceInstance("network-1", "pnf-1", "interface-1", "DOWN");
 
         PowerMock.verifyAll();
 
-        assertThat(instances.getJSONObject(0).getString("service-instance-id"), equalTo("some id 1"));
-        assertThat(instances.getJSONObject(1).getString("service-instance-id"), equalTo("some id 2"));
-        assertThat(instances.getJSONObject(2).getString("service-instance-id"), equalTo("some id 3"));
-        assertThat(instances.getJSONObject(0).getString("input-parameters"), equalTo("This is the service instance recreation input looked up by CL."));
-        assertThat(instances.getJSONObject(0).getString("globalSubscriberId"), equalTo("e151059a-d924-4629-845f-264db19e50b4"));
-        assertThat(instances.getJSONObject(0).getString("serviceType"), equalTo("volte"));
+        assertThat(instance.getString("service-instance-id"), equalTo("some id 1"));
+        assertThat(instance.getString("globalSubscriberId"), equalTo("e151059a-d924-4629-845f-264db19e50b4"));
+        assertThat(instance.getString("serviceType"), equalTo("volte"));
     }
 
     @Test
-    public void test_getServiceInstances_1() throws Exception {
+    public void test_getServiceInstance_1() throws Exception {
         mockGetMethod();
         EasyMock.expect(response.readEntity(String.class))
                 .andReturn(data.getJSONObject("service-instances-by-service-type").toJSONString());
@@ -255,18 +241,16 @@ public class AaiQuery4CcvpnTest {
 
         PowerMock.replayAll();
 
-        JSONArray instances = (JSONArray) Whitebox.invokeMethod(aai, "getServiceInstances",
-                                                                "custom-1", "service-type-1");
+        JSONObject instance = Whitebox.invokeMethod(aai, "getServiceInstance",
+                                                    "custom-1", "service-type-1");
 
         PowerMock.verifyAll();
 
-        assertThat(instances.getJSONObject(0).getString("service-instance-id"), equalTo("some id 1"));
-        assertThat(instances.getJSONObject(1).getString("service-instance-id"), equalTo("some id 2"));
-        assertThat(instances.getJSONObject(2).getString("service-instance-id"), equalTo("some id 3"));
+        assertThat(instance.getString("service-instance-id"), equalTo("some id 1"));
     }
 
     @Test
-    public void test_getServiceInstances_1_exception() throws Exception {
+    public void test_getServiceInstance_1_exception() throws Exception {
         mockGetMethod();
         EasyMock.expect(response.readEntity(String.class)).andReturn("Failed to get the service instance by type.");
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.NOT_FOUND).times(2);
@@ -275,14 +259,14 @@ public class AaiQuery4CcvpnTest {
 
         PowerMock.replayAll();
 
-        JSONArray instances = (JSONArray) Whitebox.invokeMethod(aai, "getServiceInstances",
-                                                                "custom-1", "service-type-1");
+        JSONObject instance = Whitebox.invokeMethod(aai, "getServiceInstance",
+                                                    "custom-1", "service-type-1");
 
         PowerMock.verifyAll();
 
-        assertThat(instances.getJSONObject(0).getString("service-instance-id"), equalTo("some id 1"));
-        assertThat(instances.getJSONObject(1).getString("service-instance-id"), equalTo("some id 2"));
-        assertThat(instances.getJSONObject(2).getString("service-instance-id"), equalTo("some id 3"));
+        assertThat(instance.getString("service-instance-id"), equalTo("some id 1"));
+        assertThat(instance.getString("service-instance-id"), equalTo("some id 2"));
+        assertThat(instance.getString("service-instance-id"), equalTo("some id 3"));
     }
 
     @Test
