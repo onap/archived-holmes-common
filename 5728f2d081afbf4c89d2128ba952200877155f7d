@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_378ccb35",
+        "filename": "holmes-actions/src/main/java/org/onap/holmes/common/aai/config/AaiConfig.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1515
+      },
+      "writtenOn": "2018-09-13T01:23:28Z",
+      "side": 1,
+      "message": "This section is intended for AAI queries via MSB. I\u0027m afraid it\u0027ll not be working if we change it. Unless you\u0027re quite sure that you are calling all APIs directly using AAI IP ( even if so, you are supposed to update the AaiConst section), do NOT change the MSB related section. If you have further questions, email me, please.",
+      "range": {
+        "startLine": 60,
+        "startChar": 4,
+        "endLine": 87,
+        "endChar": 5
+      },
+      "revId": "5728f2d081afbf4c89d2128ba952200877155f7d",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
