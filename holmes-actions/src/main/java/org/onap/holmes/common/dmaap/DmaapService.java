@@ -15,6 +15,7 @@
  */
 package org.onap.holmes.common.dmaap;
 
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -186,12 +187,13 @@ public class DmaapService {
     }
 
     private void deleteRequestId(PolicyMsg policyMsg){
-        String status = policyMsg.getClosedLoopEventStatus().toString();
-        if(status == "ABATED"){
+    	EVENT_STATUS status = policyMsg.getClosedLoopEventStatus();
+        if(EVENT_STATUS.ABATED.equals(status)) {
             String requestId = policyMsg.getRequestID();
-            for(String key: alarmUniqueRequestID.keySet()){
-                if(alarmUniqueRequestID.get(key).equals(requestId)){
-                    alarmUniqueRequestID.remove(key);
+            for(Entry<String, String> kv: alarmUniqueRequestID.entrySet()) {
+                if(kv.getValue().equals(requestId)) {
+                    alarmUniqueRequestID.remove(kv.getKey());
+                    break;
                 }
             }
             log.info("Clear alarm, requestId deleted successful");
