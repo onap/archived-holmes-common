@@ -25,15 +25,19 @@ import javax.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.onap.holmes.common.constant.AlarmConst;
 
+import java.util.regex.Pattern;
+
 @Slf4j
 public class MicroServiceConfig {
 
     final static public String CONSUL_ADDR_SUF = ":8500/v1/catalog/service/";
     final static public String CONSUL_HOST = "CONSUL_HOST";
     final static public String HOSTNAME = "HOSTNAME";
+    final static public String POD_IP = "POD_IP";
     final static public String CONFIG_BINDING_SERVICE = "CONFIG_BINDING_SERVICE";
     final static public String DOCKER_HOST = "DOCKER_HOST";
     final static public String MSB_ADDR = "MSB_ADDR";
+    final static public Pattern IP_REG = Pattern.compile("(http(s)?://)?(\\d+\\.\\d+\\.\\d+\\.\\d+)(:(\\d+))?");
 
     public static String getEnv(String name) {
         String value = System.getenv(name);
@@ -100,12 +104,20 @@ public class MicroServiceConfig {
         String[] serviceAddrInfo = null;
         String info = getServiceAddrInfoFromDcaeConsulByHostName(getEnv(HOSTNAME));
         log.info("Got the service information of \"" + getEnv(HOSTNAME) + "\" from Consul. The response is " + info + ".");
+
         if (info != null && !info.isEmpty()) {
+            if (!isIpAddress(info)) {
+                info = getEnv(POD_IP);
+            }
             serviceAddrInfo = split(info);
         } else {
             serviceAddrInfo = split(getEnv(HOSTNAME));
         }
         return serviceAddrInfo;
+    }
+
+    private static boolean isIpAddress(String info) {
+        return IP_REG.matcher(info).matches();
     }
 
     private static String[] split(String addr) {
