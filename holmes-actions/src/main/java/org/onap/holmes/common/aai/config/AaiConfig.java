@@ -35,7 +35,7 @@ public class AaiConfig {
 
         private static final String AAI_PREF = "/aai/";
 
-        public static final String AAI_VNF_ADDR = AAI_PREF + AAI_API_VERSION + "/network/generic-vnfs/generic-vnf";
+        public static final String AAI_VNF_ADDR = AAI_PREF + "v11/network/generic-vnfs/generic-vnf";
 
         public static final String AAI_TP_UPDATE = AAI_PREF + AAI_API_VERSION + "/network/pnfs/pnf/{pnfName}/p-interfaces/p-interface/nodeId-{pnfName}-ltpId-{ifName}";
 
@@ -53,7 +53,7 @@ public class AaiConfig {
 
         public static final String AAI_SERVICE_INSTANCES_ADDR_4_CCVPN = AAI_PREF + AAI_API_VERSION + "/business/customers/customer/{global-customer-id}/service-subscriptions/service-subscription/{service-type}";
 
-        public static final String AAI_VM_ADDR = AAI_PREF + AAI_API_VERSION + "/search/nodes-query?search-node-type=vserver&filter=";
+        public static final String AAI_VM_ADDR = AAI_PREF + "v11/search/nodes-query?search-node-type=vserver&filter=";
     }
 
 
