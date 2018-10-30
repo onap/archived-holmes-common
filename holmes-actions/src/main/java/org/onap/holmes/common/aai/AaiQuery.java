@@ -60,13 +60,7 @@ public class AaiQuery {
     private String getVmUrl(String vserverId, String vserverName) throws CorrelationException {
         String url = "";
         String resourceLinkUrl = getVmResourceLinks(vserverId, vserverName);
-        String baseUrl = getBaseUrl("");
-        if (baseUrl.startsWith("http")) {
-            url = baseUrl + getMsbSuffixAddr(resourceLinkUrl);
-        } else {
-            url = baseUrl + resourceLinkUrl;
-        }
-        return url;
+        return getBaseUrl("") + resourceLinkUrl;
     }
 
     private String getVmResourceLinks(String vserverId, String vserverName) throws CorrelationException {
@@ -79,20 +73,20 @@ public class AaiQuery {
     }
 
     private String getResourceLinksResponse(String vserverId, String vserverName) throws CorrelationException {
-        String url = getBaseUrl(getMsbSuffixAddr(AaiConfig.AaiConsts.AAI_VM_ADDR) + "vserver-id:EQUALS:" + vserverId);
+        String url = getBaseUrl(AaiConfig.AaiConsts.AAI_VM_ADDR + "vserver-id:EQUALS:" + vserverId);
         String response = getResponse(url);
         if ("".equals(response) || "{}".equals(response)) {
-            url = getBaseUrl(getMsbSuffixAddr(AaiConfig.AaiConsts.AAI_VM_ADDR) + "vserver-name:EQUALS:" + vserverName);
+            url = getBaseUrl(AaiConfig.AaiConsts.AAI_VM_ADDR + "vserver-name:EQUALS:" + vserverName);
             response = getResponse(url);
         }
         return response;
     }
 
     private String getVnfDataResponse(String vnfId, String vnfName) throws CorrelationException {
-        String url = getBaseUrl(getMsbSuffixAddr(AaiConfig.AaiConsts.AAI_VNF_ADDR)+  "/" + vnfId);
+        String url = getBaseUrl(AaiConfig.AaiConsts.AAI_VNF_ADDR+  "/" + vnfId);
         String response = getResponse(url);
         if ("".equals(response) || "{}".equals(response)) {
-            url = getBaseUrl(getMsbSuffixAddr(AaiConfig.AaiConsts.AAI_VNF_ADDR) + "vnf-name=" + vnfName);
+            url = getBaseUrl(AaiConfig.AaiConsts.AAI_VNF_ADDR + "?vnf-name=" + vnfName);
             response = getResponse(url);
         }
         return response;
