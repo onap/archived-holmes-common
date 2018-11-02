@@ -99,7 +99,7 @@ public class AaiQueryTest {
         headers.put("X-FromAppId", AaiConfig.X_FROMAPP_ID);
         headers.put("Authorization", AaiConfig.getAuthenticationCredentials());
         headers.put("Accept", "application/json");
-        String url = "https://aai.onap/aai/v11/cloud-infrastructure";
+        String url = "https://aai.onap:8443/aai/v11/cloud-infrastructure";
         HttpResponse httpResponse = PowerMock.createMock(HttpResponse.class);
         CloseableHttpClient httpClient = PowerMock.createMock(CloseableHttpClient.class);
         when(HttpsUtils.getHttpClient(30000)).thenReturn(httpClient);
@@ -136,7 +136,7 @@ public class AaiQueryTest {
         headers.put("X-FromAppId", AaiConfig.X_FROMAPP_ID);
         headers.put("Authorization", AaiConfig.getAuthenticationCredentials());
         headers.put("Accept", "application/json");
-        String url = "https://aai.onap/aai/v11/cloud-infrastructure";
+        String url = "https://aai.onap:8443/aai/v11/cloud-infrastructure";
         CloseableHttpClient httpClient = PowerMock.createMock(CloseableHttpClient.class);
         when(HttpsUtils.getHttpClient(30000)).thenReturn(httpClient);
         HttpGet httpGet = new HttpGet(url);
@@ -291,7 +291,7 @@ public class AaiQueryTest {
         String actual = Whitebox.invokeMethod(aaiQuery,"getBaseUrl", "/url");
         PowerMock.verifyAll();
 
-        assertThat(actual, equalTo("https://aai.onap/url"));
+        assertThat(actual, equalTo("https://aai.onap:8443/url"));
     }
 
     @Test

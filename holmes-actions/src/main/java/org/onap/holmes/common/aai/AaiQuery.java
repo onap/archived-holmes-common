@@ -94,7 +94,7 @@ public class AaiQuery {
     }
 
     private String getBaseUrl(String suffixUrl) {
-        return "https://aai.onap" + suffixUrl;
+        return "https://aai.onap:8443" + suffixUrl;
     }
 
     private String getMsbSuffixAddr(String suffixUrl) {
