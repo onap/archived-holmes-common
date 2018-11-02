@@ -38,6 +38,7 @@ public class MicroServiceConfig {
     final static public String DOCKER_HOST = "DOCKER_HOST";
     final static public String MSB_ADDR = "MSB_ADDR";
     final static public Pattern IP_REG = Pattern.compile("(http(s)?://)?(\\d+\\.\\d+\\.\\d+\\.\\d+)(:(\\d+))?");
+    final static public String AAI_HOSTNAME = "aai.onap";
 
     public static String getEnv(String name) {
         String value = System.getenv(name);
@@ -94,6 +95,10 @@ public class MicroServiceConfig {
             ret = AlarmConst.HTTP + ret;
         }
         return ret;
+    }
+
+    public static String getAaiAddr() {
+        return AlarmConst.HTTPS + AAI_HOSTNAME;
     }
 
     public static String[] getMsbIpAndPort() {

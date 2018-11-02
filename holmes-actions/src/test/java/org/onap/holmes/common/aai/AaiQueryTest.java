@@ -38,12 +38,14 @@ import org.onap.holmes.common.exception.CorrelationException;
 import org.onap.holmes.common.utils.HttpsUtils;
 import org.powermock.api.easymock.PowerMock;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
 
 @PrepareForTest({AaiQuery.class, HttpsUtils.class, MicroServiceConfig.class, HttpGet.class})
+@PowerMockIgnore("javax.net.ssl.*")
 @RunWith(PowerMockRunner.class)
 public class AaiQueryTest {
 
@@ -97,7 +99,7 @@ public class AaiQueryTest {
         headers.put("X-FromAppId", AaiConfig.X_FROMAPP_ID);
         headers.put("Authorization", AaiConfig.getAuthenticationCredentials());
         headers.put("Accept", "application/json");
-        String url = "http://10.96.33.33:80/aai/v11/cloud-infrastructure";
+        String url = "https://aai.onap/aai/v11/cloud-infrastructure";
         HttpResponse httpResponse = PowerMock.createMock(HttpResponse.class);
         CloseableHttpClient httpClient = PowerMock.createMock(CloseableHttpClient.class);
         when(HttpsUtils.getHttpClient(30000)).thenReturn(httpClient);
@@ -105,9 +107,6 @@ public class AaiQueryTest {
         PowerMock.expectNew(HttpGet.class, url).andReturn(httpGet);
         when(HttpsUtils.get(httpGet, headers, httpClient)).thenReturn(httpResponse);
         when(HttpsUtils.extractResponseEntity(httpResponse)).thenReturn("{}");
-
-        PowerMockito.mockStatic(MicroServiceConfig.class);
-        when(MicroServiceConfig.getMsbServerAddrWithHttpPrefix()).thenReturn("http://10.96.33.33:80");
 
         PowerMock.expectPrivate(aaiQuery, "getVmResourceLinks", "test1", "test2")
                 .andReturn("/aai/v11/cloud-infrastructure");
@@ -121,6 +120,7 @@ public class AaiQueryTest {
     }
 
     @Test
+
     public void testAaiQuery_getAaiVmData_httpsutils_exception() throws Exception {
         PowerMock.resetAll();
         thrown.expect(CorrelationException.class);
@@ -136,14 +136,13 @@ public class AaiQueryTest {
         headers.put("X-FromAppId", AaiConfig.X_FROMAPP_ID);
         headers.put("Authorization", AaiConfig.getAuthenticationCredentials());
         headers.put("Accept", "application/json");
-        String url = "http://10.96.33.33:80/aai/v11/cloud-infrastructure";
+        String url = "https://aai.onap/aai/v11/cloud-infrastructure";
         CloseableHttpClient httpClient = PowerMock.createMock(CloseableHttpClient.class);
         when(HttpsUtils.getHttpClient(30000)).thenReturn(httpClient);
         HttpGet httpGet = new HttpGet(url);
         PowerMock.expectNew(HttpGet.class, url).andReturn(httpGet);
         when(HttpsUtils.get(httpGet, headers, httpClient)).thenThrow(new CorrelationException(""));
         PowerMockito.mockStatic(MicroServiceConfig.class);
-        when(MicroServiceConfig.getMsbServerAddrWithHttpPrefix()).thenReturn("http://10.96.33.33:80");
         PowerMock.expectPrivate(aaiQuery, "getVmResourceLinks", "test1", "test2")
                 .andReturn("/aai/v11/cloud-infrastructure");
         PowerMock.expectPrivate(httpClient,"close");
@@ -282,51 +281,17 @@ public class AaiQueryTest {
     }
 
     @Test
-    public void testAaiQuery_getBaseUrl_msb() throws Exception {
-        PowerMock.resetAll();
-        aaiQuery = new AaiQuery();
-
-        PowerMockito.mockStatic(MicroServiceConfig.class);
-        when(MicroServiceConfig.getMsbServerAddrWithHttpPrefix()).thenReturn("http://10.96.33.33:80");
-        when(MicroServiceConfig.getServiceConfigInfoFromCBS("nihao")).thenReturn("");
-
-        PowerMock.replayAll();
-        String actual = Whitebox.invokeMethod(aaiQuery,"getBaseUrl", "/url");
-        PowerMock.verifyAll();
-        assertThat(actual, equalTo("http://10.96.33.33:80/url"));
-    }
-
-    @Test
     public void testAaiQuery_getBaseUrl_aaiurl() throws Exception {
         PowerMock.resetAll();
         aaiQuery = new AaiQuery();
 
         PowerMockito.mockStatic(MicroServiceConfig.class);
-        when(MicroServiceConfig.getMsbServerAddrWithHttpPrefix()).thenThrow(new NullPointerException());
-        when(MicroServiceConfig.getServiceConfigInfoFromCBS("aai_config")).thenReturn("aai");
 
         PowerMock.replayAll();
-        String actual = Whitebox.invokeMethod(aaiQuery,"getBaseUrl", "url");
-        System.out.println(actual);
+        String actual = Whitebox.invokeMethod(aaiQuery,"getBaseUrl", "/url");
         PowerMock.verifyAll();
-        assertThat(actual, equalTo("https://aaiurl"));
-    }
 
-    @Test
-    public void testAaiQuery_getBaseUrl_exception() throws Exception {
-        PowerMock.resetAll();
-        aaiQuery = new AaiQuery();
-
-        PowerMockito.mockStatic(MicroServiceConfig.class);
-        when(MicroServiceConfig.getMsbServerAddrWithHttpPrefix()).thenThrow(new NullPointerException());
-        when(MicroServiceConfig.getServiceConfigInfoFromCBS("aai_config"))
-                .thenThrow(new NullPointerException());
-
-        PowerMock.replayAll();
-        String actual = Whitebox.invokeMethod(aaiQuery,"getBaseUrl", "url");
-        System.out.println(actual);
-        PowerMock.verifyAll();
-        assertThat(actual, equalTo(""));
+        assertThat(actual, equalTo("https://aai.onap/url"));
     }
 
     @Test

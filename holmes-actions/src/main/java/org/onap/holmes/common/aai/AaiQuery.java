@@ -1,11 +1,11 @@
 /**
  * Copyright 2017 ZTE Corporation.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed under the License
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
  * or implied. See the License for the specific language governing permissions and limitations under
@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -69,7 +70,7 @@ public class AaiQuery {
         if (!linkList.isEmpty()) {
             return aaiResponseUtil.convertJsonToVmResourceLink(response).get(0).getResourceLink();
         }
-        return  "";
+        return "";
     }
 
     private String getResourceLinksResponse(String vserverId, String vserverName) throws CorrelationException {
@@ -83,7 +84,7 @@ public class AaiQuery {
     }
 
     private String getVnfDataResponse(String vnfId, String vnfName) throws CorrelationException {
-        String url = getBaseUrl(AaiConfig.AaiConsts.AAI_VNF_ADDR+  "/" + vnfId);
+        String url = getBaseUrl(AaiConfig.AaiConsts.AAI_VNF_ADDR + "/" + vnfId);
         String response = getResponse(url);
         if ("".equals(response) || "{}".equals(response)) {
             url = getBaseUrl(AaiConfig.AaiConsts.AAI_VNF_ADDR + "?vnf-name=" + vnfName);
@@ -93,21 +94,7 @@ public class AaiQuery {
     }
 
     private String getBaseUrl(String suffixUrl) {
-        String url = "";
-        try {
-            url = MicroServiceConfig.getMsbServerAddrWithHttpPrefix()+ suffixUrl;
-        } catch (Exception e) {
-            log.info("Failed to get msb address");
-        }
-        if ("".equals(url)) {
-            try {
-                url = "https://" + MicroServiceConfig.getServiceConfigInfoFromCBS("aai_config").replace("http://", "")
-                        + suffixUrl;
-            } catch (Exception e) {
-                log.info("Failed to get the address of A&AI.", e);
-            }
-        }
-        return url;
+        return "https://aai.onap" + suffixUrl;
     }
 
     private String getMsbSuffixAddr(String suffixUrl) {
@@ -118,7 +105,7 @@ public class AaiQuery {
         String[] conv = addrSplits[2].split("-");
         addrSplits[2] = conv[0];
         if (conv.length > 1) {
-            for(int i = 1; i < conv.length; i++) {
+            for (int i = 1; i < conv.length; i++) {
                 addrSplits[2] = addrSplits[2] + conv[i].substring(0, 1).toUpperCase() + conv[i]
                         .substring(1);
             }
