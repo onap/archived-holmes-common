@@ -37,8 +37,8 @@ public class Alarm implements AplusData, Cloneable, Serializable {
     public static final byte EVENT_RAISED = 0;
 
     private static final long serialVersionUID = 4520003737132012000L;
-    private final static Date clearedServerTime = null;
-    private final Map<Integer, Integer> linkIdNodeIdxMap = new HashMap<Integer, Integer>();
+    private static final Date clearedServerTime = null;
+    private final Map<Integer, Integer> linkIdNodeIdxMap = new HashMap<>();
     private byte eventType = EVENT_RAISED;
     private long id = 0L;
     private String alarmKey = "";
@@ -64,9 +64,9 @@ public class Alarm implements AplusData, Cloneable, Serializable {
     private boolean rootAlarmFlag = false;
     private int linkId = -1;
     private int nodeIdx = -1;
-    private Set<Integer> linkIds = new HashSet<Integer>();
-    private HashMap<String, Integer> priorityMap = new HashMap<String, Integer>();
-    private HashMap<String, Integer> rootAlarmTypeMap = new HashMap<String, Integer>();
+    private Set<Integer> linkIds = new HashSet<>();
+    private HashMap<String, Integer> priorityMap = new HashMap<>();
+    private HashMap<String, Integer> rootAlarmTypeMap = new HashMap<>();
     private int rootAlarmType = -1;
     private boolean keyAlarmFlag = false;
     private int keyAlarmType = -1;
@@ -86,7 +86,7 @@ public class Alarm implements AplusData, Cloneable, Serializable {
      * number of locations in otherIdIdx (otherIdIdx) with the site):1,
      */
     public int CompareLinkPosition(Map<Integer, Integer> otherIdIdx) {
-        Set<Integer> myIdSet = new HashSet<Integer>();
+        Set<Integer> myIdSet = new HashSet<>();
         myIdSet.addAll(this.linkIdNodeIdxMap.keySet());
         myIdSet.retainAll(otherIdIdx.keySet());
 
@@ -175,10 +175,7 @@ public class Alarm implements AplusData, Cloneable, Serializable {
 
 
     public boolean containsPriority(String ruleId) {
-        if (priorityMap.keySet().contains(ruleId)) {
-            return true;
-        }
-        return false;
+        return priorityMap.keySet().contains(ruleId);
     }
 
     public int getPriority(String ruleId) {
@@ -190,11 +187,8 @@ public class Alarm implements AplusData, Cloneable, Serializable {
     }
 
     public int getRootAlarmType(String ruleId) {
-        Integer rootAlarmType = this.rootAlarmTypeMap.get(ruleId);
-        if (rootAlarmType == null) {
-            rootAlarmType = -1;
-        }
-        return rootAlarmType;
+        Integer rootAlarmTypeVar = this.rootAlarmTypeMap.get(ruleId);
+        return (rootAlarmTypeVar == null) ? -1 : rootAlarmTypeVar;
     }
 
 }

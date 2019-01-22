@@ -71,7 +71,7 @@ public class AaiResponseUtil {
         return vmEntity;
     }
 
-    public VnfEntity convertJsonToVnfEntity(String responseJson) throws IOException {
+    public VnfEntity convertJsonToVnfEntity(String responseJson) {
         JSONObject jsonObject = JSON.parseObject(responseJson);
 
         if (jsonObject.isEmpty()) {

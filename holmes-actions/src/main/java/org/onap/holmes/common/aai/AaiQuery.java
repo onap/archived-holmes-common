@@ -22,13 +22,11 @@ import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.jvnet.hk2.annotations.Service;
 import org.onap.holmes.common.aai.config.AaiConfig;
 import org.onap.holmes.common.aai.entity.VmEntity;
 import org.onap.holmes.common.aai.entity.VnfEntity;
-import org.onap.holmes.common.config.MicroServiceConfig;
 import org.onap.holmes.common.exception.CorrelationException;
 import org.onap.holmes.common.utils.HttpsUtils;
 
@@ -59,7 +57,6 @@ public class AaiQuery {
     }
 
     private String getVmUrl(String vserverId, String vserverName) throws CorrelationException {
-        String url = "";
         String resourceLinkUrl = getVmResourceLinks(vserverId, vserverName);
         return getBaseUrl("") + resourceLinkUrl;
     }

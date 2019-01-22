@@ -38,7 +38,7 @@ public class AaiQuery4Ccvpn {
 
     private MultivaluedMap<String, Object> headers;
 
-    static public AaiQuery4Ccvpn newInstance() {
+    public static AaiQuery4Ccvpn newInstance() {
         return new AaiQuery4Ccvpn();
     }
 
@@ -171,8 +171,8 @@ public class AaiQuery4Ccvpn {
 
     private String getPath(String urlTemplate, Map<String, String> pathParams) {
         String url = urlTemplate;
-        for (String key : pathParams.keySet()) {
-            url = url.replaceAll("\\{" + key + "\\}", pathParams.get(key));
+        for(Map.Entry<String, String> entry : pathParams.entrySet()){
+            url = url.replaceAll("\\{" + entry.getKey() + "\\}", entry.getValue());
         }
         return url;
     }

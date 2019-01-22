@@ -17,7 +17,6 @@ package org.onap.holmes.common.api.entity;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.io.Closeable;
 import java.util.Date;
 import java.util.Properties;
 
