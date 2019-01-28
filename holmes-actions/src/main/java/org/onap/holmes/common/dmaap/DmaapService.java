@@ -39,8 +39,8 @@ public class DmaapService {
 
     @Inject
     private AaiQuery aaiQuery;
-    public static final ConcurrentHashMap<String, String> loopControlNames = new ConcurrentHashMap<>();
-    public static final ConcurrentHashMap<String, String> alarmUniqueRequestID = new ConcurrentHashMap<>();
+    protected static final ConcurrentHashMap<String, String> loopControlNames = new ConcurrentHashMap<>();
+    protected static final ConcurrentHashMap<String, String> alarmUniqueRequestID = new ConcurrentHashMap<>();
 
     public void publishPolicyMsg(PolicyMsg policyMsg, String dmaapConfigKey) {
         try {
