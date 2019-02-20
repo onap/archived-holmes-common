@@ -98,7 +98,7 @@ public class MicroServiceConfig {
     }
 
     public static String getAaiAddr() {
-        return AlarmConst.HTTPS + AAI_HOSTNAME;
+        return AlarmConst.HTTPS + AAI_HOSTNAME + ":8443";
     }
 
     public static String[] getMsbIpAndPort() {
