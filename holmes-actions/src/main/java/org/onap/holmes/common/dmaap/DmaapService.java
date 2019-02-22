@@ -70,19 +70,9 @@ public class DmaapService {
         if (rootAlarm.getAlarmIsCleared() == PolicyMassgeConstant.POLICY_MESSAGE_ONSET) {
             enrichVnfInfo(vmEntity, childAlarm, policyMsg);
             policyMsg.setClosedLoopEventStatus(EVENT_STATUS.ONSET);
-            try {
-                policyMsg.getAai().put("vserver.in-maint", vmEntity.getInMaint());
-            } catch (Exception e) {
-                log.error("Failed to parse the field \"in-maint\". A boolean string (\"true\"/\"false\")"
-                        + " is expected but the actual value is " + vmEntity.getInMaint() + ".", e);
-            }
-            try {
-                policyMsg.getAai().put("vserver.is-closed-loop-disabled",
+            policyMsg.getAai().put("vserver.in-maint", vmEntity.getInMaint());
+            policyMsg.getAai().put("vserver.is-closed-loop-disabled",
                         vmEntity.getClosedLoopDisable());
-            } catch (Exception e) {
-                log.error("Failed to parse the field \"is-closed-loop-disabled\". A boolean string (\"true\"/\"false\")"
-                        + " is expected but the actual value is " + vmEntity.getClosedLoopDisable() + ".", e);
-            }
             policyMsg.getAai().put("vserver.prov-status", vmEntity.getProvStatus());
             policyMsg.getAai().put("vserver.resource-version", vmEntity.getResourceVersion());
         } else {
@@ -196,7 +186,7 @@ public class DmaapService {
                     break;
                 }
             }
-            log.info("Clear alarm, requestId deleted successful");
+            log.info("An alarm is cleared and the corresponding requestId is deleted successfully");
         }
     }
 }
