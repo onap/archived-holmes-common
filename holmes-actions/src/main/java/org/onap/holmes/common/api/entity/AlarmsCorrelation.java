@@ -18,9 +18,12 @@ package org.onap.holmes.common.api.entity;
 import com.google.gson.annotations.SerializedName;
 import java.util.Date;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class AlarmsCorrelation {
 
@@ -47,4 +50,18 @@ public class AlarmsCorrelation {
     private long reserve2 = -1;
 
     private long reserve3 = -1;
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("[");
+        sb.append("ruleId=").append(ruleId).append(",");
+        sb.append("ruleInfo=").append(ruleInfo).append(",");
+        sb.append("createTime=").append(createTime == null ? null : createTime.toString()).append(",");
+        sb.append("parentAlarmId=").append(parentAlarmId).append(",");
+        sb.append("childAlarmId=").append(childAlarmId).append(",");
+        sb.append("reserve1=").append(reserve1).append(",");
+        sb.append("reserve2=").append(reserve2).append(",");
+        sb.append("reserve3=").append(reserve3).append("]");
+        return sb.toString();
+    }
 }

@@ -35,6 +35,7 @@ public class MSBRegisterUtilTest {
 
     @Rule
     public PowerMockRule powerMockRule = new PowerMockRule();
+
     private MSBRegisterUtil msbRegisterUtil = new MSBRegisterUtil();
 
     @Test

@@ -110,7 +110,6 @@ public class AlarmsCorrelationTest {
         assertThat(alarmsCorrelation.getReserve3(), equalTo(reserve3));
     }
 
-
     @Test
     public void testToString() throws Exception {
         final AlarmsCorrelation alarmsCorrelationTemp = new AlarmsCorrelation();
@@ -119,14 +118,4 @@ public class AlarmsCorrelationTest {
         alarmsCorrelation.setRuleId(ruleId);
         assertThat(alarmsCorrelation.toString(), equalTo(alarmsCorrelationTemp.toString()));
     }
-
-
-    @Test
-    public void testEqualsAndHashCode() throws Exception {
-        final AlarmsCorrelation alarmsCorrelationTemp = new AlarmsCorrelation();
-        String ruleId = "ruleId";
-        alarmsCorrelationTemp.setRuleId(ruleId);
-        alarmsCorrelation.setRuleId(ruleId);
-        assertThat(alarmsCorrelation, equalTo(alarmsCorrelationTemp));
-    }
-} 
+}

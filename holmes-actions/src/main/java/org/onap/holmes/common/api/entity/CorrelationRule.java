@@ -61,23 +61,23 @@ public class CorrelationRule implements Cloneable {
             throw new InternalError(e);
         }
 
-        r.rid = rid == null ? null : rid;
-        r.name = name == null ? null : name;
-        r.description = description == null ? null : description;
+        r.rid = rid;
+        r.name = name;
+        r.description = description;
         r.enabled = enabled;
         r.templateID = templateID;
-        r.engineID = engineID == null ? null : engineID;
-        r.engineType = engineType == null ? null : engineType;
-        r.creator = creator == null ? null : creator;
-        r.modifier = modifier  == null ? null : modifier;
+        r.engineID = engineID;
+        r.engineType = engineType;
+        r.creator = creator;
+        r.modifier = modifier;
         r.params = params == null ? null : (Properties) params.clone();
-        r.content = content  == null ? null : content;
-        r.vendor = vendor  == null ? null : vendor;
+        r.content = content;
+        r.vendor = vendor;
         r.createTime = createTime == null ? null : (Date) createTime.clone();
         r.updateTime = updateTime == null ? null : (Date) updateTime.clone();
-        r.packageName = packageName == null ? null : packageName;
-        r.closedControlLoopName = closedControlLoopName == null ? null : closedControlLoopName;
-        r.engineInstance = engineInstance == null ? null : engineInstance;
+        r.packageName = packageName;
+        r.closedControlLoopName = closedControlLoopName;
+        r.engineInstance = engineInstance;
 
         return r;
     }
