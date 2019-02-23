@@ -18,11 +18,18 @@ package org.onap.holmes.common.dmaap;
 import static org.easymock.EasyMock.anyObject;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
+import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,6 +41,8 @@ import org.onap.holmes.common.aai.entity.RelationshipList.RelationshipData;
 import org.onap.holmes.common.aai.entity.VmEntity;
 import org.onap.holmes.common.aai.entity.VnfEntity;
 import org.onap.holmes.common.api.stat.VesAlarm;
+import org.onap.holmes.common.dcae.DcaeConfigurationsCache;
+import org.onap.holmes.common.dcae.utils.DcaeConfigurationParser;
 import org.onap.holmes.common.dmaap.entity.PolicyMsg;
 import org.onap.holmes.common.dmaap.entity.PolicyMsg.EVENT_STATUS;
 import org.onap.holmes.common.exception.CorrelationException;
@@ -183,7 +192,7 @@ public class DmaapServiceTest {
     }
 
     @Test
-    public void testDmaapService_getEnrichedPolicyMsg_ok() throws Exception {
+    public void testDmaapService_getEnrichedPolicyMsg_onset() throws Exception {
         PowerMock.resetAll();
         VmEntity vmEntity = new VmEntity();
         vmEntity.setInMaint(false);
@@ -204,9 +213,94 @@ public class DmaapServiceTest {
                 .invokeMethod(dmaapService, "getEnrichedPolicyMsg", vmEntity, vesAlarm, vesAlarm, "loopName");
         PowerMock.verifyAll();
 
-        assertThat(actual.getClosedLoopControlName(), equalTo(null));
+        assertThat(actual.getClosedLoopControlName(), nullValue());
         assertThat(actual.getAai().get("vserver.prov-status"), equalTo("prov"));
-        assertThat(actual.getAai().get("vserver.vserver-name2") == null, equalTo(true));
+        assertThat(actual.getAai().get("vserver.vserver-name2"), nullValue());
         assertThat(actual.getAai().get("generic-vnf.service-instance-id"), equalTo(""));
+    }
+
+    @Test
+    public void testDmaapService_getEnrichedPolicyMsg_abated() throws Exception {
+        PowerMock.resetAll();
+        VmEntity vmEntity = new VmEntity();
+        vmEntity.setInMaint(false);
+        vmEntity.setClosedLoopDisable(true);
+        vmEntity.setProvStatus("prov");
+        vmEntity.setResourceVersion("kkkk");
+        VesAlarm vesAlarm = new VesAlarm();
+        vesAlarm.setEventId("11111");
+        vesAlarm.setEventName("3333");
+        vesAlarm.setSourceId("111");
+        vesAlarm.setStartEpochMicrosec(11111L);
+        vesAlarm.setLastEpochMicrosec(21111L);
+        vesAlarm.setAlarmIsCleared(PolicyMassgeConstant.POLICY_MESSAGE_ABATED);
+
+        PowerMock.expectPrivate(dmaapService, "getVnfEntity", anyObject(String.class),
+                anyObject(String.class)).andReturn(null).anyTimes();
+
+        PowerMock.replayAll();
+        PolicyMsg actual = Whitebox
+                .invokeMethod(dmaapService, "getEnrichedPolicyMsg", vmEntity, vesAlarm, vesAlarm, "loopName");
+        PowerMock.verifyAll();
+
+        assertThat(actual.getClosedLoopControlName(), nullValue());
+        assertThat(actual.getAai().get("vserver.prov-status"), nullValue());
+        assertThat(actual.getAai().get("vserver.vserver-name2"), nullValue());
+        assertThat(actual.getAai().get("generic-vnf.service-instance-id"), nullValue());
+    }
+
+    @Test
+    public void testPublishPolicyMsg_onset() throws Exception {
+        PowerMock.resetAll();
+        Publisher publisher = PowerMock.createPartialMock(Publisher.class, "publish", PolicyMsg.class);
+        PolicyMsg policyMsg = new PolicyMsg();
+        policyMsg.setClosedLoopEventStatus(EVENT_STATUS.ONSET);
+        PowerMock.expectNew(Publisher.class).andReturn(publisher);
+        EasyMock.expect(publisher.publish(policyMsg)).andReturn(true);
+
+        DcaeConfigurationsCache.setDcaeConfigurations(
+                DcaeConfigurationParser.parse(readConfigurationsFromFile("dcae.config.json")));
+
+        PowerMock.replayAll();
+        dmaapService.publishPolicyMsg(policyMsg, "sec_fault_unsecure");
+        PowerMock.verifyAll();
+
+    }
+
+    @Test
+    public void testPublishPolicyMsg_abated() throws Exception {
+        PowerMock.resetAll();
+        Publisher publisher = PowerMock.createPartialMock(Publisher.class, "publish", PolicyMsg.class);
+        PolicyMsg policyMsg = new PolicyMsg();
+        policyMsg.setClosedLoopEventStatus(EVENT_STATUS.ABATED);
+        policyMsg.setRequestID("testRequestid");
+        DmaapService.alarmUniqueRequestID.put("testAlarmId", "testRequestid");
+        PowerMock.expectNew(Publisher.class).andReturn(publisher);
+        EasyMock.expect(publisher.publish(policyMsg)).andReturn(true);
+
+        DcaeConfigurationsCache.setDcaeConfigurations(
+                DcaeConfigurationParser.parse(readConfigurationsFromFile("dcae.config.json")));
+
+        PowerMock.replayAll();
+        dmaapService.publishPolicyMsg(policyMsg, "sec_fault_unsecure");
+        PowerMock.verifyAll();
+
+    }
+
+    private String readConfigurationsFromFile(String fileName) throws URISyntaxException, FileNotFoundException {
+        URL url = DmaapServiceTest.class.getClassLoader().getResource(fileName);
+        File configFile = new File(new URI(url.toString()).getPath());
+        BufferedReader br = new BufferedReader(new FileReader(configFile));
+
+        final StringBuilder sb = new StringBuilder();
+        br.lines().forEach(line -> {
+            sb.append(line);
+        });
+        try {
+            br.close();
+        } catch (IOException e) {
+            // Do nothing
+        }
+        return sb.toString();
     }
 }

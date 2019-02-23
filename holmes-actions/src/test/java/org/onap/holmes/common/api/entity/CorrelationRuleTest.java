@@ -150,4 +150,19 @@ public class CorrelationRuleTest {
         correlationRule.setEngineInstance(engineInstance);
         assertThat(correlationRule.getEngineInstance(), equalTo(engineInstance));
     }
+
+    @Test
+    public void getterAndSetter4ClosedControlLoopName(){
+        final String closedControlLoopName = "closedControlLoopName";
+        correlationRule.setClosedControlLoopName(closedControlLoopName);
+        assertThat(correlationRule.getClosedControlLoopName(), equalTo(closedControlLoopName));
+    }
+
+    @Test
+    public void testClone() {
+        final String rid = "rid";
+        correlationRule.setRid(rid);
+        CorrelationRule rule = (CorrelationRule) correlationRule.clone();
+        assertThat(rule.getRid(), equalTo(rid));
+    }
 } 

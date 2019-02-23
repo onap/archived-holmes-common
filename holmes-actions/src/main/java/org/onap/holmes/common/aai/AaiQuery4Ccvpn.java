@@ -34,6 +34,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class AaiQuery4Ccvpn {
 
     private MultivaluedMap<String, Object> headers;
@@ -41,6 +44,10 @@ public class AaiQuery4Ccvpn {
     public static AaiQuery4Ccvpn newInstance() {
         return new AaiQuery4Ccvpn();
     }
+
+    private static final String EMPTY_STR = "";
+
+    private static final JSONObject EMPTY_JSON = new JSONObject();
 
     private AaiQuery4Ccvpn() {
         headers = new MultivaluedHashMap<>();
@@ -71,6 +78,11 @@ public class AaiQuery4Ccvpn {
         Response response = get(getHostAddr(), getPath(AaiConfig.MsbConsts.AAI_LINK_QUERY, params)
                 + (status == null ? "" : String.format("&operational-status=%s", status)));
         JSONObject linkInfo = getInfo(response.readEntity(String.class), "p-interface", "logical-link");
+        if (linkInfo == null) {
+            log.warn(String.format("Link information is missing from AAI. Method: [getLogicLink], " +
+                    "params: [networkId - %s, pnfName - %s, ifName - %s].", networkId, pnfName, ifName));
+            return EMPTY_STR;
+        }
         return extractValueFromJsonArray(linkInfo.getJSONArray("relationship-data"), "logical-link.link-name");
     }
 
@@ -90,12 +102,30 @@ public class AaiQuery4Ccvpn {
     public JSONObject getServiceInstance(String networkId, String pnfName, String ifName, String status) {
         try {
             JSONObject vpnBindingInfo = getVpnBindingInfo(networkId, pnfName, ifName, status);
+            if (vpnBindingInfo == null) {
+                log.warn(String.format("VPN binding information is missing from AAI. " +
+                        "Method: [getServiceInstance], params: [networkId - %s, pnfName - %s, " +
+                        "ifName - %s, status - %s].", networkId, pnfName, ifName, status));
+                return EMPTY_JSON;
+            }
             String vpnBindingId = extractValueFromJsonArray(vpnBindingInfo.getJSONArray("relationship-data"),
-                                                            "vpn-binding.vpn-id");
+                    "vpn-binding.vpn-id");
             JSONObject connectivityInfo = getConnectivityInfo(vpnBindingId);
+            if (connectivityInfo == null) {
+                log.warn(String.format("Connectivity information is missing from AAI. " +
+                        "Method: [getServiceInstance], params: [networkId - %s, pnfName - %s, " +
+                        "ifName - %s, status - %s].", networkId, pnfName, ifName, status));
+                return EMPTY_JSON;
+            }
             String connectivityId = extractValueFromJsonArray(connectivityInfo.getJSONArray("relationship-data"),
-                                                              "connectivity.connectivity-id");
+                    "connectivity.connectivity-id");
             JSONObject serviceInstanceInfo = getServiceInstanceByConn(connectivityId);
+            if (serviceInstanceInfo == null) {
+                log.warn(String.format("Service instance information is missing from AAI. " +
+                        "Method: [getServiceInstance], params: [networkId - %s, pnfName - %s, " +
+                        "ifName - %s, status - %s].", networkId, pnfName, ifName, status));
+                return EMPTY_JSON;
+            }
             String serviceInstancePath = serviceInstanceInfo.getString("related-link");
 
             Response response = get(getHostAddr(), getPath(serviceInstancePath));
@@ -103,8 +133,8 @@ public class AaiQuery4Ccvpn {
 
             String[] params = new String[2];
             Pattern pattern = Pattern.compile("/aai/v\\d+/business/customers/customer/(.+)" +
-                                                      "/service-subscriptions/service-subscription/(.+)" +
-                                                      "/service-instances/service-instance/(.+)");
+                    "/service-subscriptions/service-subscription/(.+)" +
+                    "/service-instances/service-instance/(.+)");
             Matcher matcher = pattern.matcher(serviceInstancePath);
             if (matcher.find()) {
                 params[0] = matcher.group(1);
@@ -157,7 +187,7 @@ public class AaiQuery4Ccvpn {
 
     private JSONObject getServiceInstanceByConn(String connectivityId) throws CorrelationException {
         Response response = get(getHostAddr(), getPath(AaiConfig.MsbConsts.AAI_SERVICE_INSTANCE_ADDR_4_CCVPN,
-                                                       "connectivityId", connectivityId));
+                "connectivityId", connectivityId));
         return getInfo(response.readEntity(String.class), "connectivity", "service-instance");
     }
 
@@ -171,7 +201,7 @@ public class AaiQuery4Ccvpn {
 
     private String getPath(String urlTemplate, Map<String, String> pathParams) {
         String url = urlTemplate;
-        for(Map.Entry<String, String> entry : pathParams.entrySet()){
+        for (Map.Entry<String, String> entry : pathParams.entrySet()) {
             url = url.replaceAll("\\{" + entry.getKey() + "\\}", entry.getValue());
         }
         return url;
@@ -199,15 +229,15 @@ public class AaiQuery4Ccvpn {
             Response response = target.request().headers(getAaiHeaders()).get();
             if (response.getStatusInfo().getFamily() != Response.Status.Family.SUCCESSFUL) {
                 throw new CorrelationException("Failed to connect to AAI. \nCause: "
-                                                       + response.getStatusInfo().getReasonPhrase() + "\nDetails: \n"
-                                                       + getErrorMsg(String.format("%s%s", host, path), null, response));
+                        + response.getStatusInfo().getReasonPhrase() + "\nDetails: \n"
+                        + getErrorMsg(String.format("%s%s", host, path), null, response));
             }
             return response;
         } catch (CorrelationException e) {
             throw e;
         } catch (Exception e) {
             throw new CorrelationException(e.getMessage() + "More info: "
-                                                   + getErrorMsg(String.format("%s%s", host, path), null, null), e);
+                    + getErrorMsg(String.format("%s%s", host, path), null, null), e);
         }
     }
 
@@ -219,14 +249,14 @@ public class AaiQuery4Ccvpn {
                     .property(HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true).invoke();
             if (response.getStatusInfo().getFamily() != Response.Status.Family.SUCCESSFUL) {
                 throw new CorrelationException("Failed to connect to AAI. \nCause: "
-                                                       + response.getStatusInfo().getReasonPhrase() + "\nDetails: \n"
-                                                       + getErrorMsg(String.format("%s%s", host, path), body, response));
+                        + response.getStatusInfo().getReasonPhrase() + "\nDetails: \n"
+                        + getErrorMsg(String.format("%s%s", host, path), body, response));
             }
         } catch (CorrelationException e) {
             throw e;
         } catch (Exception e) {
             throw new CorrelationException(e.getMessage() + "More info: "
-                                                   + getErrorMsg(String.format("%s%s", host, path), body, null), e);
+                    + getErrorMsg(String.format("%s%s", host, path), body, null), e);
         }
     }
 
@@ -272,10 +302,12 @@ public class AaiQuery4Ccvpn {
     }
 
     private String extractValueFromJsonArray(JSONArray relationshipData, String keyName) {
-        for (int i = 0; i < relationshipData.size(); ++i) {
-            JSONObject item = relationshipData.getJSONObject(i);
-            if (item.getString("relationship-key").equals(keyName)) {
-                return item.getString("relationship-value");
+        if (relationshipData != null) {
+            for (int i = 0; i < relationshipData.size(); ++i) {
+                JSONObject item = relationshipData.getJSONObject(i);
+                if (item.getString("relationship-key").equals(keyName)) {
+                    return item.getString("relationship-value");
+                }
             }
         }
         return null;

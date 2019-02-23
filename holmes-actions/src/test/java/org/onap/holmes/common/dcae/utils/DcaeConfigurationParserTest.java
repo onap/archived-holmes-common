@@ -27,11 +27,18 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.onap.holmes.common.dcae.entity.DcaeConfigurations;
 import org.onap.holmes.common.dcae.entity.SecurityInfo;
+import org.onap.holmes.common.exception.CorrelationException;
 
 public class DcaeConfigurationParserTest {
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void parse() throws Exception {
@@ -41,6 +48,19 @@ public class DcaeConfigurationParserTest {
         assertThat(obj.get("collector.keystore.alias"), equalTo("dynamically generated"));
         assertThat(((SecurityInfo) obj.getPubSecInfo("sec_measurement")).getAafPassword(), equalTo("aaf_password"));
         assertThat(((SecurityInfo) obj.getPubSecInfo("sec_measurement")).getDmaapInfo().getLocation(), equalTo("mtl5"));
+    }
+
+    @Test
+    public void parse_with_empty_contents_excption() throws CorrelationException {
+        thrown.expect(CorrelationException.class);
+        thrown.expectMessage("Can not resolve configurations from DCAE. The configuration string is empty.");
+        DcaeConfigurationParser.parse("");
+    }
+
+    @Test
+    public void parse_with_illegal_dcae_response_excption() throws CorrelationException {
+        thrown.expect(CorrelationException.class);
+        DcaeConfigurationParser.parse("This is an ordinary string.");
     }
 
     private String readConfigurationsFromFile(String fileName) throws URISyntaxException, FileNotFoundException {
