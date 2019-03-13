@@ -44,7 +44,6 @@
         <lombok.version>1.16.8</lombok.version>
         <jersey.version>2.22.2</jersey.version>
         <slf4j.version>1.7.25</slf4j.version>
-        <quartz.version>2.2.1</quartz.version>
     </properties>
 
     <dependencyManagement>
@@ -101,11 +100,6 @@
                 <groupId>org.antlr</groupId>
                 <artifactId>stringtemplate</artifactId>
                 <version>${stringtemplate.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.quartz-scheduler</groupId>
-                <artifactId>quartz</artifactId>
-                <version>${quartz.version}</version>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>
