@@ -1,0 +1,98 @@
+{
+  "site-resources": {
+    "site-resource": [
+      {
+        "site-resource-id": "3801b392-f596-4f7b-93d6-4d0a33b014bc",
+        "site-resource-name": "HkHubONSDEMOBJHKCustomer",
+        "description": "HongkongLabDesc",
+        "type": "single-gateway",
+        "role": "dsvpn-hub",
+        "selflink": "restconf/config/GENERIC-RESOURCE-API:services/service/499hkg9933NNN/service-data/vnfs/vnf/3801b392-f596-4f7b-93d6-4d0a33b014bc/vnf-data/",
+        "operational-status": "Online",
+        "resource-version": "1553193393081",
+        "relationship-list": {
+          "relationship": [
+            {
+              "related-to": "complex",
+              "relationship-label": "org.onap.relationships.inventory.Uses",
+              "related-link": "/aai/v14/cloud-infrastructure/complexes/complex/3801b392-f596-4f7b-93d6-4d0a33b014bc",
+              "relationship-data": {
+                "relationship-key": "complex.physical-location-id",
+                "relationship-value": "3801b392-f596-4f7b-93d6-4d0a33b014bc"
+              }
+            },
+            {
+              "related-to": "vnf-instance",
+              "relationship-label": "org.onap.relationships.inventory.PartOf",
+              "related-link": "/aai/v14/business/customers/customer/ONSDEMOBJHKCustomer/service-subscriptions/service-subscription/service-ccvpn/vnf-instances/vnf-instance/499hkg9933NNN",
+              "relationship-data": [
+                {
+                  "relationship-key": "customer.global-customer-id",
+                  "relationship-value": "ONSDEMOBJHKCustomer"
+                },
+                {
+                  "relationship-key": "service-subscription.service-type",
+                  "relationship-value": "service-ccvpn"
+                },
+                {
+                  "relationship-key": "service-instance.service-instance-id",
+                  "relationship-value": "499hkg9933NNN"
+                }
+              ],
+              "related-to-property": {
+                "property-key": "service-instance.service-instance-name",
+                "property-value": "499hkg9933NNN"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "499hkg9933NNN": {
+    "site-resource-id": "3801b392-f596-4f7b-93d6-4d0a33b014bc",
+    "site-resource-name": "HkHubONSDEMOBJHKCustomer",
+    "description": "HongkongLabDesc",
+    "type": "single-gateway",
+    "role": "dsvpn-hub",
+    "selflink": "restconf/config/GENERIC-RESOURCE-API:services/service/499hkg9933NNN/service-data/vnfs/vnf/3801b392-f596-4f7b-93d6-4d0a33b014bc/vnf-data/",
+    "operational-status": "Online",
+    "resource-version": "1553193393081",
+    "relationship-list": {
+      "relationship": [
+        {
+          "related-to": "complex",
+          "relationship-label": "org.onap.relationships.inventory.Uses",
+          "related-link": "/aai/v14/cloud-infrastructure/complexes/complex/3801b392-f596-4f7b-93d6-4d0a33b014bc",
+          "relationship-data": {
+            "relationship-key": "complex.physical-location-id",
+            "relationship-value": "3801b392-f596-4f7b-93d6-4d0a33b014bc"
+          }
+        },
+        {
+          "related-to": "service-instance",
+          "relationship-label": "org.onap.relationships.inventory.PartOf",
+          "related-link": "/aai/v14/business/customers/customer/ONSDEMOBJHKCustomer/service-subscriptions/service-subscription/service-ccvpn/service-instances/service-instance/499hkg9933NNN",
+          "relationship-data": [
+            {
+              "relationship-key": "customer.global-customer-id",
+              "relationship-value": "ONSDEMOBJHKCustomer"
+            },
+            {
+              "relationship-key": "service-subscription.service-type",
+              "relationship-value": "service-ccvpn"
+            },
+            {
+              "relationship-key": "service-instance.service-instance-id",
+              "relationship-value": "499hkg9933NNN"
+            }
+          ],
+          "related-to-property": {
+            "property-key": "service-instance.service-instance-name",
+            "property-value": "499hkg9933NNN"
+          }
+        }
+      ]
+    }
+  }
+}

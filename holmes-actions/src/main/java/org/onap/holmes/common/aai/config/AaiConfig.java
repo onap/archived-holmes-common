@@ -59,7 +59,9 @@ public class AaiConfig {
 
     public static class MsbConsts {
 
-        private static final String AAI_NETWORK = "/aai/";
+        private static final String AAI_MSB_PREF = "/api";
+
+        private static final String AAI_NETWORK = "/aai-network/";
 
         private static final String AAI_BUSINESS = "/aai-business/";
 
@@ -84,5 +86,11 @@ public class AaiConfig {
         public static final String AAI_SERVICE_INSTANCES_ADDR_4_CCVPN = AAI_BUSINESS + AAI_API_VERSION + "/customers/customer/{global-customer-id}/service-subscriptions/service-subscription/{service-type}";
 
         public static final String AAI_VM_ADDR = AAI_SEARCH + AAI_API_VERSION + "/nodes-query?search-node-type=vserver&filter=";
+
+        public static final String AAI_SITE_RESOURCES_QUERY = AAI_MSB_PREF + AAI_NETWORK + AAI_API_VERSION +
+                "/site-resources";
+
+        public static final String AAI_SITE_VNF_QUERY = AAI_MSB_PREF + AAI_NETWORK + AAI_API_VERSION +
+                "/generic-vnfs/generic-vnf/{vnfId}";
     }
 }
