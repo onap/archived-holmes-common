@@ -123,7 +123,7 @@ public class AaiQuery {
         CloseableHttpClient httpClient = null;
         HttpGet httpGet = new HttpGet(url);
         try {
-            httpClient = HttpsUtils.getHttpClient(HttpsUtils.DEFUALT_TIMEOUT);
+            httpClient = HttpsUtils.getHttpsClient(HttpsUtils.DEFUALT_TIMEOUT);
             HttpResponse httpResponse = HttpsUtils.get(httpGet, getHeaders(), httpClient);
             response = HttpsUtils.extractResponseEntity(httpResponse);
         } catch (Exception e) {

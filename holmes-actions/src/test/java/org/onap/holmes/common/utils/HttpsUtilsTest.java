@@ -26,20 +26,16 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
-import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Rule;
@@ -77,7 +73,7 @@ public class HttpsUtilsTest {
         String url = "host";
         Map<String, String> header = new HashMap<>();
         header.put("accept", "application/json");
-        CloseableHttpClient httpClient = HttpsUtils.getHttpClient(HttpsUtils.DEFUALT_TIMEOUT);
+        CloseableHttpClient httpClient = HttpsUtils.getConditionalHttpsClient(HttpsUtils.DEFUALT_TIMEOUT);
         HttpGet httpRequestBase = new HttpGet(url);
         HttpResponse httpResponse = HttpsUtils.get(httpRequestBase, header, httpClient);
         String response = HttpsUtils.extractResponseEntity(httpResponse);
@@ -121,7 +117,7 @@ public class HttpsUtilsTest {
         Map<String, String> header = new HashMap<>();
         header.put("accept", "application/json");
         HttpDelete httpRequestBase = new HttpDelete(url);
-        CloseableHttpClient httpClient = HttpsUtils.getHttpClient(HttpsUtils.DEFUALT_TIMEOUT);
+        CloseableHttpClient httpClient = HttpsUtils.getConditionalHttpsClient(HttpsUtils.DEFUALT_TIMEOUT);
         HttpResponse httpResponse = HttpsUtils.delete(httpRequestBase, header, httpClient);
         String response = HttpsUtils.extractResponseEntity(httpResponse);
         assertThat(response, equalTo(""));
@@ -165,7 +161,7 @@ public class HttpsUtilsTest {
         header.put("accept", "application/json");
         Map<String, String> para = new HashMap<>();
         para.put("tset", "1111");
-        CloseableHttpClient httpClient = HttpsUtils.getHttpClient(HttpsUtils.DEFUALT_TIMEOUT);
+        CloseableHttpClient httpClient = HttpsUtils.getConditionalHttpsClient(HttpsUtils.DEFUALT_TIMEOUT);
         HttpPost httpPost = new HttpPost(url);
         HttpResponse httpResponse = HttpsUtils.post(httpPost, header, para, null, httpClient);
         String response = HttpsUtils.extractResponseEntity(httpResponse);
@@ -212,7 +208,7 @@ public class HttpsUtilsTest {
         header.put("accept", "application/json");
         Map<String, String> para = new HashMap<>();
         para.put("tset", "1111");
-        CloseableHttpClient httpClient = HttpsUtils.getHttpClient(HttpsUtils.DEFUALT_TIMEOUT);
+        CloseableHttpClient httpClient = HttpsUtils.getConditionalHttpsClient(HttpsUtils.DEFUALT_TIMEOUT);
         HttpPut httpPut = new HttpPut(url);
         HttpResponse httpResponse = HttpsUtils.put(httpPut, header, para, null, httpClient);
         String response = HttpsUtils.extractResponseEntity(httpResponse);
@@ -265,14 +261,14 @@ public class HttpsUtilsTest {
     public void testHttpsUtil_getHttpClient_exception() throws Exception {
         PowerMock.resetAll();
         thrown.expect(Exception.class);
-        Whitebox.invokeMethod(HttpsUtils.class, "getHttpClient");
+        Whitebox.invokeMethod(HttpsUtils.class, "getConditionalHttpsClient");
         PowerMock.verifyAll();
     }
 
     @Test
     public void testHttpsUtil_getHttpClient_ok() throws Exception {
         PowerMock.resetAll();
-        HttpsUtils.getHttpClient(HttpsUtils.DEFUALT_TIMEOUT);
+        HttpsUtils.getConditionalHttpsClient(HttpsUtils.DEFUALT_TIMEOUT);
         PowerMock.verifyAll();
     }
 

@@ -17,12 +17,10 @@ package org.onap.holmes.common.dmaap;
 
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.onap.holmes.common.dmaap.entity.PolicyMsg;
 import org.onap.holmes.common.exception.CorrelationException;
-import com.alibaba.fastjson.JSON;
 import com.google.gson.Gson;
 import java.util.HashMap;
 import javax.ws.rs.core.MediaType;
@@ -61,7 +59,7 @@ public class Publisher {
         CloseableHttpClient httpClient = null;
         HttpPost httpPost = new HttpPost(url);
         try {
-            httpClient = HttpsUtils.getHttpClient(HttpsUtils.DEFUALT_TIMEOUT);
+            httpClient = HttpsUtils.getConditionalHttpsClient(HttpsUtils.DEFUALT_TIMEOUT);
             httpResponse = HttpsUtils.post(httpPost, headers, new HashMap<>(), new StringEntity(content, "utf-8"), httpClient);
         } catch (Exception e) {
             throw new CorrelationException("Failed to connect to DCAE.", e);
