@@ -1,11 +1,11 @@
 /**
  * Copyright 2017 ZTE Corporation.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software distributed under the License
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
  * or implied. See the License for the specific language governing permissions and limitations under
@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.Consts;
 import org.apache.http.HttpEntity;
@@ -43,12 +44,14 @@ import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
 import org.jvnet.hk2.annotations.Service;
+import org.onap.holmes.common.config.MicroServiceConfig;
 import org.onap.holmes.common.exception.CorrelationException;
 
 @Slf4j
@@ -61,7 +64,7 @@ public class HttpsUtils {
     private static SSLContextBuilder sslContextBuilder = null;
     public static final int DEFUALT_TIMEOUT = 30000;
 
-    static{
+    static {
         try {
             sslContextBuilder = new SSLContextBuilder();
             sslContextBuilder.loadTrustMaterial(null, new TrustStrategy() {
@@ -89,12 +92,12 @@ public class HttpsUtils {
     }
 
     public static HttpResponse post(HttpPost httpPost, Map<String, String> header, Map<String, String> param,
-            HttpEntity entity, CloseableHttpClient httpClient) throws CorrelationException {
+                                    HttpEntity entity, CloseableHttpClient httpClient) throws CorrelationException {
         return getPostAndPutResponse(httpPost, header, param, entity, httpClient);
     }
 
     public static HttpResponse put(HttpPut httpPut, Map<String, String> header, Map<String, String> param,
-            HttpEntity entity, CloseableHttpClient httpClient) throws CorrelationException {
+                                   HttpEntity entity, CloseableHttpClient httpClient) throws CorrelationException {
         return getPostAndPutResponse(httpPut, header, param, entity, httpClient);
     }
 
@@ -124,8 +127,8 @@ public class HttpsUtils {
     }
 
     private static HttpResponse getPostAndPutResponse(HttpEntityEnclosingRequestBase requestBase,
-            Map<String, String> header, Map<String, String> param, HttpEntity entity,
-            CloseableHttpClient httpClient) throws CorrelationException {
+                                                      Map<String, String> header, Map<String, String> param, HttpEntity entity,
+                                                      CloseableHttpClient httpClient) throws CorrelationException {
         try {
             addHeaders(header, requestBase);
             addParams(param, requestBase);
@@ -139,7 +142,7 @@ public class HttpsUtils {
     }
 
     private static HttpResponse getGetAndDeleteResponse(HttpRequestBase requestBase,
-            Map<String, String> header, CloseableHttpClient httpClient) throws CorrelationException {
+                                                        Map<String, String> header, CloseableHttpClient httpClient) throws CorrelationException {
         try {
             addHeaders(header, requestBase);
             return executeRequest(httpClient, requestBase);
@@ -169,23 +172,39 @@ public class HttpsUtils {
         try {
             httpResponse = httpClient.execute(httpRequest);
         } catch (Exception e) {
-            throw new CorrelationException("Failed to get data from server" ,e);
+            throw new CorrelationException("Failed to get data from server", e);
         }
         return httpResponse;
     }
 
-    public static CloseableHttpClient getHttpClient(int timeout) {
+    public static CloseableHttpClient getConditionalHttpsClient(int timeout) {
+        HttpClientBuilder builder = getHttpClientBuilder(timeout);
+        if (isHttpsEnabled()) {
+            builder.setSSLSocketFactory(sslConnectionSocketFactory);
+        }
+
+        return builder.build();
+    }
+
+    public static CloseableHttpClient getHttpsClient(int timeout) {
+        HttpClientBuilder builder = getHttpClientBuilder(timeout);
+        return builder.setSSLSocketFactory(sslConnectionSocketFactory).build();
+    }
+
+    private static HttpClientBuilder getHttpClientBuilder(int timeout) {
         RequestConfig defaultRequestConfig = RequestConfig.custom()
                 .setSocketTimeout(timeout)
                 .setConnectTimeout(timeout)
                 .setConnectionRequestTimeout(timeout)
                 .build();
-        CloseableHttpClient httpClient = HttpClients.custom()
+
+        return HttpClients.custom()
                 .setDefaultRequestConfig(defaultRequestConfig)
-                .setSSLSocketFactory(sslConnectionSocketFactory)
                 .setConnectionManager(connectionManager)
-                .setConnectionManagerShared(true)
-                .build();
-        return httpClient;
+                .setConnectionManagerShared(true);
+    }
+
+    public static boolean isHttpsEnabled() {
+        return Boolean.valueOf(MicroServiceConfig.getEnv("ENABLE_ENCRYPT"));
     }
 }
