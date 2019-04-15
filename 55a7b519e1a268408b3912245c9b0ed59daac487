@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "161c4c44_9b0524ee",
+        "filename": "holmes-actions/src/main/java/org/onap/holmes/common/dmaap/DmaapService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1515
+      },
+      "writtenOn": "2019-04-15T06:14:51Z",
+      "side": 1,
+      "message": "These variables should not be changed to \"protected\" because they have to be visible to some class in the engine management module. This will cause a compilation error.",
+      "range": {
+        "startLine": 42,
+        "startChar": 4,
+        "endLine": 43,
+        "endChar": 110
+      },
+      "revId": "55a7b519e1a268408b3912245c9b0ed59daac487",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
