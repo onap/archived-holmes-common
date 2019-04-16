@@ -96,6 +96,9 @@ public class AaiQuery4Ccvpn2 {
 
     public JSONObject getSiteServiceInstance(String siteService) throws CorrelationException {
         String vnfId = getSiteVNFId(siteService);
+        if (vnfId == null) {
+            return null;
+        }
         JSONObject serviceInstanceInfo = getServiceInstanceByVnfId(vnfId);
         String serviceInstancePath = serviceInstanceInfo.getString("related-link");
         Response response = get(getHostAddr(), getPath(serviceInstancePath));
