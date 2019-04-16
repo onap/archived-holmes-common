@@ -140,6 +140,28 @@ public class AaiQuery4Ccvpn2Test {
         PowerMock.verifyAll();
     }
 
+    @Test
+    public void test_getServiceInstancesNull_exception() throws CorrelationException {
+        mockGetMethod();
+        EasyMock.expect(response.readEntity(String.class)).andReturn(data.getJSONObject("site-resources1").toJSONString
+                ());
+        EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
+
+        mockGetMethod();
+        EasyMock.expect(response.readEntity(String.class)).andReturn(data.getJSONObject("499hkg9933NNN").toJSONString
+                ());
+        EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
+
+        mockGetMethod();
+        EasyMock.expect(response.readEntity(String.class)).andReturn(data.getJSONObject("499hkg9933NNN").toJSONString
+                ());
+        EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
+
+        PowerMock.replayAll();
+
+        aai.getSiteServiceInstance("HkHubONSDEMOSZHKCustomer");
+    }
+
 
     private void mockGetMethod() {
         initCommonMock();
