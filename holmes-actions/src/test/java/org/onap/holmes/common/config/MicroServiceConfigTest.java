@@ -16,13 +16,7 @@
 
 package org.onap.holmes.common.config;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.onap.holmes.common.config.MicroServiceConfig.*;
-
+import org.apache.commons.lang3.StringUtils;
 import org.easymock.EasyMock;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -33,9 +27,17 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.powermock.reflect.internal.WhiteboxImpl;
 
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsNull.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.onap.holmes.common.config.MicroServiceConfig.*;
+
 @PrepareForTest(MicroServiceConfig.class)
 @PowerMockIgnore({"javax.ws.*"})
 public class MicroServiceConfigTest {
+
+    private static String ACTUAL_HOSTNAME = System.getenv(HOSTNAME);
 
     @Rule
     public PowerMockRule powerMockRule = new PowerMockRule();
@@ -63,8 +65,10 @@ public class MicroServiceConfigTest {
 
     @Test
     public void getServiceIpTest() {
-        System.setProperty(HOSTNAME, "127.0.0.1");
-        assertThat("127.0.0.1", equalTo(getMicroServiceIpAndPort()[0]));
+        String ip = StringUtils.isEmpty(ACTUAL_HOSTNAME) ? "10.74.5.8" : ACTUAL_HOSTNAME;
+        String hostname = String.format("http://%s", ip);
+        System.setProperty(HOSTNAME, hostname);
+        assertThat(ip, equalTo(getMicroServiceIpAndPort()[0]));
         assertThat("80", equalTo(getMicroServiceIpAndPort()[1]));
         System.clearProperty(HOSTNAME);
     }
@@ -211,7 +215,10 @@ public class MicroServiceConfigTest {
 
     @Test
     public void getMicroServiceIpAndPort_service_not_registered_to_consul() throws Exception {
-        System.setProperty(HOSTNAME, "10.74.5.8:1545");
+        String ip = StringUtils.isEmpty(ACTUAL_HOSTNAME) ? "10.74.5.8" : ACTUAL_HOSTNAME;
+        String port = StringUtils.isEmpty(ACTUAL_HOSTNAME) ? "1545" : "80";
+        String hostname = String.format("http://%s:%s", ip, port);
+        System.setProperty(HOSTNAME, hostname);
         PowerMock.mockStaticPartial(MicroServiceConfig.class, "execQuery", String.class);
         PowerMock.expectPrivate(MicroServiceConfig.class, "execQuery", EasyMock.anyObject())
                 .andReturn("[]");
@@ -220,15 +227,18 @@ public class MicroServiceConfigTest {
         String[] msbInfo = getMicroServiceIpAndPort();
         PowerMock.verifyAll();
 
-        assertThat(msbInfo[0], equalTo("10.74.5.8"));
-        assertThat(msbInfo[1], equalTo("1545"));
+        assertThat(msbInfo[0], equalTo(ip));
+        assertThat(msbInfo[1], equalTo(port));
 
         System.clearProperty(HOSTNAME);
     }
 
     @Test
     public void getMicroServiceIpAndPort_service_not_registered_full_addr() throws Exception {
-        System.setProperty(HOSTNAME, "http://10.74.5.8:1545");
+        String ip = StringUtils.isEmpty(ACTUAL_HOSTNAME) ? "10.74.5.8" : ACTUAL_HOSTNAME;
+        String port = StringUtils.isEmpty(ACTUAL_HOSTNAME) ? "1545" : "80";
+        String hostname = String.format("http://%s:%s", ip, port);
+        System.setProperty(HOSTNAME, hostname);
         PowerMock.mockStaticPartial(MicroServiceConfig.class, "execQuery", String.class);
         PowerMock.expectPrivate(MicroServiceConfig.class, "execQuery", EasyMock.anyObject())
                 .andReturn("{}");
@@ -237,15 +247,17 @@ public class MicroServiceConfigTest {
         String[] msbInfo = getMicroServiceIpAndPort();
         PowerMock.verifyAll();
 
-        assertThat(msbInfo[0], equalTo("10.74.5.8"));
-        assertThat(msbInfo[1], equalTo("1545"));
+        assertThat(msbInfo[0], equalTo(ip));
+        assertThat(msbInfo[1], equalTo(port));
 
         System.clearProperty(MSB_ADDR);
     }
 
     @Test
     public void getMicroServiceIpAndPort_service_not_registered_no_port() throws Exception {
-        System.setProperty(HOSTNAME, "http://10.74.5.8");
+        String ip = StringUtils.isEmpty(ACTUAL_HOSTNAME) ? "10.74.5.8" : ACTUAL_HOSTNAME;
+        String hostname = String.format("http://%s", ip);
+        System.setProperty(HOSTNAME, hostname);
         PowerMock.mockStaticPartial(MicroServiceConfig.class, "execQuery", String.class);
         PowerMock.expectPrivate(MicroServiceConfig.class, "execQuery", EasyMock.anyObject())
                 .andReturn("{}");
@@ -254,7 +266,7 @@ public class MicroServiceConfigTest {
         String[] msbInfo = getMicroServiceIpAndPort();
         PowerMock.verifyAll();
 
-        assertThat(msbInfo[0], equalTo("10.74.5.8"));
+        assertThat(msbInfo[0], equalTo(ip));
         assertThat(msbInfo[1], equalTo("80"));
 
         System.clearProperty(MSB_ADDR);
@@ -262,7 +274,9 @@ public class MicroServiceConfigTest {
 
     @Test
     public void getMicroServiceIpAndPort_service_not_registered_only_ip() throws Exception {
-        System.setProperty(HOSTNAME, "10.74.5.8");
+        String ip = StringUtils.isEmpty(ACTUAL_HOSTNAME) ? "10.74.5.8" : ACTUAL_HOSTNAME;
+        String hostname = String.format("http://%s", ip);
+        System.setProperty(HOSTNAME, hostname);
         PowerMock.mockStaticPartial(MicroServiceConfig.class, "execQuery", String.class);
         PowerMock.expectPrivate(MicroServiceConfig.class, "execQuery", EasyMock.anyObject())
                 .andReturn("{}");
@@ -271,7 +285,7 @@ public class MicroServiceConfigTest {
         String[] msbInfo = getMicroServiceIpAndPort();
         PowerMock.verifyAll();
 
-        assertThat(msbInfo[0], equalTo("10.74.5.8"));
+        assertThat(msbInfo[0], equalTo(ip));
         assertThat(msbInfo[1], equalTo("80"));
 
         System.clearProperty(MSB_ADDR);
@@ -279,7 +293,10 @@ public class MicroServiceConfigTest {
 
     @Test
     public void getMicroServiceIpAndPort_service_not_registered_full_addr_https() throws Exception {
-        System.setProperty(HOSTNAME, "https://10.74.5.8:5432");
+        String ip = StringUtils.isEmpty(ACTUAL_HOSTNAME) ? "10.74.5.8" : ACTUAL_HOSTNAME;
+        String port = StringUtils.isEmpty(ACTUAL_HOSTNAME) ? "1545" : "80";
+        String hostname = String.format("http://%s:%s", ip, port);
+        System.setProperty(HOSTNAME, hostname);
         PowerMock.mockStaticPartial(MicroServiceConfig.class, "execQuery", String.class);
         PowerMock.expectPrivate(MicroServiceConfig.class, "execQuery", EasyMock.anyObject())
                 .andReturn("[]");
@@ -288,8 +305,8 @@ public class MicroServiceConfigTest {
         String[] msbInfo = getMicroServiceIpAndPort();
         PowerMock.verifyAll();
 
-        assertThat(msbInfo[0], equalTo("10.74.5.8"));
-        assertThat(msbInfo[1], equalTo("5432"));
+        assertThat(msbInfo[0], equalTo(ip));
+        assertThat(msbInfo[1], equalTo(port));
 
         System.clearProperty(MSB_ADDR);
     }
