@@ -15,7 +15,7 @@ package org.onap.holmes.common.aai.config;
 
 public class AaiConfig {
 
-    private static final String AAI_API_VERSION = "v14";
+    private static final String AAI_API_VERSION = "v16";
 
     public static final String X_TRANSACTION_ID = "9999";
 

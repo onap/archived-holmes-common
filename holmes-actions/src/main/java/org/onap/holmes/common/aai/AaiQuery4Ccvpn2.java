@@ -68,16 +68,14 @@ public class AaiQuery4Ccvpn2 {
             for (int i = 0; i < siteResources.size(); i++) {
                 final JSONObject object = siteResources.getJSONObject(i);
                 if (siteService.equals(object.getString("site-resource-name"))) {
-                    JSONObject vnfInfo = getInfo(object.toJSONString(), "vnf-instance");
+                    JSONObject vnfInfo = getInfo(object.toJSONString(), "generic-vnf");
                     String vnfPath = vnfInfo.getString("related-link");
 
                     String vnfId = null;
-                    Pattern pattern = Pattern.compile("/aai/v\\d+/business/customers/customer/(.+)" +
-                                                              "/service-subscriptions/service-subscription/(.+)" +
-                                                              "/vnf-instances/vnf-instance/(.+)");
+                    Pattern pattern = Pattern.compile("/aai/v\\d+/network/generic-vnfs/generic-vnf/(.+)");
                     Matcher matcher = pattern.matcher(vnfPath);
                     if (matcher.find()) {
-                        vnfId = matcher.group(3);
+                        vnfId = matcher.group(1);
                     }
 
                     return vnfId;

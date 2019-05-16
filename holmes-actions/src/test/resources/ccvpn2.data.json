@@ -22,9 +22,9 @@
               }
             },
             {
-              "related-to": "vnf-instance",
+              "related-to": "generic-vnf",
               "relationship-label": "org.onap.relationships.inventory.PartOf",
-              "related-link": "/aai/v14/business/customers/customer/ONSDEMOBJHKCustomer/service-subscriptions/service-subscription/service-ccvpn/vnf-instances/vnf-instance/499hkg9933NNN",
+              "related-link": "/aai/v14/network/generic-vnfs/generic-vnf/499hkg9933NNN",
               "relationship-data": [
                 {
                   "relationship-key": "customer.global-customer-id",
