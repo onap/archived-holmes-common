@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 ZTE Corporation.
+ * Copyright 2017-2020 ZTE Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,7 @@ package org.onap.holmes.common.api.stat;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+
 import java.util.Date;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertFalse;
@@ -50,20 +49,6 @@ public class AlarmTest {
 
     @After
     public void after() throws Exception {
-    }
-
-    @Test
-    public void testCompareLinkPosition_isEmpty() throws Exception {
-        final Map<Integer, Integer> otherIdIdx = new HashMap<>();
-        assertThat(999, equalTo(alarm.CompareLinkPosition(otherIdIdx)));
-    }
-
-    @Test
-    public void testCompareLinkPosition_TempLinkId() throws Exception {
-        final Map<Integer, Integer> otherIdIdx = new HashMap<>();
-        otherIdIdx.put(1, 2);
-        alarm.addLinkIdNodeIdx(1, 3);
-        assertThat(1, equalTo(alarm.CompareLinkPosition(otherIdIdx)));
     }
 
     @Test

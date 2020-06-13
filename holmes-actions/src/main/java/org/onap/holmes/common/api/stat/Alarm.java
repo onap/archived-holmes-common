@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 ZTE Corporation.
+ * Copyright 2017-2020 ZTE Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,28 +76,6 @@ public class Alarm implements AplusData, Cloneable, Serializable {
 
     public void addLinkIdNodeIdx(int linkId, int index) {
         linkIdNodeIdxMap.put(linkId, index);
-    }
-
-    /**
-     * Comparison of the location of different links: 999 the same link: the location of the node
-     * number less than otherIdIdx in the location of the number (in the otherIdIdx upstream):-1,
-     * the same link: the node position number is equal to the number of position in the otherIdIdx
-     * (in the same site otherIdIdx):0, the same link: the node location number is greater than the
-     * number of locations in otherIdIdx (otherIdIdx) with the site):1,
-     */
-    public int CompareLinkPosition(Map<Integer, Integer> otherIdIdx) {
-        Set<Integer> myIdSet = new HashSet<>();
-        myIdSet.addAll(this.linkIdNodeIdxMap.keySet());
-        myIdSet.retainAll(otherIdIdx.keySet());
-
-        if (myIdSet.isEmpty()) {
-            return 999;
-        }
-
-        for (int tempLinkId : myIdSet) {
-            return this.linkIdNodeIdxMap.get(tempLinkId) - otherIdIdx.get(tempLinkId);
-        }
-        return 999;
     }
 
     public boolean containNode(int linkId, int index) {
