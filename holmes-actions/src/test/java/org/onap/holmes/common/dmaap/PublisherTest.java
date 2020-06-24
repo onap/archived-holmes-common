@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 ZTE Corporation.
+ * Copyright 2017-2020 ZTE Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,21 +15,9 @@
  */
 package org.onap.holmes.common.dmaap;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-import java.util.HashMap;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation.Builder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -38,16 +26,19 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.onap.holmes.common.dmaap.entity.PolicyMsg;
 import org.onap.holmes.common.exception.CorrelationException;
 import org.onap.holmes.common.utils.HttpsUtils;
 import org.powermock.api.easymock.PowerMock;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-@PrepareForTest({HttpsUtils.class, HttpResponse.class})
+import java.util.HashMap;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+@PrepareForTest({HttpsUtils.class, HttpResponse.class, Publisher.class})
 @RunWith(PowerMockRunner.class)
 public class PublisherTest {
 
@@ -74,15 +65,19 @@ public class PublisherTest {
         Publisher publisher = new Publisher();
         publisher.setUrl(URL);
 
-        PowerMockito.mockStatic(HttpsUtils.class);
-        HttpResponse httpResponse = PowerMockito.mock(HttpResponse.class);
-        PowerMockito.when(HttpsUtils
-                .post(Matchers.any(HttpPost.class), Matchers.any(HashMap.class),
-                        Matchers.any(HashMap.class), Matchers.any(StringEntity.class),
-                        Matchers.any(CloseableHttpClient.class))).thenReturn(httpResponse);
-        StatusLine statusLine = PowerMockito.mock(StatusLine.class);
-        PowerMockito.when(httpResponse.getStatusLine()).thenReturn(statusLine);
-        PowerMockito.when(statusLine.getStatusCode()).thenReturn(HttpStatus.SC_OK);
+        PowerMock.mockStatic(HttpsUtils.class);
+        CloseableHttpClient httpClient = PowerMock.createMock(CloseableHttpClient.class);
+        EasyMock.expect(HttpsUtils.getConditionalHttpsClient(HttpsUtils.DEFUALT_TIMEOUT)).andReturn(httpClient);
+        HttpResponse httpResponse = PowerMock.createMock(HttpResponse.class);
+        EasyMock.expect(HttpsUtils
+                .post(EasyMock.anyObject(HttpPost.class), EasyMock.anyObject(HashMap.class),
+                        EasyMock.anyObject(HashMap.class), EasyMock.anyObject(StringEntity.class),
+                        EasyMock.anyObject(CloseableHttpClient.class))).andReturn(httpResponse);
+        StatusLine statusLine = PowerMock.createMock(StatusLine.class);
+        EasyMock.expect(httpResponse.getStatusLine()).andReturn(statusLine);
+        EasyMock.expect(statusLine.getStatusCode()).andReturn(HttpStatus.SC_OK);
+        httpClient.close();
+        EasyMock.expectLastCall();
 
         PowerMock.replayAll();
 

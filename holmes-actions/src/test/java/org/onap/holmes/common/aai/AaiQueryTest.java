@@ -1,12 +1,12 @@
 /**
- * Copyright 2017 ZTE Corporation.
- *
+ * Copyright 2017-2020 ZTE Corporation.
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,14 +15,7 @@
  */
 
 package org.onap.holmes.common.aai;
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.expect;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.powermock.api.mockito.PowerMockito.when;
 
-import java.util.HashMap;
-import java.util.Map;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -39,11 +32,18 @@ import org.onap.holmes.common.config.MicroServiceConfig;
 import org.onap.holmes.common.exception.CorrelationException;
 import org.onap.holmes.common.utils.HttpsUtils;
 import org.powermock.api.easymock.PowerMock;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.expect;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertThat;
 
 
 @PrepareForTest({AaiQuery.class, HttpsUtils.class, MicroServiceConfig.class, HttpGet.class})
@@ -153,7 +153,7 @@ public class AaiQueryTest {
         PowerMock.mockStatic(MicroServiceConfig.class);
         PowerMock.expectPrivate(aaiQuery, "getVmResourceLinks", "test1", "test2")
                 .andReturn("/aai/v11/cloud-infrastructure");
-        PowerMock.expectPrivate(httpClient,"close");
+        PowerMock.expectPrivate(httpClient, "close");
         EasyMock.expectLastCall();
         PowerMock.replayAll();
         Whitebox.invokeMethod(aaiQuery, "getAaiVmData", "test1", "test2");
@@ -179,7 +179,6 @@ public class AaiQueryTest {
     }
 
 
-
     @Test
     public void testAaiQuery_getResourceLinksResponse() throws Exception {
         PowerMock.resetAll();
@@ -187,9 +186,6 @@ public class AaiQueryTest {
 
         aaiResponseUtil = new AaiResponseUtil();
         Whitebox.setInternalState(aaiQuery, "aaiResponseUtil", aaiResponseUtil);
-
-        PowerMockito.mockStatic(MicroServiceConfig.class);
-        when(MicroServiceConfig.getMsbServerAddrWithHttpPrefix()).thenReturn("host_url");
 
         PowerMock.expectPrivate(aaiQuery, "getResponse", anyObject(String.class)).andReturn("").anyTimes();
         PowerMock.replayAll();
@@ -206,9 +202,6 @@ public class AaiQueryTest {
 
         aaiResponseUtil = new AaiResponseUtil();
         Whitebox.setInternalState(aaiQuery, "aaiResponseUtil", aaiResponseUtil);
-
-        PowerMockito.mockStatic(MicroServiceConfig.class);
-        when(MicroServiceConfig.getMsbServerAddrWithHttpPrefix()).thenReturn("host_url");
 
         PowerMock.expectPrivate(aaiQuery, "getResponse", anyObject(String.class)).andReturn("").anyTimes();
         PowerMock.replayAll();
@@ -294,10 +287,10 @@ public class AaiQueryTest {
         PowerMock.resetAll();
         aaiQuery = new AaiQuery();
 
-        PowerMockito.mockStatic(MicroServiceConfig.class);
+        PowerMock.mockStatic(MicroServiceConfig.class);
 
         PowerMock.replayAll();
-        String actual = Whitebox.invokeMethod(aaiQuery,"getBaseUrl", "/url");
+        String actual = Whitebox.invokeMethod(aaiQuery, "getBaseUrl", "/url");
         PowerMock.verifyAll();
 
         assertThat(actual, equalTo("https://aai.onap:8443/url"));

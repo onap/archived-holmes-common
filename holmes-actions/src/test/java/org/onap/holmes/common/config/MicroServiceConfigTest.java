@@ -1,12 +1,12 @@
 /**
- * Copyright 2017 ZTE Corporation.
- *
+ * Copyright 2017-2020 ZTE Corporation.
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,12 +19,12 @@ package org.onap.holmes.common.config;
 import org.apache.commons.lang3.StringUtils;
 import org.easymock.EasyMock;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.rule.PowerMockRule;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.internal.WhiteboxImpl;
 
 import static org.hamcrest.core.Is.is;
@@ -35,12 +35,11 @@ import static org.onap.holmes.common.config.MicroServiceConfig.*;
 
 @PrepareForTest(MicroServiceConfig.class)
 @PowerMockIgnore({"javax.ws.*"})
+@RunWith(PowerMockRunner.class)
 public class MicroServiceConfigTest {
 
     private static String ACTUAL_HOSTNAME = System.getenv(HOSTNAME);
 
-    @Rule
-    public PowerMockRule powerMockRule = new PowerMockRule();
 
     @Test
     public void getMsbServerAddrTest() {

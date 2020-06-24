@@ -18,10 +18,11 @@ package org.onap.holmes.common.utils;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.setup.Environment;
-import lombok.extern.slf4j.Slf4j;
 import org.jvnet.hk2.annotations.Service;
 import org.skife.jdbi.v2.DBI;
 import org.skife.jdbi.v2.Handle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -29,8 +30,9 @@ import javax.inject.Singleton;
 
 @Singleton
 @Service
-@Slf4j
 public class DbDaoUtil {
+
+    private Logger log = LoggerFactory.getLogger(DbDaoUtil.class);
 
     private DBI jdbi;
     @Inject

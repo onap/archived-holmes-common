@@ -1,12 +1,12 @@
 /**
- * Copyright 2017 ZTE Corporation.
- *
+ * Copyright 2017-2020 ZTE Corporation.
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,8 +17,8 @@
 package org.onap.holmes.common.utils;
 
 import org.easymock.EasyMock;
-import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.onap.holmes.common.config.MicroServiceConfig;
 import org.onap.holmes.common.exception.CorrelationException;
 import org.onap.msb.sdk.discovery.entity.MicroServiceFullInfo;
@@ -27,14 +27,12 @@ import org.onap.msb.sdk.httpclient.msb.MSBServiceClient;
 import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.rule.PowerMockRule;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 @PrepareForTest({MicroServiceConfig.class, MSBServiceClient.class, MSBRegisterUtil.class})
 @PowerMockIgnore({"javax.ws.*"})
+@RunWith(PowerMockRunner.class)
 public class MSBRegisterUtilTest {
-
-    @Rule
-    public PowerMockRule powerMockRule = new PowerMockRule();
 
     private MSBRegisterUtil msbRegisterUtil = new MSBRegisterUtil();
 
