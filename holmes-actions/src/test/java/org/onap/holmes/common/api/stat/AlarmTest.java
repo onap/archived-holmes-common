@@ -16,24 +16,20 @@
 
 package org.onap.holmes.common.api.stat;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-
-import java.util.Date;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.onap.holmes.common.api.entity.ServiceNode;
+
+import java.util.Date;
+
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.*;
 
 public class AlarmTest {
 
@@ -188,8 +184,8 @@ public class AlarmTest {
         String jsonString = "{\"uid\":\"189024\", \"region\":\"SouthChina\", \"order\":123}";
         String  COMPLEX_JSON_STR = "{\"teacherName\":\"crystall\",\"teacherAge\":27,\"course\":{\"courseName\":\"english\",\"code\":1270},\"students\":[{\"studentName\":\"lily\",\"studentAge\":12},{\"studentName\":\"lucy\",\"studentAge\":15}]}";
 
-        JSONObject jsonObject = JSON.parseObject(COMPLEX_JSON_STR);
-        JSONArray jsonArray = jsonObject.getJSONArray("students");
+        JsonObject jsonObject = JsonParser.parseString(COMPLEX_JSON_STR).getAsJsonObject();
+        JsonArray jsonArray = jsonObject.get("students").getAsJsonArray();
          System.out.printf("jsonObject:"+jsonArray);
 //     System.out.println("uid:" + retMap.get("uid") + ", " + "region:" + retMap.get("region") + ", " + "order:" + retMap.get("order"));
     }

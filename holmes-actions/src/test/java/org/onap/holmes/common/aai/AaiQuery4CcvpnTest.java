@@ -1,5 +1,5 @@
 /**
- * Copyright 2018 ZTE Corporation.
+ * Copyright 2018-2020 ZTE Corporation.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -14,14 +14,11 @@
 
 package org.onap.holmes.common.aai;
 
-import com.alibaba.fastjson.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.easymock.EasyMock;
 import org.glassfish.jersey.client.HttpUrlConnectorProvider;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.onap.holmes.common.aai.config.AaiConfig;
@@ -31,20 +28,12 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.*;
 import javax.ws.rs.client.Invocation.Builder;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -61,7 +50,7 @@ public class AaiQuery4CcvpnTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    private static JSONObject data;
+    private static JsonObject data;
 
     private static AaiQuery4Ccvpn aai = AaiQuery4Ccvpn.newInstance();
 
@@ -81,7 +70,7 @@ public class AaiQuery4CcvpnTest {
             reader = new BufferedReader(new FileReader(file));
             StringBuilder sb = new StringBuilder();
             reader.lines().forEach(l -> sb.append(l));
-            data = JSONObject.parseObject(sb.toString());
+            data = JsonParser.parseString(sb.toString()).getAsJsonObject();
         } catch (FileNotFoundException e) {
             // Do nothing
         } catch (IOException e) {
@@ -152,7 +141,7 @@ public class AaiQuery4CcvpnTest {
     @Test
     public void test_getLogicLink() throws CorrelationException {
         mockGetMethod();
-        EasyMock.expect(response.readEntity(String.class)).andReturn(data.getJSONObject("logic-link").toJSONString());
+        EasyMock.expect(response.readEntity(String.class)).andReturn(data.get("logic-link").toString());
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
 
         PowerMock.replayAll();
@@ -168,32 +157,32 @@ public class AaiQuery4CcvpnTest {
     @Test
     public void test_getServiceInstances_exception() {
         mockGetMethod();
-        EasyMock.expect(response.readEntity(String.class)).andReturn(data.getJSONObject("vpn-binding").toJSONString());
+        EasyMock.expect(response.readEntity(String.class)).andReturn(data.get("vpn-binding").toString());
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
 
         mockGetMethod();
-        EasyMock.expect(response.readEntity(String.class)).andReturn(data.getJSONObject("connectivity").toJSONString());
-        EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
-
-        mockGetMethod();
-        EasyMock.expect(response.readEntity(String.class))
-                .andReturn(data.getJSONObject("service-instance-by-connectivity").toJSONString());
+        EasyMock.expect(response.readEntity(String.class)).andReturn(data.get("connectivity").toString());
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
 
         mockGetMethod();
         EasyMock.expect(response.readEntity(String.class))
-                .andReturn(data.getJSONObject("service-instances-by-service-type").toJSONString());
+                .andReturn(data.get("service-instance-by-connectivity").toString());
+        EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
+
+        mockGetMethod();
+        EasyMock.expect(response.readEntity(String.class))
+                .andReturn(data.get("service-instances-by-service-type").toString());
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.NOT_FOUND).times(2);
 
         mockGetMethod();
-        EasyMock.expect(response.readEntity(String.class)).andReturn(data.getJSONObject("service-instance").toString());
+        EasyMock.expect(response.readEntity(String.class)).andReturn(data.get("service-instance").toString());
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.NOT_FOUND).times(2);
 
         thrown.expect(RuntimeException.class);
 
         PowerMock.replayAll();
 
-        JSONObject instance = aai.getServiceInstance("network-1", "pnf-1", "interface-1", "DOWN");
+        JsonObject instance = aai.getServiceInstance("network-1", "pnf-1", "interface-1", "DOWN");
 
         PowerMock.verifyAll();
 
@@ -204,49 +193,49 @@ public class AaiQuery4CcvpnTest {
     @Test
     public void test_getServiceInstance() {
         mockGetMethod();
-        EasyMock.expect(response.readEntity(String.class)).andReturn(data.getJSONObject("vpn-binding").toJSONString());
+        EasyMock.expect(response.readEntity(String.class)).andReturn(data.get("vpn-binding").toString());
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
 
         mockGetMethod();
-        EasyMock.expect(response.readEntity(String.class)).andReturn(data.getJSONObject("connectivity").toJSONString());
-        EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
-
-        mockGetMethod();
-        EasyMock.expect(response.readEntity(String.class))
-                .andReturn(data.getJSONObject("service-instance-by-connectivity").toJSONString());
+        EasyMock.expect(response.readEntity(String.class)).andReturn(data.get("connectivity").toString());
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
 
         mockGetMethod();
         EasyMock.expect(response.readEntity(String.class))
-                .andReturn(data.getJSONObject("service-instances-by-service-type").toJSONString());
+                .andReturn(data.get("service-instance-by-connectivity").toString());
+        EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
+
+        mockGetMethod();
+        EasyMock.expect(response.readEntity(String.class))
+                .andReturn(data.get("service-instances-by-service-type").toString());
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
 
         PowerMock.replayAll();
 
-        JSONObject instance = aai.getServiceInstance("network-1", "pnf-1", "interface-1", "DOWN");
+        JsonObject instance = aai.getServiceInstance("network-1", "pnf-1", "interface-1", "DOWN");
 
         PowerMock.verifyAll();
 
-        assertThat(instance.getString("service-instance-id"), equalTo("some id 1"));
-        assertThat(instance.getString("globalSubscriberId"), equalTo("e151059a-d924-4629-845f-264db19e50b4"));
-        assertThat(instance.getString("serviceType"), equalTo("volte"));
+        assertThat(instance.get("service-instance-id").getAsString(), equalTo("some id 1"));
+        assertThat(instance.get("globalSubscriberId").getAsString(), equalTo("e151059a-d924-4629-845f-264db19e50b4"));
+        assertThat(instance.get("serviceType").getAsString(), equalTo("volte"));
     }
 
     @Test
     public void test_getServiceInstance_1() throws Exception {
         mockGetMethod();
         EasyMock.expect(response.readEntity(String.class))
-                .andReturn(data.getJSONObject("service-instances-by-service-type").toJSONString());
+                .andReturn(data.get("service-instances-by-service-type").toString());
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
 
         PowerMock.replayAll();
 
-        JSONObject instance = Whitebox.invokeMethod(aai, "getServiceInstance",
+        JsonObject instance = Whitebox.invokeMethod(aai, "getServiceInstance",
                                                     "custom-1", "service-type-1");
 
         PowerMock.verifyAll();
 
-        assertThat(instance.getString("service-instance-id"), equalTo("some id 1"));
+        assertThat(instance.get("service-instance-id").getAsString(), equalTo("some id 1"));
     }
 
     @Test
@@ -259,20 +248,20 @@ public class AaiQuery4CcvpnTest {
 
         PowerMock.replayAll();
 
-        JSONObject instance = Whitebox.invokeMethod(aai, "getServiceInstance",
+        JsonObject instance = Whitebox.invokeMethod(aai, "getServiceInstance",
                                                     "custom-1", "service-type-1");
 
         PowerMock.verifyAll();
 
-        assertThat(instance.getString("service-instance-id"), equalTo("some id 1"));
-        assertThat(instance.getString("service-instance-id"), equalTo("some id 2"));
-        assertThat(instance.getString("service-instance-id"), equalTo("some id 3"));
+        assertThat(instance.get("service-instance-id").getAsString(), equalTo("some id 1"));
+        assertThat(instance.get("service-instance-id").getAsString(), equalTo("some id 2"));
+        assertThat(instance.get("service-instance-id").getAsString(), equalTo("some id 3"));
     }
 
     @Test
     public void test_updateTerminalPointStatus() throws CorrelationException {
         mockGetMethod();
-        EasyMock.expect(response.readEntity(String.class)).andReturn(data.toJSONString());
+        EasyMock.expect(response.readEntity(String.class)).andReturn(data.toString());
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
 
         mockPatchMethod();
@@ -288,7 +277,7 @@ public class AaiQuery4CcvpnTest {
     @Test
     public void test_updateTerminalPointStatus_exception() throws CorrelationException {
         mockGetMethod();
-        EasyMock.expect(response.readEntity(String.class)).andReturn(data.toJSONString());
+        EasyMock.expect(response.readEntity(String.class)).andReturn(data.toString());
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
 
         mockPatchMethod();
@@ -307,7 +296,7 @@ public class AaiQuery4CcvpnTest {
     @Test
     public void test_updateLogicLinkStatus() throws CorrelationException {
         mockGetMethod();
-        EasyMock.expect(response.readEntity(String.class)).andReturn(data.toJSONString());
+        EasyMock.expect(response.readEntity(String.class)).andReturn(data.toString());
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
 
         mockPatchMethod();
@@ -323,7 +312,7 @@ public class AaiQuery4CcvpnTest {
     @Test
     public void test_updateLogicLinkStatus_exception() throws CorrelationException {
         mockGetMethod();
-        EasyMock.expect(response.readEntity(String.class)).andReturn(data.toJSONString());
+        EasyMock.expect(response.readEntity(String.class)).andReturn(data.toString());
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
 
         mockPatchMethod();
