@@ -16,24 +16,16 @@
 
 package org.onap.holmes.common.api.stat;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-
-import java.util.Date;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.onap.holmes.common.api.entity.ServiceNode;
+
+import java.util.Date;
+
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.*;
 
 public class AlarmTest {
 
@@ -43,39 +35,39 @@ public class AlarmTest {
     private Alarm alarm;
 
     @Before
-    public void before() throws Exception {
+    public void before() {
         alarm = new Alarm();
     }
 
     @After
-    public void after() throws Exception {
+    public void after() {
     }
 
     @Test
-    public void testContainNode_NoContainLink() throws Exception {
+    public void testContainNode_NoContainLink() {
         alarm.addLinkIdNodeIdx(1, 2);
         assertThat(false, equalTo(alarm.containNode(2, 2)));
     }
 
     @Test
-    public void testContainNode_ContainLinkNoIdx() throws Exception {
+    public void testContainNode_ContainLinkNoIdx() {
         alarm.addLinkIdNodeIdx(1, 2);
         assertFalse(alarm.containNode(1, 3));
     }
 
     @Test
-    public void testContainNode_ContainLinkAndIdx() throws Exception {
+    public void testContainNode_ContainLinkAndIdx() {
         alarm.addLinkIdNodeIdx(1, 2);
         assertTrue(alarm.containNode(1, 2));
     }
 
     @Test
-    public void testGetDataType() throws Exception {
+    public void testGetDataType() {
         assertThat(Alarm.APLUS_EVENT, equalTo(alarm.getDataType()));
     }
 
     @Test
-    public void testToString() throws Exception {
+    public void testToString() {
         Alarm alarmTempA = new Alarm();
         Alarm alarmTempB = new Alarm();
         Date date = new Date();
@@ -89,7 +81,7 @@ public class AlarmTest {
     }
 
     @Test
-    public void testHashCode() throws Exception {
+    public void testHashCode() {
         final Alarm alarmTemp = new Alarm();
         final String alarmKey = "alarmKey";
         alarm.setAlarmKey(alarmKey);
@@ -98,7 +90,7 @@ public class AlarmTest {
     }
 
     @Test
-    public void testEqualsAnd_NotNull() throws Exception {
+    public void testEqualsAnd_NotNull() {
         final Alarm alarmTemp = new Alarm();
         final String alarmKey = "alarmKey";
         alarm.setAlarmKey(alarmKey);
@@ -107,12 +99,12 @@ public class AlarmTest {
     }
 
     @Test
-    public void testEqualsAndH_isNull() throws Exception {
+    public void testEqualsAndH_isNull() {
         assertFalse(alarm.equals(null));
     }
 
     @Test
-    public void testClone() throws Exception {
+    public void testClone() throws CloneNotSupportedException {
         alarm.setAlarmKey("alarmKey");
         Alarm alarmTemp = (Alarm) alarm.clone();
         assertTrue(alarm.equals(alarmTemp));
@@ -120,40 +112,40 @@ public class AlarmTest {
     }
 
     @Test
-    public void testGetObjectId() throws Exception {
+    public void testGetObjectId() {
         alarm.setId(11);
         assertThat("11", equalTo(alarm.getObjectId()));
     }
 
     @Test
-    public void testAddLinkIds() throws Exception {
+    public void testAddLinkIds() {
         final int linkId = 11;
         alarm.addLinkIds(linkId);
         assertTrue(alarm.getLinkIds().contains(linkId));
     }
 
     @Test
-    public void testContainsPriority_true() throws Exception {
+    public void testContainsPriority_true() {
         String ruleId = "ruleId";
         alarm.getPriorityMap().put(ruleId, 2);
         assertTrue(alarm.containsPriority(ruleId));
     }
 
     @Test
-    public void testContainsPriority_false() throws Exception {
+    public void testContainsPriority_false() {
         final String ruleId = "ruleId";
         assertFalse(alarm.containsPriority(ruleId));
     }
 
     @Test
-    public void testGetPriority_isNull() throws Exception {
+    public void testGetPriority_isNull() {
         final String ruleId = "ruleId";
         alarm.getPriorityMap().put(ruleId, null);
         assertThat(0, equalTo(alarm.getPriority(ruleId)));
     }
 
     @Test
-    public void testGetPriority_notNull() throws Exception {
+    public void testGetPriority_notNull() {
         final String ruleId = "ruleId";
         final int priority = 2;
         alarm.getPriorityMap().put(ruleId, priority);
@@ -161,14 +153,14 @@ public class AlarmTest {
     }
 
     @Test
-    public void testGetAlarmTypeRuleId_isNull() throws Exception {
+    public void testGetAlarmTypeRuleId_isNull() {
         final String ruleId = "ruleId";
         alarm.getRootAlarmTypeMap().put(ruleId, null);
         assertThat(-1, equalTo(alarm.getRootAlarmType(ruleId)));
     }
 
     @Test
-    public void testGetAlarmTypeRuleId_notNull() throws Exception {
+    public void testGetAlarmTypeRuleId_notNull() {
         final String ruleId = "ruleId";
         final int rootAlarmType = 2;
         alarm.getRootAlarmTypeMap().put(ruleId, rootAlarmType);
@@ -176,21 +168,9 @@ public class AlarmTest {
     }
 
     @Test
-    public void getterAndSetter4CenterType() throws Exception {
+    public void getterAndSetter4CenterType() {
         final int centerType = 1;
         alarm.setCenterType(centerType);
         assertThat(centerType, equalTo(alarm.getCenterType()));
-    }
-    @Test
-    public void TestJson(){
-        ServiceNode serviceNode = new ServiceNode();
-        serviceNode.setIp("111");
-        String jsonString = "{\"uid\":\"189024\", \"region\":\"SouthChina\", \"order\":123}";
-        String  COMPLEX_JSON_STR = "{\"teacherName\":\"crystall\",\"teacherAge\":27,\"course\":{\"courseName\":\"english\",\"code\":1270},\"students\":[{\"studentName\":\"lily\",\"studentAge\":12},{\"studentName\":\"lucy\",\"studentAge\":15}]}";
-
-        JSONObject jsonObject = JSON.parseObject(COMPLEX_JSON_STR);
-        JSONArray jsonArray = jsonObject.getJSONArray("students");
-         System.out.printf("jsonObject:"+jsonArray);
-//     System.out.println("uid:" + retMap.get("uid") + ", " + "region:" + retMap.get("region") + ", " + "order:" + retMap.get("order"));
     }
 }

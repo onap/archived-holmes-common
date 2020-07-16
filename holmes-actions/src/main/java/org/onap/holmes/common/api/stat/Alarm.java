@@ -16,7 +16,7 @@
 
 package org.onap.holmes.common.api.stat;
 
-import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -90,7 +90,7 @@ public class Alarm implements AplusData, Cloneable, Serializable {
     @Override
     public String toString() {
 
-        return JSONObject.toJSONString(this);
+        return new Gson().toJson(this);
     }
 
     @Override

@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.holmes.common.aai
  * ================================================================================
- * Copyright (C) 2018-2019 Huawei. All rights reserved.
+ * Copyright (C) 2018-2020 Huawei. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,10 @@
 
 package org.onap.holmes.common.aai;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import lombok.extern.slf4j.Slf4j;
 import org.jvnet.hk2.annotations.Service;
 import org.onap.holmes.common.aai.config.AaiConfig;
@@ -77,14 +79,14 @@ public class AaiJsonParserUtil {
         }
     }
 
-    public static JSONObject getInfo(String response, String field) {
-        JSONObject jObject = JSONObject.parseObject(response);
-        JSONObject relationshipList = extractJsonObject(jObject, "relationship-list");
-        JSONArray relationShip = extractJsonArray(relationshipList, "relationship");
+    public static JsonObject getInfo(String response, String field) {
+        JsonObject jObject = JsonParser.parseString(response).getAsJsonObject();
+        JsonObject relationshipList = extractJsonObject(jObject, "relationship-list");
+        JsonArray relationShip = extractJsonArray(relationshipList, "relationship");
         if (relationShip != null) {
             for (int i = 0; i < relationShip.size(); ++i) {
-                final JSONObject object = relationShip.getJSONObject(i);
-                if (object.getString("related-to").equals(field)) {
+                final JsonObject object = relationShip.get(i).getAsJsonObject();
+                if (object.get("related-to").getAsString().equals(field)) {
                     return object;
                 }
             }
@@ -92,16 +94,16 @@ public class AaiJsonParserUtil {
         return null;
     }
 
-    public static JSONObject extractJsonObject(JSONObject obj, String key) {
-        if (obj != null && key != null && obj.containsKey(key)) {
-            return obj.getJSONObject(key);
+    public static JsonObject extractJsonObject(JsonObject obj, String key) {
+        if (obj != null && key != null && obj.has(key)) {
+            return obj.get(key).getAsJsonObject();
         }
         return null;
     }
 
-    public static JSONArray extractJsonArray(JSONObject obj, String key) {
-        if (obj != null && key != null && obj.containsKey(key)) {
-            return obj.getJSONArray(key);
+    public static JsonArray extractJsonArray(JsonObject obj, String key) {
+        if (obj != null && key != null && obj.has(key)) {
+            return obj.get(key).getAsJsonArray();
         }
         return null;
     }
@@ -111,11 +113,12 @@ public class AaiJsonParserUtil {
     }
 
     public static String getErrorMsg(String url, Map<String, Object> body, Response response) {
+        Gson gson = new Gson();
         StringBuilder sb = new StringBuilder();
         sb.append("Rerquest URL: ").append(url).append("\n");
-        sb.append("Request Header: ").append(JSONObject.toJSONString(getAaiHeaders())).append("\n");
+        sb.append("Request Header: ").append(gson.toJson(getAaiHeaders())).append("\n");
         if (body != null) {
-            sb.append("Request Body: ").append(JSONObject.toJSONString(body)).append("\n");
+            sb.append("Request Body: ").append(gson.toJson(body)).append("\n");
         }
         if (response != null) {
             sb.append("Request Body: ").append(response.readEntity(String.class));

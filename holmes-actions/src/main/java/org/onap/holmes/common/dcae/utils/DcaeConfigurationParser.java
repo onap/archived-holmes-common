@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 ZTE Corporation.
+ * Copyright 2017-2020 ZTE Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,20 @@
  */
 package org.onap.holmes.common.dcae.utils;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.stream.Stream;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.apache.commons.lang3.StringUtils;
 import org.onap.holmes.common.dcae.entity.DcaeConfigurations;
 import org.onap.holmes.common.dcae.entity.Rule;
 import org.onap.holmes.common.dcae.entity.SecurityInfo;
 import org.onap.holmes.common.exception.CorrelationException;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Stream;
 
 public class DcaeConfigurationParser {
 
@@ -43,9 +45,9 @@ public class DcaeConfigurationParser {
 
         DcaeConfigurations ret = new DcaeConfigurations();
 
-        JSONObject jsonObject = null;
+        JsonObject jsonObject = null;
         try {
-            jsonObject = JSON.parseObject(jsonStr);
+            jsonObject = JsonParser.parseString(jsonStr).getAsJsonObject();
         } catch (Exception e) {
             throw new CorrelationException(e.getMessage(), e);
         }
@@ -54,73 +56,73 @@ public class DcaeConfigurationParser {
         fillInPublishesInfo(ret, jsonObject);
         fillInSubscribesInfo(ret, jsonObject);
 
-        JSONObject finalJsonObject = jsonObject;
+        JsonObject finalJsonObject = jsonObject;
         Stream.of(jsonObject.keySet().toArray(new String[0]))
                 .filter(key -> !OBJECT_ATTRS.contains(key))
-                .forEach(key -> ret.put(key, finalJsonObject.getString(String.valueOf(key))));
+                .forEach(key -> ret.put(key, finalJsonObject.get(String.valueOf(key)).getAsString()));
         return ret;
     }
 
-    private static void fillInPublishesInfo(DcaeConfigurations ret, JSONObject jsonObject) {
-        if (jsonObject.containsKey("streams_publishes")) {
-            JSONObject publishes = jsonObject.getJSONObject("streams_publishes");
+    private static void fillInPublishesInfo(DcaeConfigurations ret, JsonObject jsonObject) {
+        if (jsonObject.has("streams_publishes")) {
+            JsonObject publishes = jsonObject.get("streams_publishes").getAsJsonObject();
             for (Object key : publishes.keySet()) {
                 ret.addPubSecInfo((String) key,
-                        createSecurityInfo((String) key, publishes.getJSONObject((String) key)));
+                        createSecurityInfo((String) key, publishes.get((String) key).getAsJsonObject()));
             }
         }
     }
 
-    private static void fillInSubscribesInfo(DcaeConfigurations ret, JSONObject jsonObject) {
-        if (jsonObject.containsKey("streams_subscribes")) {
-            JSONObject subscribes = jsonObject.getJSONObject("streams_subscribes");
+    private static void fillInSubscribesInfo(DcaeConfigurations ret, JsonObject jsonObject) {
+        if (jsonObject.has("streams_subscribes")) {
+            JsonObject subscribes = jsonObject.get("streams_subscribes").getAsJsonObject();
             for (Object key : subscribes.keySet()) {
                 ret.addSubSecInfo((String) key,
-                        createSecurityInfo((String) key, subscribes.getJSONObject((String) key)));
+                        createSecurityInfo((String) key, subscribes.get((String) key).getAsJsonObject()));
             }
         }
     }
 
-    private static SecurityInfo createSecurityInfo(String key, JSONObject entity) {
+    private static SecurityInfo createSecurityInfo(String key, JsonObject entity) {
         SecurityInfo securityInfo = new SecurityInfo();
-        if (entity.containsKey("type")) {
-            securityInfo.setType(entity.getString("type"));
+        if (entity.has("type") && !entity.get("type").isJsonNull()) {
+            securityInfo.setType(entity.get("type").getAsString());
         }
-        if (entity.containsKey("aaf_password")) {
-            securityInfo.setAafPassword(entity.getString("aaf_password"));
+        if (entity.has("aaf_password") && !entity.get("aaf_password").isJsonNull()) {
+            securityInfo.setAafPassword(entity.get("aaf_password").getAsString());
         }
-        if (entity.containsKey("aaf_username")) {
-            securityInfo.setAafUsername(entity.getString("aaf_username"));
+        if (entity.has("aaf_username") && !entity.get("aaf_username").isJsonNull()) {
+            securityInfo.setAafUsername(entity.get("aaf_username").getAsString());
         }
         securityInfo.setSecureTopic(!key.endsWith("unsecure"));
-        fillInDmaapInfo(securityInfo, entity.getJSONObject("dmaap_info"));
+        fillInDmaapInfo(securityInfo, entity.get("dmaap_info").getAsJsonObject());
         return securityInfo;
     }
 
-    private static void fillInDmaapInfo(SecurityInfo securityInfo, JSONObject jsonDmaapInfo) {
+    private static void fillInDmaapInfo(SecurityInfo securityInfo, JsonObject jsonDmaapInfo) {
         SecurityInfo.DmaapInfo dmaapInfo = securityInfo.getDmaapInfo();
-        if (jsonDmaapInfo.containsKey("location")){
-            dmaapInfo.setLocation(jsonDmaapInfo.getString("location"));
+        if (jsonDmaapInfo.has("location") && !jsonDmaapInfo.get("location").isJsonNull()){
+            dmaapInfo.setLocation(jsonDmaapInfo.get("location").getAsString());
         }
-        if (jsonDmaapInfo.containsKey("topic_url")) {
-            dmaapInfo.setTopicUrl(jsonDmaapInfo.getString("topic_url"));
+        if (jsonDmaapInfo.has("topic_url") && !jsonDmaapInfo.get("topic_url").isJsonNull()) {
+            dmaapInfo.setTopicUrl(jsonDmaapInfo.get("topic_url").getAsString());
         }
-        if (jsonDmaapInfo.containsKey("client_id")) {
-            dmaapInfo.setClientId(jsonDmaapInfo.getString("client_id"));
+        if (jsonDmaapInfo.has("client_id") && !jsonDmaapInfo.get("client_id").isJsonNull()) {
+            dmaapInfo.setClientId(jsonDmaapInfo.get("client_id").getAsString());
         }
-        if (jsonDmaapInfo.containsKey("client_role")) {
-            dmaapInfo.setClientRole(jsonDmaapInfo.getString("client_role"));
+        if (jsonDmaapInfo.has("client_role") && !jsonDmaapInfo.get("client_role").isJsonNull()) {
+            dmaapInfo.setClientRole(jsonDmaapInfo.get("client_role").getAsString());
         }
-        if (jsonDmaapInfo.containsKey("type")) {
-            dmaapInfo.setType(jsonDmaapInfo.getString("type"));
+        if (jsonDmaapInfo.has("type") && !jsonDmaapInfo.get("type").isJsonNull()) {
+            dmaapInfo.setType(jsonDmaapInfo.get("type").getAsString());
         }
     }
 
-    private static void fillInRules(DcaeConfigurations ret, JSONObject jsonObject) {
-        Set<Entry<String, Object>> entries = jsonObject.entrySet();
-        for (Entry<String, Object> entry : entries) {
+    private static void fillInRules(DcaeConfigurations ret, JsonObject jsonObject) {
+        Set<Entry<String, JsonElement>> entries = jsonObject.entrySet();
+        for (Entry<String, JsonElement> entry : entries) {
             if (entry.getKey().startsWith("holmes.default.rule")) {
-                String value = (String) entry.getValue();
+                String value = entry.getValue().getAsString();
                 String[] contents = value.split(RULE_CONTENT_SPLIT);
                 ret.addDefaultRule(new Rule(entry.getKey(), contents[0], contents[1], 1));
             }

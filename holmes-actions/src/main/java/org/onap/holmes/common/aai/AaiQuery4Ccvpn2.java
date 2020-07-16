@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.holmes.common.aai
  * ================================================================================
- * Copyright (C) 2018-2019 Huawei. All rights reserved.
+ * Copyright (C) 2018-2020 Huawei. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,9 @@
 
 package org.onap.holmes.common.aai;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import lombok.extern.slf4j.Slf4j;
 import org.jvnet.hk2.annotations.Service;
 import org.onap.holmes.common.aai.config.AaiConfig;
@@ -34,11 +34,7 @@ import javax.ws.rs.core.Response;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.onap.holmes.common.aai.AaiJsonParserUtil.extractJsonArray;
-import static org.onap.holmes.common.aai.AaiJsonParserUtil.get;
-import static org.onap.holmes.common.aai.AaiJsonParserUtil.getHostAddr;
-import static org.onap.holmes.common.aai.AaiJsonParserUtil.getInfo;
-import static org.onap.holmes.common.aai.AaiJsonParserUtil.getPath;
+import static org.onap.holmes.common.aai.AaiJsonParserUtil.*;
 
 @Service
 @Slf4j
@@ -62,14 +58,14 @@ public class AaiQuery4Ccvpn2 {
     private String getSiteVNFId(String siteService) throws CorrelationException {
         Response response = get(getHostAddr(), AaiConfig.MsbConsts.AAI_SITE_RESOURCES_QUERY);
         String resStr = response.readEntity(String.class);
-        JSONObject resObj = JSON.parseObject(resStr);
-        JSONArray siteResources = extractJsonArray(resObj, "site-resource");
+        JsonObject resObj = JsonParser.parseString(resStr).getAsJsonObject();
+        JsonArray siteResources = extractJsonArray(resObj, "site-resource");
         if (siteResources != null) {
             for (int i = 0; i < siteResources.size(); i++) {
-                final JSONObject object = siteResources.getJSONObject(i);
-                if (siteService.equals(object.getString("site-resource-name"))) {
-                    JSONObject vnfInfo = getInfo(object.toJSONString(), "generic-vnf");
-                    String vnfPath = vnfInfo.getString("related-link");
+                final JsonObject object = siteResources.get(i).getAsJsonObject();
+                if (siteService.equals(object.get("site-resource-name").getAsString())) {
+                    JsonObject vnfInfo = getInfo(object.toString(), "generic-vnf");
+                    String vnfPath = vnfInfo.get("related-link").getAsString();
 
                     String vnfId = null;
                     Pattern pattern = Pattern.compile("/aai/v\\d+/network/generic-vnfs/generic-vnf/(.+)");
@@ -85,23 +81,23 @@ public class AaiQuery4Ccvpn2 {
         return null;
     }
 
-    private JSONObject getServiceInstanceByVnfId(String vnfId) throws CorrelationException {
+    private JsonObject getServiceInstanceByVnfId(String vnfId) throws CorrelationException {
         Response response = get(getHostAddr(), getPath(AaiConfig.MsbConsts.AAI_SITE_VNF_QUERY,
                                                        "vnfId", vnfId));
         String resStr = response.readEntity(String.class);
         return getInfo(resStr, "service-instance");
     }
 
-    public JSONObject getSiteServiceInstance(String siteService) throws CorrelationException {
+    public JsonObject getSiteServiceInstance(String siteService) throws CorrelationException {
         String vnfId = getSiteVNFId(siteService);
         if (vnfId == null) {
             return null;
         }
-        JSONObject serviceInstanceInfo = getServiceInstanceByVnfId(vnfId);
-        String serviceInstancePath = serviceInstanceInfo.getString("related-link");
+        JsonObject serviceInstanceInfo = getServiceInstanceByVnfId(vnfId);
+        String serviceInstancePath = serviceInstanceInfo.get("related-link").getAsString();
         Response response = get(getHostAddr(), getPath(serviceInstancePath));
         String res = response.readEntity(String.class);
-        JSONObject instance = JSON.parseObject(res);
+        JsonObject instance = JsonParser.parseString(res).getAsJsonObject();
         String[] params = new String[2];
         Pattern pattern = Pattern.compile("/aai/v\\d+/business/customers/customer/(.+)" +
                                                   "/service-subscriptions/service-subscription/(.+)" +
@@ -111,9 +107,9 @@ public class AaiQuery4Ccvpn2 {
             params[0] = matcher.group(1);
             params[1] = matcher.group(2);
         }
-        instance.put("globalSubscriberId", params[0]);
-        instance.put("serviceType", params[1]);
-        instance.put("vnfId", vnfId);
+        instance.addProperty("globalSubscriberId", params[0]);
+        instance.addProperty("serviceType", params[1]);
+        instance.addProperty("vnfId", vnfId);
         return instance;
     }
 }

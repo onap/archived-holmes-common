@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 ZTE Corporation.
+ * Copyright 2017-2020 ZTE Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,9 @@
  */
 package org.onap.holmes.common.aai;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.jvnet.hk2.annotations.Service;
 import org.onap.holmes.common.aai.entity.RelationshipList;
 import org.onap.holmes.common.aai.entity.RelationshipList.RelatedToProperty;
@@ -30,6 +26,10 @@ import org.onap.holmes.common.aai.entity.RelationshipList.RelationshipData;
 import org.onap.holmes.common.aai.entity.VmEntity;
 import org.onap.holmes.common.aai.entity.VmResourceLink;
 import org.onap.holmes.common.aai.entity.VnfEntity;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Service
 public class AaiResponseUtil {
@@ -40,17 +40,17 @@ public class AaiResponseUtil {
             {
         List<VmResourceLink> vmResourceLinkList = new ArrayList<>();
         String resultDataKey = "result-data";
-        JSONObject jsonNode = JSON.parseObject(responseJson);
+                JsonObject jsonNode = JsonParser.parseString(responseJson).getAsJsonObject();
         if (jsonNode != null && jsonNode.get(resultDataKey) != null) {
-            JSONArray resultData = jsonNode.getJSONArray(resultDataKey);
+            JsonArray resultData = jsonNode.getAsJsonArray(resultDataKey);
             vmResourceLinkList = convertResultDataList(resultData);
         }
         return vmResourceLinkList;
     }
 
     public VmEntity convertJsonToVmEntity(String responseJson) {
-        JSONObject jsonObject = JSON.parseObject(responseJson);
-        if (jsonObject == null ||jsonObject.isEmpty()) {
+        JsonObject jsonObject = JsonParser.parseString(responseJson).getAsJsonObject();
+        if (jsonObject == null ||jsonObject.size() == 0) {
             return null;
         }
         VmEntity vmEntity = new VmEntity();
@@ -72,9 +72,9 @@ public class AaiResponseUtil {
     }
 
     public VnfEntity convertJsonToVnfEntity(String responseJson) {
-        JSONObject jsonObject = JSON.parseObject(responseJson);
+        JsonObject jsonObject = JsonParser.parseString(responseJson).getAsJsonObject();
 
-        if (jsonObject.isEmpty()) {
+        if (jsonObject.size() == 0) {
             return null;
         }
 
@@ -97,24 +97,24 @@ public class AaiResponseUtil {
         return vnfEntity;
     }
 
-    private void setRelationShips(JSONObject jsonObject, RelationshipList relationshipList) {
+    private void setRelationShips(JsonObject jsonObject, RelationshipList relationshipList) {
         if (jsonObject.get(RELATIONSHIP_LIST) != null) {
-            JSONObject relationshipListNode = jsonObject.getJSONObject(RELATIONSHIP_LIST);
+            JsonObject relationshipListNode = jsonObject.getAsJsonObject(RELATIONSHIP_LIST);
             String relationship = "relationship";
             if (relationshipListNode.get(relationship) != null) {
-                JSONArray relationshipNode = relationshipListNode.getJSONArray(relationship);
+                JsonArray relationshipNode = relationshipListNode.getAsJsonArray(relationship);
                 relationshipList
                         .setRelationships(convertRelationships(relationshipNode));
             }
         }
     }
 
-    private List<VmResourceLink> convertResultDataList(JSONArray resultData) {
+    private List<VmResourceLink> convertResultDataList(JsonArray resultData) {
         List<VmResourceLink> vmResourceLinkList = new ArrayList<>();
         String resourceLink = "resource-link";
         String resourceType = "resource-type";
         for (int i = 0; i < resultData.size(); i++) {
-            JSONObject jsonObject = resultData.getJSONObject(i);
+            JsonObject jsonObject = resultData.get(i).getAsJsonObject();
             if (jsonObject.get(resourceLink) != null
                     && jsonObject.get(resourceType) != null) {
                 VmResourceLink vmResourceLink = new VmResourceLink();
@@ -126,23 +126,23 @@ public class AaiResponseUtil {
         return vmResourceLinkList;
     }
 
-    private List<Relationship> convertRelationships(JSONArray relationshipNode) {
+    private List<Relationship> convertRelationships(JsonArray relationshipNode) {
         List<Relationship> relationshipList = new ArrayList<>();
         for (int i = 0; i < relationshipNode.size(); i++) {
             Relationship relationship = new Relationship();
-            JSONObject jsonObject = relationshipNode.getJSONObject(i);
+            JsonObject jsonObject = relationshipNode.get(i).getAsJsonObject();
 
             relationship.setRelatedLink(getTextElementByNode(jsonObject, "related-link"));
             relationship.setRelatedTo(getTextElementByNode(jsonObject, "related-to"));
             if (jsonObject.get("related-to-property") != null) {
-                JSONArray relatedToPropertyNode = jsonObject.getJSONArray("related-to-property");
+                JsonArray relatedToPropertyNode = jsonObject.getAsJsonArray("related-to-property");
                 relationship.setRelatedToPropertyList(
                         convertRelatedToProperty(relatedToPropertyNode));
             } else {
                 relationship.setRelatedToPropertyList(Collections.emptyList());
             }
             if (jsonObject.get("relationship-data") != null) {
-                JSONArray relationshipDataNode = jsonObject.getJSONArray("relationship-data");
+                JsonArray relationshipDataNode = jsonObject.getAsJsonArray("relationship-data");
                 relationship
                         .setRelationshipDataList(convertRelationshipDate(relationshipDataNode));
             } else {
@@ -154,10 +154,10 @@ public class AaiResponseUtil {
         return relationshipList;
     }
 
-    private List<RelationshipData> convertRelationshipDate(JSONArray relationshipDataNode) {
+    private List<RelationshipData> convertRelationshipDate(JsonArray relationshipDataNode) {
         List<RelationshipData> relationshipDataList = new ArrayList<>();
         for (int i = 0; i < relationshipDataNode.size(); i++) {
-            JSONObject jsonObject = relationshipDataNode.getJSONObject(i);
+            JsonObject jsonObject = relationshipDataNode.get(i).getAsJsonObject();
             RelationshipData relationshipData = new RelationshipData();
             relationshipData.setRelationshipKey(
                     getTextElementByNode(jsonObject, "relationship-key"));
@@ -170,10 +170,10 @@ public class AaiResponseUtil {
         return relationshipDataList;
     }
 
-    private List<RelatedToProperty> convertRelatedToProperty(JSONArray relatedToPropertyNode) {
+    private List<RelatedToProperty> convertRelatedToProperty(JsonArray relatedToPropertyNode) {
         List<RelatedToProperty> relatedToPropertyList = new ArrayList<>();
         for (int i = 0; i < relatedToPropertyNode.size(); i++) {
-            JSONObject jsonObject = relatedToPropertyNode.getJSONObject(i);
+            JsonObject jsonObject = relatedToPropertyNode.get(i).getAsJsonObject();
             RelatedToProperty relatedToProperty = new RelatedToProperty();
             relatedToProperty
                     .setPropertyKey(getTextElementByNode(jsonObject, "property-key"));
@@ -184,16 +184,16 @@ public class AaiResponseUtil {
         return relatedToPropertyList;
     }
 
-    private String getTextElementByNode(JSONObject jsonNode, String name) {
+    private String getTextElementByNode(JsonObject jsonNode, String name) {
         if (jsonNode.get(name) != null) {
-            return jsonNode.getString(name);
+            return jsonNode.get(name).getAsString();
         }
         return null;
     }
 
-    private Boolean getBooleanElementByNode(JSONObject jsonNode, String name) {
+    private Boolean getBooleanElementByNode(JsonObject jsonNode, String name) {
         if (jsonNode.get(name) != null) {
-            return jsonNode.getBoolean(name);
+            return jsonNode.get(name).getAsBoolean();
         }
         return null;
     }

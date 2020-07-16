@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 ZTE Corporation.
+ * Copyright 2017-2020 ZTE Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,6 @@
  */
 package org.onap.holmes.common.dmaap;
 
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import javax.inject.Inject;
-import lombok.extern.slf4j.Slf4j;
 import org.jvnet.hk2.annotations.Service;
 import org.onap.holmes.common.aai.AaiQuery;
 import org.onap.holmes.common.aai.entity.RelationshipList.Relationship;
@@ -30,17 +24,41 @@ import org.onap.holmes.common.api.stat.VesAlarm;
 import org.onap.holmes.common.dcae.DcaeConfigurationsCache;
 import org.onap.holmes.common.dmaap.entity.PolicyMsg;
 import org.onap.holmes.common.dmaap.entity.PolicyMsg.EVENT_STATUS;
+import org.onap.holmes.common.dmaap.store.ClosedLoopControlNameCache;
+import org.onap.holmes.common.dmaap.store.UniqueRequestIdCache;
 import org.onap.holmes.common.exception.CorrelationException;
 import org.onap.holmes.common.utils.GsonUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Slf4j
+import javax.inject.Inject;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.UUID;
+
 @Service
 public class DmaapService {
 
-    @Inject
+    private static final Logger log = LoggerFactory.getLogger(DmaapService.class);
+
     private AaiQuery aaiQuery;
-    public static final ConcurrentHashMap<String, String> loopControlNames = new ConcurrentHashMap<>();
-    public static final ConcurrentHashMap<String, String> alarmUniqueRequestID = new ConcurrentHashMap<>();
+    private ClosedLoopControlNameCache closedLoopControlNameCache;
+    private UniqueRequestIdCache uniqueRequestIdCache;
+
+    @Inject
+    public void setAaiQuery(AaiQuery aaiQuery) {
+        this.aaiQuery = aaiQuery;
+    }
+
+    @Inject
+    public void setClosedLoopControlNameCache(ClosedLoopControlNameCache closedLoopControlNameCache) {
+        this.closedLoopControlNameCache = closedLoopControlNameCache;
+    }
+
+    @Inject
+    public void setUniqueRequestIdCache(UniqueRequestIdCache uniqueRequestIdCache) {
+        this.uniqueRequestIdCache = uniqueRequestIdCache;
+    }
 
     public void publishPolicyMsg(PolicyMsg policyMsg, String dmaapConfigKey) {
         try {
@@ -48,7 +66,7 @@ public class DmaapService {
             publisher.setUrl(DcaeConfigurationsCache.getPubSecInfo(dmaapConfigKey).getDmaapInfo()
                     .getTopicUrl());
             publisher.publish(policyMsg);
-            deleteRequestId(policyMsg);
+            deleteRequestIdIfNecessary(policyMsg);
             log.info("send policyMsg: " + GsonUtil.beanToJson(policyMsg));
         } catch (CorrelationException e) {
             log.error("Failed to publish the control loop event to DMaaP", e);
@@ -79,7 +97,7 @@ public class DmaapService {
             policyMsg.setClosedLoopAlarmEnd(rootAlarm.getLastEpochMicrosec());
             policyMsg.setClosedLoopEventStatus(EVENT_STATUS.ABATED);
         }
-        policyMsg.setClosedLoopControlName(loopControlNames.get(packageName));
+        policyMsg.setClosedLoopControlName(closedLoopControlNameCache.get(packageName));
         policyMsg.setClosedLoopAlarmStart(rootAlarm.getStartEpochMicrosec());
         policyMsg.getAai().put("vserver.vserver-id", vmEntity.getVserverId());
         policyMsg.getAai().put("vserver.vserver-name", vmEntity.getVserverName());
@@ -92,7 +110,7 @@ public class DmaapService {
     private PolicyMsg getDefaultPolicyMsg(VesAlarm rootAlarm, String packageName) {
         PolicyMsg policyMsg = new PolicyMsg();
         policyMsg.setRequestID(getUniqueRequestId(rootAlarm));
-        policyMsg.setClosedLoopControlName(loopControlNames.get(packageName));
+        policyMsg.setClosedLoopControlName(closedLoopControlNameCache.get(packageName));
         policyMsg.setClosedLoopAlarmStart(rootAlarm.getStartEpochMicrosec());
         policyMsg.setTarget("vserver.vserver-name");
         policyMsg.setTargetType("VM");
@@ -112,11 +130,11 @@ public class DmaapService {
         } else {
             alarmUniqueKey = rootAlarm.getSourceId() + ":" + rootAlarm.getEventName();
         }
-        if (alarmUniqueRequestID.containsKey(alarmUniqueKey)) {
-            return alarmUniqueRequestID.get(alarmUniqueKey);
+        if (uniqueRequestIdCache.containsKey(alarmUniqueKey)) {
+            return uniqueRequestIdCache.get(alarmUniqueKey);
         } else {
             String requestID = UUID.randomUUID().toString();
-            alarmUniqueRequestID.put(alarmUniqueKey, requestID);
+            uniqueRequestIdCache.put(alarmUniqueKey, requestID);
             return requestID;
         }
     }
@@ -176,13 +194,13 @@ public class DmaapService {
         return vmEntity;
     }
 
-    private void deleteRequestId(PolicyMsg policyMsg){
+    private void deleteRequestIdIfNecessary(PolicyMsg policyMsg){
     	EVENT_STATUS status = policyMsg.getClosedLoopEventStatus();
         if(EVENT_STATUS.ABATED.equals(status)) {
             String requestId = policyMsg.getRequestID();
-            for(Entry<String, String> kv: alarmUniqueRequestID.entrySet()) {
+            for(Entry<String, String> kv: uniqueRequestIdCache.entrySet()) {
                 if(kv.getValue().equals(requestId)) {
-                    alarmUniqueRequestID.remove(kv.getKey());
+                    uniqueRequestIdCache.remove(kv.getKey());
                     break;
                 }
             }

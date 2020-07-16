@@ -1,5 +1,5 @@
 /**
- * Copyright  2017 ZTE Corporation.
+ * Copyright  2017-2020 ZTE Corporation.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,19 +15,17 @@
  */
 package org.onap.holmes.common.config;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import org.onap.holmes.common.constant.AlarmConst;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
-
-import lombok.extern.slf4j.Slf4j;
-import org.onap.holmes.common.constant.AlarmConst;
-
 import java.util.regex.Pattern;
 
-@Slf4j
 public class MicroServiceConfig {
 
     final static public String CONSUL_ADDR_SUF = ":8500/v1/catalog/service/";
@@ -39,6 +37,8 @@ public class MicroServiceConfig {
     final static public String MSB_ADDR = "MSB_ADDR";
     final static public Pattern IP_REG = Pattern.compile("(http(s)?://)?(\\d+\\.\\d+\\.\\d+\\.\\d+)(:(\\d+))?");
     final static public String AAI_HOSTNAME = "aai.onap";
+
+    final static public Logger log = LoggerFactory.getLogger(MicroServiceConfig.class);
 
     public static String getEnv(String name) {
         String value = System.getenv(name);
@@ -57,11 +57,14 @@ public class MicroServiceConfig {
         String queryString = getConsulAddrInfo() + hostname;
         log.info("Query the " + hostname + " address using the URL: " + queryString);
         try {
-            JSONObject addrJson = (JSONObject) JSON.parseArray(execQuery(queryString)).get(0);
+            JsonObject addrJson = JsonParser.parseString(execQuery(queryString))
+                    .getAsJsonArray()
+                    .get(0)
+                    .getAsJsonObject();
             if (addrJson != null && addrJson.get("ServiceAddress") != null
                     && addrJson.get("ServicePort") != null) {
-                ret = "http://" + addrJson.getString("ServiceAddress") + ":" + addrJson
-                        .getString("ServicePort");
+                ret = "http://" + addrJson.get("ServiceAddress").getAsString() + ":" + addrJson
+                        .get("ServicePort").getAsString();
             }
         } catch (Exception e) {
             log.warn(e.getMessage(), e);
