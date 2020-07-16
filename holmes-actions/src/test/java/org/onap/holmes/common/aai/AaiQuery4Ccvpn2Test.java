@@ -20,13 +20,10 @@
 
 package org.onap.holmes.common.aai;
 
-import com.alibaba.fastjson.JSONObject;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.easymock.EasyMock;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.onap.holmes.common.aai.config.AaiConfig;
@@ -43,11 +40,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 
 import static org.onap.holmes.common.config.MicroServiceConfig.MSB_ADDR;
 
@@ -59,7 +52,7 @@ public class AaiQuery4Ccvpn2Test {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    private static JSONObject data;
+    private static JsonObject data;
 
     private static AaiQuery4Ccvpn2 aai = AaiQuery4Ccvpn2.newInstance();
 
@@ -79,7 +72,7 @@ public class AaiQuery4Ccvpn2Test {
             reader = new BufferedReader(new FileReader(file));
             StringBuilder sb = new StringBuilder();
             reader.lines().forEach(l -> sb.append(l));
-            data = JSONObject.parseObject(sb.toString());
+            data = JsonParser.parseString(sb.toString()).getAsJsonObject();
         } catch (FileNotFoundException e) {
             // Do nothing
         } catch (IOException e) {
@@ -119,18 +112,15 @@ public class AaiQuery4Ccvpn2Test {
     @Test
     public void test_getServiceInstances_exception() throws CorrelationException {
         mockGetMethod();
-        EasyMock.expect(response.readEntity(String.class)).andReturn(data.getJSONObject("site-resources").toJSONString
-                ());
+        EasyMock.expect(response.readEntity(String.class)).andReturn(data.get("site-resources").toString());
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
 
         mockGetMethod();
-        EasyMock.expect(response.readEntity(String.class)).andReturn(data.getJSONObject("499hkg9933NNN").toJSONString
-                ());
+        EasyMock.expect(response.readEntity(String.class)).andReturn(data.get("499hkg9933NNN").toString());
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
 
         mockGetMethod();
-        EasyMock.expect(response.readEntity(String.class)).andReturn(data.getJSONObject("499hkg9933NNN").toJSONString
-                ());
+        EasyMock.expect(response.readEntity(String.class)).andReturn(data.get("499hkg9933NNN").toString());
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
 
         PowerMock.replayAll();
@@ -143,18 +133,15 @@ public class AaiQuery4Ccvpn2Test {
     @Test
     public void test_getServiceInstancesNull_exception() throws CorrelationException {
         mockGetMethod();
-        EasyMock.expect(response.readEntity(String.class)).andReturn(data.getJSONObject("site-resources1").toJSONString
-                ());
+        EasyMock.expect(response.readEntity(String.class)).andReturn(data.get("site-resources1").toString());
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
 
         mockGetMethod();
-        EasyMock.expect(response.readEntity(String.class)).andReturn(data.getJSONObject("499hkg9933NNN").toJSONString
-                ());
+        EasyMock.expect(response.readEntity(String.class)).andReturn(data.get("499hkg9933NNN").toString());
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
 
         mockGetMethod();
-        EasyMock.expect(response.readEntity(String.class)).andReturn(data.getJSONObject("499hkg9933NNN").toJSONString
-                ());
+        EasyMock.expect(response.readEntity(String.class)).andReturn(data.get("499hkg9933NNN").toString());
         EasyMock.expect(response.getStatusInfo()).andReturn(Response.Status.OK);
 
         PowerMock.replayAll();

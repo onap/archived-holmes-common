@@ -13,12 +13,6 @@
  */
 package org.onap.holmes.common.aai;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.inject.Inject;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -29,6 +23,12 @@ import org.onap.holmes.common.aai.entity.VmEntity;
 import org.onap.holmes.common.aai.entity.VnfEntity;
 import org.onap.holmes.common.exception.CorrelationException;
 import org.onap.holmes.common.utils.HttpsUtils;
+
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -92,30 +92,6 @@ public class AaiQuery {
 
     private String getBaseUrl(String suffixUrl) {
         return "https://aai.onap:8443" + suffixUrl;
-    }
-
-    private String getMsbSuffixAddr(String suffixUrl) {
-        if (suffixUrl.length() <= 0) {
-            return "";
-        }
-        String[] addrSplits = suffixUrl.substring(1).split("/");
-        String[] conv = addrSplits[2].split("-");
-        addrSplits[2] = conv[0];
-        if (conv.length > 1) {
-            for (int i = 1; i < conv.length; i++) {
-                addrSplits[2] = addrSplits[2] + conv[i].substring(0, 1).toUpperCase() + conv[i]
-                        .substring(1);
-            }
-        }
-        String ret = addrSplits[1];
-        addrSplits[1] = addrSplits[0] + "-" + addrSplits[2];
-        addrSplits[2] = ret;
-        addrSplits[0] = "api";
-        StringBuilder stringBuffer = new StringBuilder();
-        for (String split : addrSplits) {
-            stringBuffer.append("/" + split);
-        }
-        return stringBuffer.toString();
     }
 
     private String getResponse(String url) throws CorrelationException {

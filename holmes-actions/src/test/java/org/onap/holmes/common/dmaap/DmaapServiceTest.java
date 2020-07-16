@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 ZTE Corporation.
+ * Copyright 2017-2020 ZTE Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,6 @@
  * limitations under the License.
  */
 package org.onap.holmes.common.dmaap;
-
-import static org.easymock.EasyMock.anyObject;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-
-import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.easymock.EasyMock;
 import org.junit.Before;
@@ -45,11 +31,25 @@ import org.onap.holmes.common.dcae.DcaeConfigurationsCache;
 import org.onap.holmes.common.dcae.utils.DcaeConfigurationParser;
 import org.onap.holmes.common.dmaap.entity.PolicyMsg;
 import org.onap.holmes.common.dmaap.entity.PolicyMsg.EVENT_STATUS;
+import org.onap.holmes.common.dmaap.store.ClosedLoopControlNameCache;
+import org.onap.holmes.common.dmaap.store.UniqueRequestIdCache;
 import org.onap.holmes.common.exception.CorrelationException;
 import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
+
+import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.easymock.EasyMock.anyObject;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
 @PrepareForTest({DmaapService.class, Publisher.class, AaiQuery.class})
 @RunWith(PowerMockRunner.class)
@@ -62,17 +62,24 @@ public class DmaapServiceTest {
 
     private DmaapService dmaapService;
 
+    private ClosedLoopControlNameCache closedLoopControlNameCache = new ClosedLoopControlNameCache();
+
+    private UniqueRequestIdCache uniqueRequestIdCache = new UniqueRequestIdCache();
+
     @Before
     public void setUp() {
-        dmaapService = new DmaapService();
         aaiQuery = PowerMock.createMock(AaiQuery.class);
-        Whitebox.setInternalState(dmaapService, "aaiQuery", aaiQuery);
+
+        dmaapService = new DmaapService();
+        dmaapService.setClosedLoopControlNameCache(closedLoopControlNameCache);
+        dmaapService.setUniqueRequestIdCache(uniqueRequestIdCache);
+        dmaapService.setAaiQuery(aaiQuery);
     }
 
     @Test
     public void testDmaapService_getDefaultPolicyMsg_ok() throws Exception {
         String packageName = "org.onap.holmes.rule";
-        DmaapService.loopControlNames.put(packageName, "Control-loop-VoLTE");
+        closedLoopControlNameCache.put(packageName, "Control-loop-VoLTE");
         long startTime = System.currentTimeMillis();
         long endTime = System.currentTimeMillis() + 1000000;
         VesAlarm vesAlarm = new VesAlarm();
@@ -274,7 +281,7 @@ public class DmaapServiceTest {
         PolicyMsg policyMsg = new PolicyMsg();
         policyMsg.setClosedLoopEventStatus(EVENT_STATUS.ABATED);
         policyMsg.setRequestID("testRequestid");
-        DmaapService.alarmUniqueRequestID.put("testAlarmId", "testRequestid");
+        uniqueRequestIdCache.put("testAlarmId", "testRequestid");
         PowerMock.expectNew(Publisher.class).andReturn(publisher);
         EasyMock.expect(publisher.publish(policyMsg)).andReturn(true);
 
