@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3ba5d951_85c46008",
+        "filename": "holmes-actions/src/test/java/org/onap/holmes/common/api/stat/AlarmTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 191,
+      "author": {
+        "id": 1489
+      },
+      "writtenOn": "2020-07-17T00:55:34Z",
+      "side": 1,
+      "message": "Please remove the redundant codes.",
+      "range": {
+        "startLine": 180,
+        "startChar": 4,
+        "endLine": 191,
+        "endChar": 5
+      },
+      "revId": "aa64af6f46e08866b07906d13e2d636349274f6e",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
