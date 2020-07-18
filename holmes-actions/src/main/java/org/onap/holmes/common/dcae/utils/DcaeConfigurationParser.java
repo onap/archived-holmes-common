@@ -30,6 +30,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import static org.onap.holmes.common.utils.GsonUtil.getAsString;
+
 public class DcaeConfigurationParser {
 
     private static final String RULE_CONTENT_SPLIT = "\\$\\$\\$";
@@ -85,15 +87,9 @@ public class DcaeConfigurationParser {
 
     private static SecurityInfo createSecurityInfo(String key, JsonObject entity) {
         SecurityInfo securityInfo = new SecurityInfo();
-        if (entity.has("type") && !entity.get("type").isJsonNull()) {
-            securityInfo.setType(entity.get("type").getAsString());
-        }
-        if (entity.has("aaf_password") && !entity.get("aaf_password").isJsonNull()) {
-            securityInfo.setAafPassword(entity.get("aaf_password").getAsString());
-        }
-        if (entity.has("aaf_username") && !entity.get("aaf_username").isJsonNull()) {
-            securityInfo.setAafUsername(entity.get("aaf_username").getAsString());
-        }
+        securityInfo.setType(getAsString(entity, "type"));
+        securityInfo.setAafPassword(getAsString(entity, "aaf_password"));
+        securityInfo.setAafUsername(getAsString(entity, "aaf_username"));
         securityInfo.setSecureTopic(!key.endsWith("unsecure"));
         fillInDmaapInfo(securityInfo, entity.get("dmaap_info").getAsJsonObject());
         return securityInfo;
@@ -101,21 +97,11 @@ public class DcaeConfigurationParser {
 
     private static void fillInDmaapInfo(SecurityInfo securityInfo, JsonObject jsonDmaapInfo) {
         SecurityInfo.DmaapInfo dmaapInfo = securityInfo.getDmaapInfo();
-        if (jsonDmaapInfo.has("location") && !jsonDmaapInfo.get("location").isJsonNull()){
-            dmaapInfo.setLocation(jsonDmaapInfo.get("location").getAsString());
-        }
-        if (jsonDmaapInfo.has("topic_url") && !jsonDmaapInfo.get("topic_url").isJsonNull()) {
-            dmaapInfo.setTopicUrl(jsonDmaapInfo.get("topic_url").getAsString());
-        }
-        if (jsonDmaapInfo.has("client_id") && !jsonDmaapInfo.get("client_id").isJsonNull()) {
-            dmaapInfo.setClientId(jsonDmaapInfo.get("client_id").getAsString());
-        }
-        if (jsonDmaapInfo.has("client_role") && !jsonDmaapInfo.get("client_role").isJsonNull()) {
-            dmaapInfo.setClientRole(jsonDmaapInfo.get("client_role").getAsString());
-        }
-        if (jsonDmaapInfo.has("type") && !jsonDmaapInfo.get("type").isJsonNull()) {
-            dmaapInfo.setType(jsonDmaapInfo.get("type").getAsString());
-        }
+        dmaapInfo.setLocation(getAsString(jsonDmaapInfo, "location"));
+        dmaapInfo.setTopicUrl(getAsString(jsonDmaapInfo, "topic_url"));
+        dmaapInfo.setClientId(getAsString(jsonDmaapInfo, "client_id"));
+        dmaapInfo.setClientRole(getAsString(jsonDmaapInfo, "client_role"));
+        dmaapInfo.setType(getAsString(jsonDmaapInfo, "type"));
     }
 
     private static void fillInRules(DcaeConfigurations ret, JsonObject jsonObject) {

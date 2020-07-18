@@ -43,7 +43,6 @@ public class DcaeConfigurationParserTest {
     @Test
     public void parse() throws Exception {
         DcaeConfigurations obj = DcaeConfigurationParser.parse(readConfigurationsFromFile("dcae.config.json"));
-
         assertThat(obj.getDefaultRules().size(), equalTo(1));
         assertThat(obj.get("collector.keystore.alias"), equalTo("dynamically generated"));
         assertThat(((SecurityInfo) obj.getPubSecInfo("sec_measurement")).getAafPassword(), equalTo("aaf_password"));
