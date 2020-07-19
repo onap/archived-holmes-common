@@ -15,7 +15,7 @@ package org.onap.holmes.common.aai.config;
 
 public class AaiConfig {
 
-    private static final String AAI_API_VERSION = "v16";
+    private static final String AAI_API_VERSION = "v19";
 
     public static final String X_TRANSACTION_ID = "9999";
 
@@ -54,6 +54,14 @@ public class AaiConfig {
         public static final String AAI_SERVICE_INSTANCES_ADDR_4_CCVPN = AAI_PREF + AAI_API_VERSION + "/business/customers/customer/{global-customer-id}/service-subscriptions/service-subscription/{service-type}";
 
         public static final String AAI_VM_ADDR = AAI_PREF + "v11/search/nodes-query?search-node-type=vserver&filter=";
+
+        public static final String AAI_SERVICE = AAI_SERVICE_INSTANCES_ADDR_4_CCVPN + "/service-instances/service-instance/{instance-id}";
+
+        public static final String AAI_PNF = AAI_PREF + AAI_API_VERSION + "/network/pnfs/pnf/{pnfName}";
+
+        public static final String AAI_PNF_VALUE = AAI_PNF + "?depth=all";
+
+        public static final String AAI_PNF_ID = AAI_PREF + AAI_API_VERSION + "/network/pnfs?pnf-id={pnfId}";
     }
 
 
