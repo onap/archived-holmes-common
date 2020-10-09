@@ -33,6 +33,9 @@ public interface EngineEntityDao {
     @SqlQuery("SELECT * FROM ENGINE_ENTITY")
     List<EngineEntity> getAllEntities();
 
+    @SqlQuery("SELECT DISTINCT(ENGINEINSTANCE) FROM APLUS_RULE")
+    List<String> getLegacyEngines();
+
     @SqlUpdate("INSERT INTO ENGINE_ENTITY VALUES (:id, :ip, :port, :lastModified)")
     void insertEntity(@BindBean EngineEntity entity);
 

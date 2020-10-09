@@ -16,7 +16,7 @@
 
 package org.onap.holmes.common.engine.service;
 
-import org.glassfish.jersey.spi.Contract;
+import org.jvnet.hk2.annotations.Contract;
 import org.onap.holmes.common.engine.entity.EngineEntity;
 
 import java.util.List;
@@ -25,6 +25,7 @@ import java.util.List;
 public interface EngineEntityService {
     EngineEntity getEntity(String id);
     List<EngineEntity> getAllEntities();
+    List<String> getLegacyEngines();
     void updateEntity(EngineEntity entity);
     void insertEntity(EngineEntity entity);
     void deleteEntity(String id);

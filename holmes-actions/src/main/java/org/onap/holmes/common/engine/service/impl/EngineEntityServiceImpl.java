@@ -46,6 +46,11 @@ public class EngineEntityServiceImpl implements EngineEntityService {
     }
 
     @Override
+    public List<String> getLegacyEngines() {
+        return engineEntityDao.getLegacyEngines();
+    }
+
+    @Override
     public void updateEntity(EngineEntity entity) {
         engineEntityDao.updateEntity(entity);
     }

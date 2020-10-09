@@ -24,10 +24,7 @@ import org.onap.holmes.common.engine.entity.EngineEntity;
 import org.onap.holmes.common.engine.service.EngineEntityService;
 import org.onap.holmes.common.utils.DbDaoUtil;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.google.common.base.Predicates.notNull;
 import static org.hamcrest.core.Is.is;
@@ -35,8 +32,13 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.*;
 
 public class EngineEntityServiceImplTest {
-
     private EngineEntityService service = new EngineEntityServiceImpl(new DbDaoUtilStub());
+
+    @Test
+    public void getLegacyEngines() {
+        List<String> legacyEngines = service.getLegacyEngines();
+        assertThat(legacyEngines.size(), is(2));
+    }
 
     @Test
     public void getEntity() throws Exception {
@@ -100,6 +102,11 @@ class EngineEntityDaoStub implements EngineEntityDao {
     @Override
     public List<EngineEntity> getAllEntities() {
         return new ArrayList<>(entitySet);
+    }
+
+    @Override
+    public List<String> getLegacyEngines() {
+        return Arrays.asList("org.onap.holmes", "org.onap.holmes.legacy.1");
     }
 
     @Override
