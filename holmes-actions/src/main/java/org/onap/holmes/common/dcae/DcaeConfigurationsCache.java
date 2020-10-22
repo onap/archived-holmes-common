@@ -18,6 +18,7 @@ package org.onap.holmes.common.dcae;
 import lombok.extern.slf4j.Slf4j;
 import org.onap.holmes.common.dcae.entity.DcaeConfigurations;
 import org.onap.holmes.common.dcae.entity.SecurityInfo;
+import org.onap.holmes.common.utils.GsonUtil;
 
 @Slf4j
 public class DcaeConfigurationsCache {
@@ -39,5 +40,9 @@ public class DcaeConfigurationsCache {
 
     public synchronized static void setDcaeConfigurations(DcaeConfigurations configurations) {
         dcaeConfigurations = configurations;
+    }
+
+    public synchronized static String getDcaeConfigurations() {
+        return GsonUtil.beanToJson(dcaeConfigurations);
     }
 }

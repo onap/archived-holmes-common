@@ -71,7 +71,8 @@ public class DmaapService {
         } catch (CorrelationException e) {
             log.error("Failed to publish the control loop event to DMaaP", e);
         } catch (NullPointerException e) {
-            log.error("DMaaP configurations do not exist!");
+            log.error(String.format("DMaaP configurations do not exist!\n DCAE Configurations: \n %s",
+                    DcaeConfigurationsCache.getDcaeConfigurations()), e);
         }
     }
 

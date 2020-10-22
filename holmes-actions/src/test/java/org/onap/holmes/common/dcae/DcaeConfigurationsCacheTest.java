@@ -37,6 +37,7 @@ public class DcaeConfigurationsCacheTest {
         securityInfo.setAafUsername("tset11");
         dcaeConfigurations.addPubSecInfo("test", securityInfo);
         DcaeConfigurationsCache.setDcaeConfigurations(dcaeConfigurations);
+        System.out.println(DcaeConfigurationsCache.getDcaeConfigurations());
         assertThat(DcaeConfigurationsCache.getPubSecInfo("test").getAafUsername(),
                 equalTo(securityInfo.getAafUsername()));
     }
