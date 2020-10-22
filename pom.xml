@@ -20,7 +20,7 @@
     <artifactId>holmes-common-parent</artifactId>
     <packaging>pom</packaging>
 
-    <version>1.3.1-SNAPSHOT</version>
+    <version>1.3.2-SNAPSHOT</version>
     <name>holmes-common</name>
     <modules>
         <module>holmes-actions</module>
@@ -59,7 +59,7 @@
             <dependency>
                 <groupId>org.onap.msb.java-sdk</groupId>
                 <artifactId>msb-java-sdk</artifactId>
-                <version>1.2.5</version>
+                <version>1.2.6</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.containers</groupId>

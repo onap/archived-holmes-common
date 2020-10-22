@@ -43,23 +43,27 @@ public class MicroServiceConfigTest {
 
     @Test
     public void getMsbServerAddrTest() {
-        System.setProperty(MSB_ADDR, "test:80");
-        assertThat("http://test:80", equalTo(getMsbServerAddrWithHttpPrefix()));
-        System.clearProperty(MicroServiceConfig.MSB_ADDR);
+        System.setProperty(MSB_IAG_SERVICE_HOST, "test");
+        System.setProperty(MSB_IAG_SERVICE_PORT, "443");
+        assertThat("http://test:443", equalTo(getMsbServerAddrWithHttpPrefix()));
+        System.clearProperty(MicroServiceConfig.MSB_IAG_SERVICE_PORT);
+        System.clearProperty(MicroServiceConfig.MSB_IAG_SERVICE_HOST);
     }
 
     @Test
     public void getMsbServerIpTest() {
-        System.setProperty(MSB_ADDR, "10.54.23.79:80");
+        System.setProperty(MSB_IAG_SERVICE_HOST, "10.54.23.79");
+        System.setProperty(MSB_IAG_SERVICE_PORT, "443");
         System.setProperty(HOSTNAME, "rule-mgmt");
         PowerMock.mockStaticPartial(MicroServiceConfig.class, "getServiceConfigInfoFromCBS", String.class);
         EasyMock.expect(MicroServiceConfig.getServiceConfigInfoFromCBS(System.getProperty(HOSTNAME)))
-                .andReturn("{\"msb.hostname\": \"10.54.23.79:80\"}").times(2);
+                .andReturn("{\"msb.hostname\": \"10.54.23.79:443\"}").times(2);
         PowerMock.replayAll();
         assertThat("10.54.23.79", equalTo(getMsbIpAndPort()[0]));
-        assertThat("80", equalTo(getMsbIpAndPort()[1]));
+        assertThat("443", equalTo(getMsbIpAndPort()[1]));
         System.clearProperty(MicroServiceConfig.HOSTNAME);
-        System.clearProperty(MSB_ADDR);
+        System.clearProperty(MicroServiceConfig.MSB_IAG_SERVICE_PORT);
+        System.clearProperty(MicroServiceConfig.MSB_IAG_SERVICE_HOST);
     }
 
     @Test
@@ -159,7 +163,8 @@ public class MicroServiceConfigTest {
 
     @Ignore
     public void getMsbAddrInfo_msb_registered() throws Exception {
-        System.setProperty(MSB_ADDR, "10.74.5.8:1545");
+        System.setProperty(MSB_IAG_SERVICE_HOST, "10.74.5.8");
+        System.setProperty(MSB_IAG_SERVICE_PORT, "1545");
         System.setProperty(HOSTNAME, "rule-mgmt");
         PowerMock.mockStaticPartial(MicroServiceConfig.class, "getServiceConfigInfoFromCBS", String.class);
         EasyMock.expect(MicroServiceConfig.getServiceConfigInfoFromCBS(System.getProperty(HOSTNAME)))
@@ -173,12 +178,14 @@ public class MicroServiceConfigTest {
         assertThat(msbInfo[1], equalTo("5432"));
 
         System.clearProperty(HOSTNAME);
-        System.clearProperty(MSB_ADDR);
+        System.clearProperty(MSB_IAG_SERVICE_PORT);
+        System.clearProperty(MSB_IAG_SERVICE_HOST);
     }
 
     @Ignore
     public void getMsbAddrInfo_msb_not_registered() throws Exception {
-        System.setProperty(MSB_ADDR, "10.74.5.8:1545");
+        System.setProperty(MSB_IAG_SERVICE_HOST, "10.74.5.8");
+        System.setProperty(MSB_IAG_SERVICE_PORT, "1545");
         System.setProperty(HOSTNAME, "rule-mgmt");
         PowerMock.mockStaticPartial(MicroServiceConfig.class, "getServiceConfigInfoFromCBS", String.class);
         EasyMock.expect(MicroServiceConfig.getServiceConfigInfoFromCBS(System.getProperty(HOSTNAME)))
@@ -192,7 +199,8 @@ public class MicroServiceConfigTest {
         assertThat(msbInfo[1], equalTo("1545"));
 
         System.clearProperty(HOSTNAME);
-        System.clearProperty(MSB_ADDR);
+        System.clearProperty(MSB_IAG_SERVICE_PORT);
+        System.clearProperty(MSB_IAG_SERVICE_HOST);
     }
 
     @Test
@@ -249,7 +257,7 @@ public class MicroServiceConfigTest {
         assertThat(msbInfo[0], equalTo(ip));
         assertThat(msbInfo[1], equalTo(port));
 
-        System.clearProperty(MSB_ADDR);
+        System.clearProperty(HOSTNAME);
     }
 
     @Test
@@ -268,7 +276,7 @@ public class MicroServiceConfigTest {
         assertThat(msbInfo[0], equalTo(ip));
         assertThat(msbInfo[1], equalTo("80"));
 
-        System.clearProperty(MSB_ADDR);
+        System.clearProperty(HOSTNAME);
     }
 
     @Test
@@ -287,7 +295,7 @@ public class MicroServiceConfigTest {
         assertThat(msbInfo[0], equalTo(ip));
         assertThat(msbInfo[1], equalTo("80"));
 
-        System.clearProperty(MSB_ADDR);
+        System.clearProperty(HOSTNAME);
     }
 
     @Test
@@ -307,7 +315,7 @@ public class MicroServiceConfigTest {
         assertThat(msbInfo[0], equalTo(ip));
         assertThat(msbInfo[1], equalTo(port));
 
-        System.clearProperty(MSB_ADDR);
+        System.clearProperty(HOSTNAME);
     }
 
     @Test
@@ -342,7 +350,7 @@ public class MicroServiceConfigTest {
 
     @Test
     public void isValidIpAddress_invalid_ip_with_port() throws Exception {
-        boolean res = WhiteboxImpl.invokeMethod(MicroServiceConfig.class, "isIpAddress", "holmes-rule-mgmt:80");
+        boolean res = WhiteboxImpl.invokeMethod(MicroServiceConfig.class, "isIpAddress", "holmes-rule-mgmt:443");
         assertThat(res, is(false));
     }
 
@@ -354,7 +362,7 @@ public class MicroServiceConfigTest {
 
     @Test
     public void isValidIpAddress_invalid_ip_with_port_with_https_prefix() throws Exception {
-        boolean res = WhiteboxImpl.invokeMethod(MicroServiceConfig.class, "isIpAddress", "https://holmes-rule-mgmt:80");
+        boolean res = WhiteboxImpl.invokeMethod(MicroServiceConfig.class, "isIpAddress", "https://holmes-rule-mgmt:443");
         assertThat(res, is(false));
     }
 }
