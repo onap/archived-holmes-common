@@ -35,6 +35,8 @@ public class MicroServiceConfig {
     final static public String CONFIG_BINDING_SERVICE = "CONFIG_BINDING_SERVICE";
     final static public String DOCKER_HOST = "DOCKER_HOST";
     final static public String MSB_ADDR = "MSB_ADDR";
+    final static public String MSB_IAG_SERVICE_HOST = "MSB_IAG_SERVICE_HOST";
+    final static public String MSB_IAG_SERVICE_PORT = "MSB_IAG_SERVICE_PORT";
     final static public Pattern IP_REG = Pattern.compile("(http(s)?://)?(\\d+\\.\\d+\\.\\d+\\.\\d+)(:(\\d+))?");
     final static public String AAI_HOSTNAME = "aai.onap";
 
@@ -105,7 +107,7 @@ public class MicroServiceConfig {
     }
 
     public static String[] getMsbIpAndPort() {
-        return split(getEnv(MSB_ADDR));
+        return new String[] {getEnv(MSB_IAG_SERVICE_HOST), getEnv(MSB_IAG_SERVICE_PORT)};
     }
 
     public static String[] getMicroServiceIpAndPort() {
@@ -124,7 +126,7 @@ public class MicroServiceConfig {
         return serviceAddrInfo;
     }
 
-    private static boolean isIpAddress(String info) {
+    public static boolean isIpAddress(String info) {
         return IP_REG.matcher(info).matches();
     }
 
