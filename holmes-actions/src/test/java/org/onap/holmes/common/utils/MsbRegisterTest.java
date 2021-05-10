@@ -16,69 +16,92 @@
 
 package org.onap.holmes.common.utils;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.onap.holmes.common.config.MicroServiceConfig;
 import org.onap.holmes.common.exception.CorrelationException;
+import org.onap.msb.sdk.discovery.entity.MicroServiceFullInfo;
 import org.onap.msb.sdk.discovery.entity.MicroServiceInfo;
 import org.powermock.api.easymock.PowerMock;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.internal.WhiteboxImpl;
 
-import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
+import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.expect;
-import static org.powermock.api.easymock.PowerMock.createMock;
+import static org.powermock.api.easymock.PowerMock.createPartialMock;
 
 @PrepareForTest({MicroServiceConfig.class})
 @RunWith(PowerMockRunner.class)
+@PowerMockIgnore({"javax.net.ssl.*", "javax.security.*"})
 public class MsbRegisterTest {
-    @Test
-    public void test_register2Msb_normal() {
-        MicroServiceInfo msi = new MicroServiceInfo();
+
+    private MsbRegister msbRegister;
+    private JerseyClient mockedJerseyClient;
+    private MicroServiceInfo msi;
+
+    @Before
+    public void before() {
+        msi = new MicroServiceInfo();
         String[] msbAddrInfo = {"127.0.0.1", "80"};
 
         PowerMock.mockStatic(MicroServiceConfig.class);
         expect(MicroServiceConfig.getMsbIpAndPort()).andReturn(msbAddrInfo);
 
-        JerseyClient mockedJerseyClient = createMock(JerseyClient.class);
+        mockedJerseyClient = createPartialMock(JerseyClient.class,
+                "post", new Class[]{String.class, Entity.class, Class.class});
 
-        Client mockedClient = createMock(Client.class);
-        expect(mockedJerseyClient.client(false)).andReturn(mockedClient);
+        msbRegister = new MsbRegister();
+        WhiteboxImpl.setInternalState(msbRegister, "client", mockedJerseyClient);
+    }
 
-        WebTarget mockedWebTarget = createMock(WebTarget.class);
-        expect(mockedClient.target("http://127.0.0.1:80/api/microservices/v1/services")).andReturn(mockedWebTarget);
+    @Test
+    public void test_register2Msb_normal() {
+        expect(mockedJerseyClient.post(anyObject(String.class),
+                anyObject(Entity.class),
+                anyObject(Class.class)))
+                .andReturn(GsonUtil.jsonToBean("{\"serviceName\":\"holmes-engine-mgmt\"," +
+                                "\"version\":\"v1\",\"url\":\"/api/holmes-engine-mgmt/v1\",\"protocol\":\"REST\"," +
+                                "\"visualRange\":\"0|1\",\"lb_policy\":\"\",\"publish_port\":\"\",\"namespace\":\"\"," +
+                                "\"network_plane_type\":\"\",\"host\":\"\",\"path\":\"/api/holmes-engine-mgmt/v1\"," +
+                                "\"enable_ssl\":true,\"nodes\":[{\"ip\":\"127.0.0.1\",\"port\":\"9102\",\"checkType\":\"\"," +
+                                "\"checkUrl\":\"\",\"tls_skip_verify\":true,\"ha_role\":\"\",\"nodeId\":\"_v1_holmes-engine-mgmt_127.0.0.1_9102\"," +
+                                "\"status\":\"passing\"}],\"metadata\":[],\"labels\":[],\"status\":\"1\",\"is_manual\":false}",
+                        MicroServiceFullInfo.class));
 
+        PowerMock.replayAll();
 
-        expect(mockedWebTarget.queryParam("createOrUpdate", true)).andReturn(mockedWebTarget).times(2);
+        try {
+            msbRegister.register2Msb(msi);
+        } catch (CorrelationException e) {
+            // Do nothing
+        }
 
-        Invocation.Builder mockedBuilder = createMock(Invocation.Builder.class);
-        expect(mockedWebTarget.request(MediaType.APPLICATION_JSON)).andReturn(mockedBuilder).times(2);
+        PowerMock.verifyAll();
+    }
 
-        Response mockedResponse = createMock(Response.class);
-        expect(mockedBuilder.post(Entity.entity(msi, MediaType.APPLICATION_JSON)))
-                .andReturn(mockedResponse);
-        expect(mockedResponse.getStatus()).andReturn(300);
+    @Test
+    public void test_register2Msb_fail_once() {
+        expect(mockedJerseyClient.post(anyObject(String.class),
+                anyObject(Entity.class),
+                anyObject(Class.class)))
+                .andReturn(null);
 
-        expect(mockedBuilder.post(Entity.entity(msi, MediaType.APPLICATION_JSON)))
-                .andReturn(mockedResponse);
-        expect(mockedResponse.getStatus()).andReturn(201);
-        expect(mockedResponse.readEntity(String.class)).andReturn("Error");
-        expect(mockedResponse.readEntity(String.class)).andReturn("{\"serviceName\":\"holmes-engine-mgmt\"," +
-                "\"version\":\"v1\",\"url\":\"/api/holmes-engine-mgmt/v1\",\"protocol\":\"REST\"," +
-                "\"visualRange\":\"0|1\",\"lb_policy\":\"\",\"publish_port\":\"\",\"namespace\":\"\"," +
-                "\"network_plane_type\":\"\",\"host\":\"\",\"path\":\"/api/holmes-engine-mgmt/v1\"," +
-                "\"enable_ssl\":true,\"nodes\":[{\"ip\":\"127.0.0.1\",\"port\":\"9102\",\"checkType\":\"\"," +
-                "\"checkUrl\":\"\",\"tls_skip_verify\":true,\"ha_role\":\"\",\"nodeId\":\"_v1_holmes-engine-mgmt_127.0.0.1_9102\"," +
-                "\"status\":\"passing\"}],\"metadata\":[],\"labels\":[],\"status\":\"1\",\"is_manual\":false}");
-
-
-        MsbRegister msbRegister = new MsbRegister(mockedJerseyClient);
+        expect(mockedJerseyClient.post(anyObject(String.class),
+                anyObject(Entity.class),
+                anyObject(Class.class)))
+                .andReturn(GsonUtil.jsonToBean("{\"serviceName\":\"holmes-engine-mgmt\"," +
+                                "\"version\":\"v1\",\"url\":\"/api/holmes-engine-mgmt/v1\",\"protocol\":\"REST\"," +
+                                "\"visualRange\":\"0|1\",\"lb_policy\":\"\",\"publish_port\":\"\",\"namespace\":\"\"," +
+                                "\"network_plane_type\":\"\",\"host\":\"\",\"path\":\"/api/holmes-engine-mgmt/v1\"," +
+                                "\"enable_ssl\":true,\"nodes\":[{\"ip\":\"127.0.0.1\",\"port\":\"9102\",\"checkType\":\"\"," +
+                                "\"checkUrl\":\"\",\"tls_skip_verify\":true,\"ha_role\":\"\",\"nodeId\":\"_v1_holmes-engine-mgmt_127.0.0.1_9102\"," +
+                                "\"status\":\"passing\"}],\"metadata\":[],\"labels\":[],\"status\":\"1\",\"is_manual\":false}",
+                        MicroServiceFullInfo.class));
 
         PowerMock.replayAll();
 

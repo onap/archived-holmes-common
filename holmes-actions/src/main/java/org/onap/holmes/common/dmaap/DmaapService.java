@@ -67,12 +67,14 @@ public class DmaapService {
                     .getTopicUrl());
             publisher.publish(policyMsg);
             deleteRequestIdIfNecessary(policyMsg);
+
             log.info("send policyMsg: " + GsonUtil.beanToJson(policyMsg));
-        } catch (CorrelationException e) {
-            log.error("Failed to publish the control loop event to DMaaP", e);
         } catch (NullPointerException e) {
             log.error(String.format("DMaaP configurations do not exist!\n DCAE Configurations: \n %s",
                     DcaeConfigurationsCache.getDcaeConfigurations()), e);
+        } catch (Exception e) {
+            log.error(String.format("An error occurred when publishing a message to Policy: %s",
+                    e.getMessage()), e);
         }
     }
 
@@ -83,7 +85,7 @@ public class DmaapService {
     }
 
     private PolicyMsg getEnrichedPolicyMsg(VmEntity vmEntity, VesAlarm rootAlarm, VesAlarm childAlarm,
-            String packageName) {
+                                           String packageName) {
         PolicyMsg policyMsg = new PolicyMsg();
         policyMsg.setRequestID(getUniqueRequestId(rootAlarm));
         if (rootAlarm.getAlarmIsCleared() == PolicyMassgeConstant.POLICY_MESSAGE_ONSET) {
@@ -91,7 +93,7 @@ public class DmaapService {
             policyMsg.setClosedLoopEventStatus(EVENT_STATUS.ONSET);
             policyMsg.getAai().put("vserver.in-maint", vmEntity.getInMaint());
             policyMsg.getAai().put("vserver.is-closed-loop-disabled",
-                        vmEntity.getClosedLoopDisable());
+                    vmEntity.getClosedLoopDisable());
             policyMsg.getAai().put("vserver.prov-status", vmEntity.getProvStatus());
             policyMsg.getAai().put("vserver.resource-version", vmEntity.getResourceVersion());
         } else {
@@ -195,12 +197,12 @@ public class DmaapService {
         return vmEntity;
     }
 
-    private void deleteRequestIdIfNecessary(PolicyMsg policyMsg){
-    	EVENT_STATUS status = policyMsg.getClosedLoopEventStatus();
-        if(EVENT_STATUS.ABATED.equals(status)) {
+    private void deleteRequestIdIfNecessary(PolicyMsg policyMsg) {
+        EVENT_STATUS status = policyMsg.getClosedLoopEventStatus();
+        if (EVENT_STATUS.ABATED.equals(status)) {
             String requestId = policyMsg.getRequestID();
-            for(Entry<String, String> kv: uniqueRequestIdCache.entrySet()) {
-                if(kv.getValue().equals(requestId)) {
+            for (Entry<String, String> kv : uniqueRequestIdCache.entrySet()) {
+                if (kv.getValue().equals(requestId)) {
                     uniqueRequestIdCache.remove(kv.getKey());
                     break;
                 }

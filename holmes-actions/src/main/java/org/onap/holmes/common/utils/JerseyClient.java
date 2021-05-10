@@ -16,33 +16,33 @@
 
 package org.onap.holmes.common.utils;
 
-import org.glassfish.jersey.client.ClientConfig;
-import org.jvnet.hk2.annotations.Service;
+import org.eclipse.jetty.http.HttpStatus;
+import org.onap.holmes.common.exception.HttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.*;
+import javax.ws.rs.core.Response;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
-@Service
 public class JerseyClient {
-    private static Logger logger = LoggerFactory.getLogger(JerseyClient.class);
-    public static final String PROTOCOL_HTTP = "http";
-    public static final String PROTOCOL_HTTPS = "https";
-    private SSLContext sslcontext = null;
+    static final public String PROTOCOL_HTTP = "http";
+    static final public String PROTOCOL_HTTPS = "https";
+    static private Logger logger = LoggerFactory.getLogger(JerseyClient.class);
+    static private long DEFAULT_TIMEOUT = TimeUnit.SECONDS.toMillis(30);
+    static private SSLContext SSLCONTEXT;
 
-    @PostConstruct
-    private void init() {
+    static {
         try {
-            sslcontext = SSLContext.getInstance("TLS");
-            sslcontext.init(null, new TrustManager[]{new X509TrustManager() {
+            SSLCONTEXT = SSLContext.getInstance("TLS");
+            SSLCONTEXT.init(null, new TrustManager[]{new X509TrustManager() {
                 public void checkClientTrusted(X509Certificate[] arg0, String arg1) {
                 }
 
@@ -58,18 +58,174 @@ public class JerseyClient {
         }
     }
 
-    public Client httpClient() {
-        return ClientBuilder.newClient(new ClientConfig());
+    private Client client;
+    private Map<String, Object> headers = new HashMap();
+    private Map<String, Object> parameters = new HashMap();
+    private List<String> paths = new ArrayList();
+
+
+    public JerseyClient() {
+        this(DEFAULT_TIMEOUT);
     }
 
-    public Client httpsClient() {
-        return ClientBuilder.newBuilder()
-                .sslContext(sslcontext)
+    public JerseyClient(long timeout) {
+        this.client = ClientBuilder.newBuilder()
+                .connectTimeout(timeout, TimeUnit.MILLISECONDS)
+                .readTimeout(timeout, TimeUnit.MILLISECONDS)
+                .sslContext(SSLCONTEXT)
                 .hostnameVerifier((s1, s2) -> true)
                 .build();
     }
 
-    public Client client(boolean isHttps) {
-        return isHttps ? httpsClient() : httpClient();
+    public JerseyClient header(String name, Object value) {
+        headers.put(name, value);
+        return this;
+    }
+
+    public JerseyClient headers(Map<String, Object> hds) {
+        headers.putAll(hds);
+        return this;
+    }
+
+    public JerseyClient queryParam(String name, Object value) {
+        parameters.put(name, value);
+        return this;
+    }
+
+    public JerseyClient queryParams(Map<String, Object> params) {
+        parameters.putAll(params);
+        return this;
+    }
+
+    public JerseyClient path(String path) {
+        paths.add(path);
+        return this;
+    }
+
+    public String get(String url) {
+        return get(url, String.class);
+    }
+
+    public <T> T get(String url, Class<T> clazz) {
+
+        WebTarget target = appendPaths(client.target(url));
+
+        target = setParameters(target);
+
+        Invocation.Builder builder = setHeaders(target.request());
+
+        Response response = builder.get();
+
+        if (isSuccessful(response)) {
+            return response2Target(response, clazz);
+        }
+
+        return null;
+    }
+
+    public String post(String url) {
+        return post(url, null);
+    }
+
+    public String post(String url, Entity entity) {
+        return post(url, entity, String.class);
+    }
+
+    public <T> T post(String url, Entity entity, Class<T> clazz) {
+
+        WebTarget target = appendPaths(client.target(url));
+
+        setParameters(target);
+
+        Invocation.Builder builder = setHeaders(target.request());
+
+        Response response = builder.post(entity);
+
+        if (isSuccessful(response)) {
+            return response2Target(response, clazz);
+        }
+
+        return null;
+    }
+
+    public String put(String url, Entity entity) {
+        return put(url, entity, String.class);
+    }
+
+    public <T> T put(String url, Entity entity, Class<T> clazz) {
+        WebTarget target = appendPaths(client.target(url));
+
+        setParameters(target);
+
+        Invocation.Builder builder = setHeaders(target.request());
+
+        Response response = builder.put(entity);
+
+        if (isSuccessful(response)) {
+            return response2Target(response, clazz);
+        }
+
+        return null;
+    }
+
+    public String delete(String url) {
+        return delete(url, String.class);
+    }
+
+    public <T> T delete(String url, Class<T> clazz) {
+        WebTarget target = appendPaths(client.target(url));
+
+        setParameters(target);
+
+        Invocation.Builder builder = setHeaders(target.request());
+
+        Response response = builder.delete();
+
+        if (isSuccessful(response)) {
+            return response2Target(response, clazz);
+        }
+
+        return null;
+    }
+
+    private boolean isSuccessful(Response response) {
+        int status = response.getStatus();
+        if (!HttpStatus.isSuccess(status)) {
+            throw new HttpException(status, String.format("Failed to get response from the server. Info: %s",
+                    response.readEntity(String.class)));
+        }
+        return true;
+    }
+
+    private WebTarget appendPaths(WebTarget target) {
+        for (String path : paths) {
+            target = target.path(path);
+        }
+        return target;
+    }
+
+    private Invocation.Builder setHeaders(Invocation.Builder builder) {
+        Set<Map.Entry<String, Object>> entries = headers.entrySet();
+        for (Map.Entry<String, Object> entry : entries) {
+            builder = builder.header(entry.getKey(), entry.getValue());
+        }
+        return builder;
+    }
+
+    private WebTarget setParameters(WebTarget target) {
+        Set<Map.Entry<String, Object>> entries = parameters.entrySet();
+        for (Map.Entry<String, Object> entry : entries) {
+            target = target.queryParam(entry.getKey(), entry.getValue());
+        }
+        return target;
+    }
+
+    private <T> T response2Target(Response response, Class<T> clazz) {
+        String responseText = response.readEntity(String.class);
+        if (clazz == null || clazz == String.class) {
+            return (T) responseText;
+        } else {
+            return GsonUtil.jsonToBean(responseText, clazz);
+        }
     }
 }

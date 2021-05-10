@@ -16,37 +16,34 @@
 
 package org.onap.holmes.common.aai;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.easymock.EasyMock;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.onap.holmes.common.aai.config.AaiConfig;
 import org.onap.holmes.common.aai.entity.VmEntity;
 import org.onap.holmes.common.aai.entity.VnfEntity;
 import org.onap.holmes.common.config.MicroServiceConfig;
 import org.onap.holmes.common.exception.CorrelationException;
-import org.onap.holmes.common.utils.HttpsUtils;
+import org.onap.holmes.common.exception.HttpException;
+import org.onap.holmes.common.utils.JerseyClient;
 import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.expect;
+import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 
 
-@PrepareForTest({AaiQuery.class, HttpsUtils.class, MicroServiceConfig.class, HttpGet.class})
+@PrepareForTest({AaiQuery.class, MicroServiceConfig.class})
 @PowerMockIgnore("javax.net.ssl.*")
 @RunWith(PowerMockRunner.class)
 public class AaiQueryTest {
@@ -75,7 +72,7 @@ public class AaiQueryTest {
         VnfEntity vnfEntity = Whitebox.invokeMethod(aaiQuery, "getAaiVnfData", "test1", "test2");
         PowerMock.verifyAll();
 
-        assertThat(vnfEntity == null, equalTo(true));
+        assertThat(vnfEntity, is(nullValue()));
     }
 
     @Test
@@ -100,64 +97,24 @@ public class AaiQueryTest {
         aaiQuery = PowerMock.createPartialMock(AaiQuery.class, "getVmResourceLinks");
         aaiResponseUtil = new AaiResponseUtil();
         Whitebox.setInternalState(aaiQuery, "aaiResponseUtil", aaiResponseUtil);
-        PowerMock.mockStatic(HttpsUtils.class);
-        Map<String, String> headers = new HashMap<>();
-        headers.put("X-TransactionId", AaiConfig.X_TRANSACTION_ID);
-        headers.put("X-FromAppId", AaiConfig.X_FROMAPP_ID);
-        headers.put("Authorization", AaiConfig.getAuthenticationCredentials());
-        headers.put("Accept", "application/json");
+
         String url = "https://aai.onap:8443/aai/v11/cloud-infrastructure";
-        HttpResponse httpResponse = PowerMock.createMock(HttpResponse.class);
-        CloseableHttpClient httpClient = PowerMock.createMock(CloseableHttpClient.class);
-        expect(HttpsUtils.getHttpsClient(30000)).andReturn(httpClient);
-        HttpGet httpGet = new HttpGet(url);
-        PowerMock.expectNew(HttpGet.class, url).andReturn(httpGet);
-        expect(HttpsUtils.get(anyObject(HttpGet.class), anyObject(Map.class),
-                anyObject(CloseableHttpClient.class))).andReturn(httpResponse);
-        expect(HttpsUtils.extractResponseEntity(httpResponse)).andReturn("{}");
+
+        JerseyClient mockedClient = PowerMock.createMock(JerseyClient.class);
+        PowerMock.expectNew(JerseyClient.class).andReturn(mockedClient);
+        EasyMock.expect(mockedClient.headers(EasyMock.anyObject(Map.class))).andReturn(mockedClient);
+        EasyMock.expect(mockedClient.get(url)).andReturn("{}");
 
         PowerMock.expectPrivate(aaiQuery, "getVmResourceLinks", "test1", "test2")
                 .andReturn("/aai/v11/cloud-infrastructure");
-        PowerMock.expectPrivate(httpClient, "close");
-        EasyMock.expectLastCall();
+
         PowerMock.replayAll();
+
         VmEntity vmEntity = Whitebox.invokeMethod(aaiQuery, "getAaiVmData", "test1", "test2");
+
         PowerMock.verifyAll();
 
-        assertThat(vmEntity == null, equalTo(true));
-    }
-
-    @Test
-    public void testAaiQuery_getAaiVmData_httpsutils_exception() throws Exception {
-        PowerMock.resetAll();
-        thrown.expect(CorrelationException.class);
-        thrown.expectMessage("Failed to get data from aai");
-        aaiQuery = PowerMock.createPartialMock(AaiQuery.class, "getVmResourceLinks");
-
-        aaiResponseUtil = new AaiResponseUtil();
-        Whitebox.setInternalState(aaiQuery, "aaiResponseUtil", aaiResponseUtil);
-
-        PowerMock.mockStatic(HttpsUtils.class);
-        Map<String, String> headers = new HashMap<>();
-        headers.put("X-TransactionId", AaiConfig.X_TRANSACTION_ID);
-        headers.put("X-FromAppId", AaiConfig.X_FROMAPP_ID);
-        headers.put("Authorization", AaiConfig.getAuthenticationCredentials());
-        headers.put("Accept", "application/json");
-        String url = "https://aai.onap:8443/aai/v11/cloud-infrastructure";
-        CloseableHttpClient httpClient = PowerMock.createMock(CloseableHttpClient.class);
-        EasyMock.expect(HttpsUtils.getHttpsClient(30000)).andReturn(httpClient);
-        HttpGet httpGet = new HttpGet(url);
-        PowerMock.expectNew(HttpGet.class, url).andReturn(httpGet);
-        EasyMock.expect(HttpsUtils.get(anyObject(HttpGet.class), anyObject(Map.class),
-                anyObject(CloseableHttpClient.class))).andThrow(new CorrelationException(""));
-        PowerMock.mockStatic(MicroServiceConfig.class);
-        PowerMock.expectPrivate(aaiQuery, "getVmResourceLinks", "test1", "test2")
-                .andReturn("/aai/v11/cloud-infrastructure");
-        PowerMock.expectPrivate(httpClient, "close");
-        EasyMock.expectLastCall();
-        PowerMock.replayAll();
-        Whitebox.invokeMethod(aaiQuery, "getAaiVmData", "test1", "test2");
-        PowerMock.verifyAll();
+        assertThat(vmEntity, is(nullValue()));
     }
 
     @Test
@@ -177,7 +134,6 @@ public class AaiQueryTest {
 
         assertThat(resource, equalTo("le-vserver-id-val-51834"));
     }
-
 
     @Test
     public void testAaiQuery_getResourceLinksResponse() throws Exception {
@@ -215,24 +171,13 @@ public class AaiQueryTest {
     public void testAaiQuery_getResponse_ok() throws Exception {
         PowerMock.resetAll();
         aaiQuery = new AaiQuery();
-        PowerMock.mockStatic(HttpsUtils.class);
-        Map<String, String> headers = new HashMap<>();
-        headers.put("X-TransactionId", AaiConfig.X_TRANSACTION_ID);
-        headers.put("X-FromAppId", AaiConfig.X_FROMAPP_ID);
-        headers.put("Authorization", AaiConfig.getAuthenticationCredentials());
-        headers.put("Accept", "application/json");
+
         String url = "host_url";
 
-        HttpResponse httpResponse = PowerMock.createMock(HttpResponse.class);
-        CloseableHttpClient httpClient = PowerMock.createMock(CloseableHttpClient.class);
-        expect(HttpsUtils.getHttpsClient(30000)).andReturn(httpClient);
-        HttpGet httpGet = new HttpGet(url);
-        PowerMock.expectNew(HttpGet.class, url).andReturn(httpGet);
-        expect(HttpsUtils.get(anyObject(HttpGet.class), anyObject(Map.class),
-                anyObject(CloseableHttpClient.class))).andReturn(httpResponse);
-        expect(HttpsUtils.extractResponseEntity(httpResponse)).andReturn("");
-        PowerMock.expectPrivate(httpClient, "close");
-        EasyMock.expectLastCall();
+        JerseyClient mockedClient = PowerMock.createMock(JerseyClient.class);
+        PowerMock.expectNew(JerseyClient.class).andReturn(mockedClient);
+        EasyMock.expect(mockedClient.headers(EasyMock.anyObject(Map.class))).andReturn(mockedClient);
+        EasyMock.expect(mockedClient.get(url)).andReturn("");
 
         PowerMock.replayAll();
         String resource = Whitebox.invokeMethod(aaiQuery, "getResponse", "host_url");
@@ -242,28 +187,21 @@ public class AaiQueryTest {
     }
 
     @Test
-    public void testAaiQuery_getResponse_exceptioin() throws Exception {
+    public void testAaiQuery_getResponse_exception() throws Exception {
         PowerMock.resetAll();
         thrown.expect(CorrelationException.class);
         thrown.expectMessage("Failed to get data from aai");
         aaiQuery = new AaiQuery();
 
-        PowerMock.mockStatic(HttpsUtils.class);
-        Map<String, String> headers = new HashMap<>();
-        headers.put("X-TransactionId", AaiConfig.X_TRANSACTION_ID);
-        headers.put("X-FromAppId", AaiConfig.X_FROMAPP_ID);
-        headers.put("Authorization", AaiConfig.getAuthenticationCredentials());
-        headers.put("Accept", "application/json");
         String url = "host_url";
-        CloseableHttpClient httpClient = PowerMock.createMock(CloseableHttpClient.class);
-        expect(HttpsUtils.getHttpsClient(30000)).andReturn(httpClient);
-        HttpGet httpGet = new HttpGet(url);
-        PowerMock.expectNew(HttpGet.class, url).andReturn(httpGet);
-        expect(HttpsUtils.get(httpGet, headers, httpClient)).andThrow(new CorrelationException(""));
-        PowerMock.expectPrivate(httpClient, "close");
-        EasyMock.expectLastCall();
+
+        JerseyClient mockedClient = PowerMock.createMock(JerseyClient.class);
+        PowerMock.expectNew(JerseyClient.class).andReturn(mockedClient);
+        EasyMock.expect(mockedClient.headers(EasyMock.anyObject(Map.class))).andReturn(mockedClient);
+        EasyMock.expect(mockedClient.get(url)).andThrow(new HttpException(404, "Not Found"));
+
         PowerMock.replayAll();
-        String resource = Whitebox.invokeMethod(aaiQuery, "getResponse", "host_url");
+        String resource = Whitebox.invokeMethod(aaiQuery, "getResponse", url);
         PowerMock.verifyAll();
         assertThat(resource, equalTo(""));
     }

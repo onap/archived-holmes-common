@@ -14,44 +14,35 @@
 
 package org.onap.holmes.common.aai;
 
-import static org.junit.Assert.assertEquals;
-import static org.onap.holmes.common.config.MicroServiceConfig.MSB_ADDR;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import org.easymock.EasyMock;
+import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.onap.holmes.common.aai.config.AaiConfig;
 import org.onap.holmes.common.config.MicroServiceConfig;
-import org.onap.holmes.common.utils.HttpsUtils;
+import org.onap.holmes.common.utils.JerseyClient;
 import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
+import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.easymock.EasyMock.anyObject;
+import static org.junit.Assert.assertEquals;
+import static org.onap.holmes.common.config.MicroServiceConfig.MSB_ADDR;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore("javax.net.ssl.*")
-@PrepareForTest({AaiQueryMdons.class, HttpsUtils.class, MicroServiceConfig.class, HttpGet.class})
+@PrepareForTest({AaiQueryMdons.class, MicroServiceConfig.class})
 public class AaiQueryMdonsTest {
 
     @Rule
@@ -62,7 +53,6 @@ public class AaiQueryMdonsTest {
 
     private static JsonObject data;
 
-    private HttpResponse httpResponse;
     private static final String AAI_ADDR = "https://aai.onap:8443/aai/v19/";
 
     @BeforeClass
@@ -101,7 +91,6 @@ public class AaiQueryMdonsTest {
 
     @Before
     public void before() {
-        httpResponse = PowerMock.createMock(HttpResponse.class);
         Whitebox.setInternalState(aaiMdonsQuery, "headers", headers);
 
     }
@@ -158,12 +147,16 @@ public class AaiQueryMdonsTest {
         String response =
                 "{\"link-name\":\"link1\",\"in-maint\":false,\"link-type\":\"inter-domain\",\"available-capacity\":\"ODU2\",\"resource-version\":\"1584338211407\",\"operational-status\":\"down\"}";
 
-        aaiMdonsQuery = PowerMock.createPartialMock(AaiQueryMdons.class, "getResponse", "put");
+        aaiMdonsQuery = PowerMock.createPartialMock(AaiQueryMdons.class, "getResponse");
+
+        JerseyClient mockedClient = PowerMock.createMock(JerseyClient.class);
+        PowerMock.expectNew(JerseyClient.class).andReturn(mockedClient);
+        EasyMock.expect(mockedClient.headers(anyObject(Map.class))).andReturn(mockedClient);
+        EasyMock.expect(mockedClient.put(anyObject(String.class), anyObject(Entity.class))).andReturn("");
 
         PowerMock.expectPrivate(aaiMdonsQuery, "getResponse", accessService)
                 .andReturn(data.get("get-access-service").toString());
         PowerMock.expectPrivate(aaiMdonsQuery, "getResponse", linkUrl).andReturn(data.get("get-inter-link").toString());
-        PowerMock.expectPrivate(aaiMdonsQuery, "put", linkUrl, response).andReturn(httpResponse);
 
         PowerMock.replayAll();
         Whitebox.invokeMethod(aaiMdonsQuery, "updateLinksForAccessService", accessMap);

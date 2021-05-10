@@ -15,73 +15,39 @@
  */
 package org.onap.holmes.common.dmaap;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.StatusLine;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.commons.lang3.StringUtils;
 import org.easymock.EasyMock;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.onap.holmes.common.dmaap.entity.PolicyMsg;
-import org.onap.holmes.common.exception.CorrelationException;
-import org.onap.holmes.common.utils.HttpsUtils;
+import org.onap.holmes.common.utils.JerseyClient;
 import org.powermock.api.easymock.PowerMock;
-import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.internal.WhiteboxImpl;
 
-import java.util.HashMap;
+import javax.ws.rs.client.Entity;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.easymock.EasyMock.anyObject;
 
-@PrepareForTest({HttpsUtils.class, HttpResponse.class, Publisher.class})
 @RunWith(PowerMockRunner.class)
+@PowerMockIgnore({"javax.net.ssl.*", "javax.security.*"})
 public class PublisherTest {
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
-    private static final String URL = "http://localhost/dmaapTopic";
-
     @Test
-    public void publish_exception() throws Exception {
+    public void publish_normal() {
 
         Publisher publisher = new Publisher();
-        publisher.setUrl(URL);
+        publisher.setUrl("http://localhost/dmaapTopic");
 
-        thrown.expect(CorrelationException.class);
-        thrown.expectMessage("Failed to connect to DCAE");
-
-        publisher.publish(new PolicyMsg());
-    }
-
-    @Test
-    public void publish_normal() throws Exception {
-
-        Publisher publisher = new Publisher();
-        publisher.setUrl(URL);
-
-        PowerMock.mockStatic(HttpsUtils.class);
-        CloseableHttpClient httpClient = PowerMock.createMock(CloseableHttpClient.class);
-        EasyMock.expect(HttpsUtils.getConditionalHttpsClient(HttpsUtils.DEFUALT_TIMEOUT)).andReturn(httpClient);
-        HttpResponse httpResponse = PowerMock.createMock(HttpResponse.class);
-        EasyMock.expect(HttpsUtils
-                .post(EasyMock.anyObject(HttpPost.class), EasyMock.anyObject(HashMap.class),
-                        EasyMock.anyObject(HashMap.class), EasyMock.anyObject(StringEntity.class),
-                        EasyMock.anyObject(CloseableHttpClient.class))).andReturn(httpResponse);
-        StatusLine statusLine = PowerMock.createMock(StatusLine.class);
-        EasyMock.expect(httpResponse.getStatusLine()).andReturn(statusLine);
-        EasyMock.expect(statusLine.getStatusCode()).andReturn(HttpStatus.SC_OK);
-        httpClient.close();
-        EasyMock.expectLastCall();
+        JerseyClient mockedJerseyClient = PowerMock.createMock(JerseyClient.class);
+        WhiteboxImpl.setInternalState(publisher, "client", mockedJerseyClient);
+        EasyMock.expect(mockedJerseyClient.post(anyObject(String.class), anyObject(Entity.class)))
+                .andReturn(StringUtils.EMPTY);
 
         PowerMock.replayAll();
 
-        assertThat(publisher.publish(new PolicyMsg()), is(true));
+        publisher.publish(new PolicyMsg());
 
         PowerMock.verifyAll();
     }
