@@ -119,7 +119,26 @@ public class MicroServiceConfigTest {
     }
 
     @Test
-    public void getConfigBindingServiceAddrInfoTest_consul_exists_propertie_not_exist() throws Exception {
+    public void getConfigBindingServiceAddrInfoTest_consul_return_empty_array() throws Exception {
+        System.setProperty(CONFIG_BINDING_SERVICE, "config_binding_service");
+        PowerMock.mockStaticPartial(MicroServiceConfig.class, "execQuery", String.class);
+        PowerMock.expectPrivate(MicroServiceConfig.class, "execQuery", EasyMock.anyObject())
+                .andReturn("[]");
+        System.setProperty(CONSUL_HOST, "127.0.0.1");
+
+        PowerMock.replayAll();
+
+        assertThat(getServiceAddrInfoFromDcaeConsulByHostName(System.getProperty(CONFIG_BINDING_SERVICE)),
+                is(nullValue()));
+
+        PowerMock.verifyAll();
+
+        System.clearProperty(CONSUL_HOST);
+        System.clearProperty(CONFIG_BINDING_SERVICE);
+    }
+
+    @Test
+    public void getConfigBindingServiceAddrInfoTest_consul_exists_property_not_exist() throws Exception {
         System.setProperty(CONFIG_BINDING_SERVICE, "config_binding_service");
         PowerMock.mockStaticPartial(MicroServiceConfig.class, "execQuery", String.class);
         PowerMock.expectPrivate(MicroServiceConfig.class, "execQuery", EasyMock.anyObject())
