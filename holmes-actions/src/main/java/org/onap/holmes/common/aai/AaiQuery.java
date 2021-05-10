@@ -14,18 +14,14 @@
 package org.onap.holmes.common.aai;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.jvnet.hk2.annotations.Service;
 import org.onap.holmes.common.aai.config.AaiConfig;
 import org.onap.holmes.common.aai.entity.VmEntity;
 import org.onap.holmes.common.aai.entity.VnfEntity;
 import org.onap.holmes.common.exception.CorrelationException;
-import org.onap.holmes.common.utils.HttpsUtils;
+import org.onap.holmes.common.utils.JerseyClient;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -95,26 +91,11 @@ public class AaiQuery {
     }
 
     private String getResponse(String url) throws CorrelationException {
-        String response;
-        CloseableHttpClient httpClient = null;
-        HttpGet httpGet = new HttpGet(url);
         try {
-            httpClient = HttpsUtils.getHttpsClient(HttpsUtils.DEFUALT_TIMEOUT);
-            HttpResponse httpResponse = HttpsUtils.get(httpGet, getHeaders(), httpClient);
-            response = HttpsUtils.extractResponseEntity(httpResponse);
+            return new JerseyClient().headers(getHeaders()).get(url);
         } catch (Exception e) {
             throw new CorrelationException("Failed to get data from aai", e);
-        } finally {
-            httpGet.releaseConnection();
-            if (httpClient != null) {
-                try {
-                    httpClient.close();
-                } catch (IOException e) {
-                    log.warn("Failed to close http client!");
-                }
-            }
         }
-        return response;
     }
 
     private Map getHeaders() {

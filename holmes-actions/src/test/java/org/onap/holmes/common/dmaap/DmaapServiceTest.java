@@ -263,7 +263,8 @@ public class DmaapServiceTest {
         PolicyMsg policyMsg = new PolicyMsg();
         policyMsg.setClosedLoopEventStatus(EVENT_STATUS.ONSET);
         PowerMock.expectNew(Publisher.class).andReturn(publisher);
-        EasyMock.expect(publisher.publish(policyMsg)).andReturn(true);
+        publisher.publish(policyMsg);
+        EasyMock.expectLastCall();
 
         DcaeConfigurationsCache.setDcaeConfigurations(
                 DcaeConfigurationParser.parse(readConfigurationsFromFile("dcae.config.json")));
@@ -283,7 +284,8 @@ public class DmaapServiceTest {
         policyMsg.setRequestID("testRequestid");
         uniqueRequestIdCache.put("testAlarmId", "testRequestid");
         PowerMock.expectNew(Publisher.class).andReturn(publisher);
-        EasyMock.expect(publisher.publish(policyMsg)).andReturn(true);
+        publisher.publish(policyMsg);
+        EasyMock.expectLastCall();
 
         DcaeConfigurationsCache.setDcaeConfigurations(
                 DcaeConfigurationParser.parse(readConfigurationsFromFile("dcae.config.json")));

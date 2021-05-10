@@ -17,7 +17,6 @@
 package org.onap.holmes.common.utils;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jetty.http.HttpStatus;
 import org.jvnet.hk2.annotations.Service;
 import org.onap.holmes.common.config.MicroServiceConfig;
 import org.onap.holmes.common.exception.CorrelationException;
@@ -26,12 +25,8 @@ import org.onap.msb.sdk.discovery.entity.MicroServiceInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.util.concurrent.TimeUnit;
 
 import static org.onap.holmes.common.utils.JerseyClient.PROTOCOL_HTTP;
@@ -41,21 +36,16 @@ import static org.onap.holmes.common.utils.JerseyClient.PROTOCOL_HTTPS;
 public class MsbRegister {
     private static final Logger log = LoggerFactory.getLogger(MsbRegister.class);
 
-    private JerseyClient jerseyClient;
+    private JerseyClient client = new JerseyClient();
 
-    @Inject
-    public MsbRegister(JerseyClient jerseyClient) {
-        this.jerseyClient = jerseyClient;
+    public MsbRegister() {
     }
 
     public void register2Msb(MicroServiceInfo msinfo) throws CorrelationException {
         String[] msbAddrInfo = MicroServiceConfig.getMsbIpAndPort();
+
         boolean isHttpsEnabled = StringUtils.isNotBlank(msbAddrInfo[1])
                 && msbAddrInfo[1].equals("443");
-
-        Client client = jerseyClient.client(isHttpsEnabled);
-        WebTarget target = client.target(String.format("%s://%s:%s/api/microservices/v1/services",
-                isHttpsEnabled ? PROTOCOL_HTTPS : PROTOCOL_HTTP, msbAddrInfo[0], msbAddrInfo[1]));
 
         log.info("Start to register Holmes Service to MSB...");
 
@@ -65,18 +55,13 @@ public class MsbRegister {
         while (null == microServiceFullInfo && retry < 20) {
             log.info("Holmes Service Registration. Retry: " + retry++);
 
-            Response response = target.queryParam("createOrUpdate", true)
-                    .request(MediaType.APPLICATION_JSON)
-                    .post(Entity.entity(msinfo, MediaType.APPLICATION_JSON));
-
-            if (response != null) {
-                String ret = response.readEntity(String.class);
-                int statusCode = response.getStatus();
-                log.info(String.format("=========MSB REG=========\nStatus Code: %d\nInformation: %s", statusCode, ret));
-                if (HttpStatus.isSuccess(statusCode)) {
-                    microServiceFullInfo = GsonUtil.jsonToBean(ret, MicroServiceFullInfo.class);
-                }
-            }
+            microServiceFullInfo = client
+                    .header("Accept", MediaType.APPLICATION_JSON)
+                    .queryParam("createOrUpdate", true)
+                    .post(String.format("%s://%s:%s/api/microservices/v1/services",
+                            isHttpsEnabled ? PROTOCOL_HTTPS : PROTOCOL_HTTP, msbAddrInfo[0], msbAddrInfo[1]),
+                            Entity.entity(msinfo, MediaType.APPLICATION_JSON),
+                            MicroServiceFullInfo.class);
 
             if (null == microServiceFullInfo) {
                 log.warn(String.format("Failed to register the service to MSB. Sleep %ds and try again.", interval));

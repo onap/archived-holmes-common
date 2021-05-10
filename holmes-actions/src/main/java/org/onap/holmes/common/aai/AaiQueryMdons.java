@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Fujitsu Limited.
+ * Copyright 2020 - 2021 Fujitsu Limited.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -17,30 +17,22 @@ package org.onap.holmes.common.aai;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
+import org.jvnet.hk2.annotations.Service;
 import org.onap.holmes.common.aai.config.AaiConfig;
 import org.onap.holmes.common.config.MicroServiceConfig;
 import org.onap.holmes.common.exception.CorrelationException;
-import org.onap.holmes.common.utils.HttpsUtils;
+import org.onap.holmes.common.utils.JerseyClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import static org.onap.holmes.common.aai.AaiJsonParserUtil.getInfo;
-import static org.onap.holmes.common.aai.AaiJsonParserUtil.getPath;
-
-import java.io.IOException;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-
-import org.jvnet.hk2.annotations.Service;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.onap.holmes.common.aai.AaiJsonParserUtil.getInfo;
+import static org.onap.holmes.common.aai.AaiJsonParserUtil.getPath;
 
 @Service
 public class AaiQueryMdons {
@@ -71,32 +63,17 @@ public class AaiQueryMdons {
         }
         return url;
     }
-    
+
     private String getResponse(String url) throws CorrelationException {
-        String response;
-        CloseableHttpClient httpClient = null;
-        HttpGet httpGet = new HttpGet(url);
         try {
-            httpClient = HttpsUtils.getHttpsClient(HttpsUtils.DEFUALT_TIMEOUT);
-            HttpResponse httpResponse = HttpsUtils.get(httpGet, getHeaders(), httpClient);
-            response = HttpsUtils.extractResponseEntity(httpResponse);
+            return new JerseyClient().headers(getHeaders()).get(url);
         } catch (Exception e) {
             throw new CorrelationException("Failed to get data from aai", e);
-        } finally {
-            httpGet.releaseConnection();
-            if (httpClient != null) {
-                try {
-                    httpClient.close();
-                } catch (IOException e) {
-                    log.warn("Failed to close http client!");
-                }
-            }
         }
-        return response;
     }
 
-    private Map<String, String> getHeaders() {
-        Map<String, String> headers = new HashMap<>();
+    private Map<String, Object> getHeaders() {
+        Map<String, Object> headers = new HashMap<>();
         headers.put("X-TransactionId", AaiConfig.X_TRANSACTION_ID);
         headers.put("X-FromAppId", AaiConfig.X_FROMAPP_ID);
         headers.put("Authorization", AaiConfig.getAuthenticationCredentials());
@@ -195,27 +172,11 @@ public class AaiQueryMdons {
         put(url, jsonObject.toString());
     }
 
-    private HttpResponse put(String url, String content) throws CorrelationException {
-        CloseableHttpClient httpClient = null;
-        HttpPut httpPut = new HttpPut(url);
+    private void put(String url, String content) throws CorrelationException {
         try {
-            httpClient = HttpsUtils.getConditionalHttpsClient(HttpsUtils.DEFUALT_TIMEOUT);
-            return HttpsUtils.put(httpPut, getHeaders(), new HashMap<>(), new StringEntity(content), httpClient);
+            new JerseyClient().headers(getHeaders()).put(url, Entity.json(content));
         } catch (Exception e) {
             throw new CorrelationException("Failed to put data in AAI", e);
-        } finally {
-            closeHttpClient(httpClient);
         }
     }
-
-    private void closeHttpClient(CloseableHttpClient httpClient) {
-        if (httpClient != null) {
-            try {
-                httpClient.close();
-            } catch (IOException e) {
-                log.warn("Failed to close http client!");
-            }
-        }
-    }
-
 }

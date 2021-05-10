@@ -15,68 +15,23 @@
  */
 package org.onap.holmes.common.dmaap;
 
-import java.io.IOException;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.onap.holmes.common.dmaap.entity.PolicyMsg;
-import org.onap.holmes.common.exception.CorrelationException;
-import com.google.gson.Gson;
-import java.util.HashMap;
-import javax.ws.rs.core.MediaType;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.entity.StringEntity;
 import org.jvnet.hk2.annotations.Service;
-import org.onap.holmes.common.utils.HttpsUtils;
+import org.onap.holmes.common.dmaap.entity.PolicyMsg;
+import org.onap.holmes.common.utils.JerseyClient;
+
+import javax.ws.rs.client.Entity;
+import java.util.concurrent.TimeUnit;
 
 @Getter
 @Setter
 @Service
-@Slf4j
 public class Publisher {
-
-    private String topic;
     private String url;
-    private String authInfo;
-    private String authExpDate;
+    private JerseyClient client = new JerseyClient(TimeUnit.SECONDS.toMillis(30));
 
-    public boolean publish(PolicyMsg msg) throws CorrelationException {
-        String content;
-        try {
-            //content = JSON.toJSONString(msg);
-        	content = new Gson().toJson(msg);
-        } catch (Exception e) {
-            throw new CorrelationException("Failed to convert the message object to a json string.",
-                    e);
-        }
-        HttpResponse httpResponse;
-        HashMap<String, String> headers = new HashMap<>();
-        headers.put("Accept", MediaType.APPLICATION_JSON);
-        headers.put("Content-Type", MediaType.APPLICATION_JSON);
-        CloseableHttpClient httpClient = null;
-        HttpPost httpPost = new HttpPost(url);
-        try {
-            httpClient = HttpsUtils.getConditionalHttpsClient(HttpsUtils.DEFUALT_TIMEOUT);
-            httpResponse = HttpsUtils.post(httpPost, headers, new HashMap<>(), new StringEntity(content, "utf-8"), httpClient);
-        } catch (Exception e) {
-            throw new CorrelationException("Failed to connect to DCAE.", e);
-        } finally {
-            httpPost.releaseConnection();
-            if (httpClient != null) {
-                try {
-                    httpClient.close();
-                } catch (IOException e) {
-                    log.warn("Failed to close http client!");
-                }
-            }
-        }
-        return checkStatus(httpResponse);
-    }
-
-    private boolean checkStatus(HttpResponse httpResponse) {
-        return (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) ? true : false;
+    public void publish(PolicyMsg msg) {
+        client.post(url, Entity.json(msg));
     }
 }
