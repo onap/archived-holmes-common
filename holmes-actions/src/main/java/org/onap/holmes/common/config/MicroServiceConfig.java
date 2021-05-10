@@ -15,6 +15,7 @@
  */
 package org.onap.holmes.common.config;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.onap.holmes.common.constant.AlarmConst;
@@ -59,14 +60,16 @@ public class MicroServiceConfig {
         String queryString = getConsulAddrInfo() + hostname;
         log.info("Query the " + hostname + " address using the URL: " + queryString);
         try {
-            JsonObject addrJson = JsonParser.parseString(execQuery(queryString))
-                    .getAsJsonArray()
-                    .get(0)
-                    .getAsJsonObject();
-            if (addrJson != null && addrJson.get("ServiceAddress") != null
-                    && addrJson.get("ServicePort") != null) {
-                ret = "http://" + addrJson.get("ServiceAddress").getAsString() + ":" + addrJson
-                        .get("ServicePort").getAsString();
+            JsonArray addrArray = JsonParser.parseString(execQuery(queryString)).getAsJsonArray();
+            if (addrArray.size() > 0) {
+                JsonObject addrJson = addrArray.get(0).getAsJsonObject();
+                if (addrJson != null && addrJson.get("ServiceAddress") != null
+                        && addrJson.get("ServicePort") != null) {
+                    ret = "http://" + addrJson.get("ServiceAddress").getAsString() + ":" + addrJson
+                            .get("ServicePort").getAsString();
+                }
+            } else {
+                log.info("No service info is returned from DCAE Consul. Hostname: {}", hostname);
             }
         } catch (Exception e) {
             log.warn(e.getMessage(), e);
@@ -107,7 +110,7 @@ public class MicroServiceConfig {
     }
 
     public static String[] getMsbIpAndPort() {
-        return new String[] {getEnv(MSB_IAG_SERVICE_HOST), getEnv(MSB_IAG_SERVICE_PORT)};
+        return new String[]{getEnv(MSB_IAG_SERVICE_HOST), getEnv(MSB_IAG_SERVICE_PORT)};
     }
 
     public static String[] getMicroServiceIpAndPort() {
