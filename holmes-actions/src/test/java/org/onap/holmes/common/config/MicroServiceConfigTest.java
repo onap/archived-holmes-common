@@ -40,7 +40,6 @@ public class MicroServiceConfigTest {
 
     private static String ACTUAL_HOSTNAME = System.getenv(HOSTNAME);
 
-
     @Test
     public void getMsbServerAddrTest() {
         System.setProperty(MSB_IAG_SERVICE_HOST, "test");
@@ -335,53 +334,5 @@ public class MicroServiceConfigTest {
         assertThat(msbInfo[1], equalTo(port));
 
         System.clearProperty(HOSTNAME);
-    }
-
-    @Test
-    public void isValidIpAddress_with_port() throws Exception {
-        boolean res = WhiteboxImpl.invokeMethod(MicroServiceConfig.class, "isIpAddress", "10.75.13.21:90");
-        assertThat(res, is(true));
-    }
-
-    @Test
-    public void isValidIpAddress_without_port() throws Exception {
-        boolean res = WhiteboxImpl.invokeMethod(MicroServiceConfig.class, "isIpAddress", "10.75.13.21");
-        assertThat(res, is(true));
-    }
-
-    @Test
-    public void isValidIpAddress_with_port_with_http_prefix() throws Exception {
-        boolean res = WhiteboxImpl.invokeMethod(MicroServiceConfig.class, "isIpAddress", "http://10.75.13.21:90");
-        assertThat(res, is(true));
-    }
-
-    @Test
-    public void isValidIpAddress_without_port_with_https_prefix() throws Exception {
-        boolean res = WhiteboxImpl.invokeMethod(MicroServiceConfig.class, "isIpAddress", "https://10.75.13.21");
-        assertThat(res, is(true));
-    }
-
-    @Test
-    public void isValidIpAddress_invalid_ip_without_port() throws Exception {
-        boolean res = WhiteboxImpl.invokeMethod(MicroServiceConfig.class, "isIpAddress", "holmes-rule-mgmt");
-        assertThat(res, is(false));
-    }
-
-    @Test
-    public void isValidIpAddress_invalid_ip_with_port() throws Exception {
-        boolean res = WhiteboxImpl.invokeMethod(MicroServiceConfig.class, "isIpAddress", "holmes-rule-mgmt:443");
-        assertThat(res, is(false));
-    }
-
-    @Test
-    public void isValidIpAddress_invalid_ip_without_port_with_http_prefix() throws Exception {
-        boolean res = WhiteboxImpl.invokeMethod(MicroServiceConfig.class, "isIpAddress", "http://holmes-rule-mgmt");
-        assertThat(res, is(false));
-    }
-
-    @Test
-    public void isValidIpAddress_invalid_ip_with_port_with_https_prefix() throws Exception {
-        boolean res = WhiteboxImpl.invokeMethod(MicroServiceConfig.class, "isIpAddress", "https://holmes-rule-mgmt:443");
-        assertThat(res, is(false));
     }
 }
