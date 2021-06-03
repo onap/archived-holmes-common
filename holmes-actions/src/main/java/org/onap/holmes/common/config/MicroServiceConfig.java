@@ -27,6 +27,9 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 import java.util.regex.Pattern;
 
+import static org.onap.holmes.common.utils.CommonUtils.getEnv;
+import static org.onap.holmes.common.utils.CommonUtils.isIpAddress;
+
 public class MicroServiceConfig {
 
     final static public String CONSUL_ADDR_SUF = ":8500/v1/catalog/service/";
@@ -38,18 +41,10 @@ public class MicroServiceConfig {
     final static public String MSB_ADDR = "MSB_ADDR";
     final static public String MSB_IAG_SERVICE_HOST = "MSB_IAG_SERVICE_HOST";
     final static public String MSB_IAG_SERVICE_PORT = "MSB_IAG_SERVICE_PORT";
-    final static public Pattern IP_REG = Pattern.compile("(http(s)?://)?(\\d+\\.\\d+\\.\\d+\\.\\d+)(:(\\d+))?");
+
     final static public String AAI_HOSTNAME = "aai.onap";
 
     final static public Logger log = LoggerFactory.getLogger(MicroServiceConfig.class);
-
-    public static String getEnv(String name) {
-        String value = System.getenv(name);
-        if (value == null) {
-            value = System.getProperty(name);
-        }
-        return value;
-    }
 
     public static String getConsulAddrInfo() {
         return "http://" + getEnv(CONSUL_HOST) + CONSUL_ADDR_SUF;
@@ -129,9 +124,7 @@ public class MicroServiceConfig {
         return serviceAddrInfo;
     }
 
-    public static boolean isIpAddress(String info) {
-        return IP_REG.matcher(info).matches();
-    }
+
 
     private static String[] split(String addr) {
         String ip;
