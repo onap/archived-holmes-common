@@ -1,12 +1,12 @@
 /**
- * Copyright 2018 ZTE Corporation.
- *
+ * Copyright 2018 - 2021 ZTE Corporation.
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,21 +15,18 @@
  */
 package org.onap.holmes.common.utils.transactionid;
 
-import java.io.IOException;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jvnet.hk2.annotations.Service;
 import org.slf4j.MDC;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
+
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.UUID;
 
 
 @Service
@@ -40,19 +37,21 @@ public class TransactionIdFilter implements Filter {
     public static final Marker ENTRY = MarkerFactory.getMarker("ENTRY");
     public static final Marker EXIT = MarkerFactory.getMarker("EXIT");
 
+    private static final String DEFAULT_REQUEST_ID = UUID.randomUUID().toString();
+
     static {
         INVOKE_SYNCHRONOUS = MarkerFactory.getMarker("INVOKE");
         INVOKE_SYNCHRONOUS.add(MarkerFactory.getMarker("SYNCHRONOUS"));
     }
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
+    public void init(FilterConfig filterConfig) {
 
     }
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse,
-            FilterChain filterChain) throws IOException, ServletException {
+                         FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         AddHeadersHttpServletRequestWrapper requestWithTransactionId = new AddHeadersHttpServletRequestWrapper(
                 httpServletRequest);
@@ -60,10 +59,16 @@ public class TransactionIdFilter implements Filter {
 
         String requestID = ensureTransactionIdIsPresent(requestWithTransactionId);
         HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
-        httpServletResponse.setHeader(TransactionIdUtils.REQUEST_ID_HEADER, requestID);
+        if (TransactionIdUtils.validate(requestID)) {
+            httpServletResponse.setHeader(TransactionIdUtils.REQUEST_ID_HEADER, requestID);
+        } else {
+            log.warn("A mal-formatted request ID has been detected: {}. It will be replaced by the default ID: {}",
+                    requestID, DEFAULT_REQUEST_ID);
+            requestID = DEFAULT_REQUEST_ID;
+        }
 
         String invocationID = TransactionIdUtils.getUUID();
-        httpServletResponse.setHeader(TransactionIdUtils.INVOCATIONIDID_HEADER,invocationID);
+        httpServletResponse.setHeader(TransactionIdUtils.INVOCATIONIDID_HEADER, invocationID);
 
         MDC.put("RequestID", requestID);
         MDC.put("InvocationID", invocationID);

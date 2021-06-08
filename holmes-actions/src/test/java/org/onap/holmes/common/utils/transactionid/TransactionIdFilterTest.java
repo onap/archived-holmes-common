@@ -38,11 +38,13 @@ public class TransactionIdFilterTest {
         responseMock = EasyMock.createMock(HttpServletResponse.class);
         chainMock = EasyMock.createMock(FilterChain.class);
     }
+
     @Test
     public void callsChainDoFilter() throws Exception {
         filter.doFilter(requestMock, responseMock, chainMock);
         EasyMock.verify();
     }
+
     @Test
     public void requestIdExistTest() throws Exception{
         String requestID = TransactionIdUtils.getUUID();
@@ -51,8 +53,15 @@ public class TransactionIdFilterTest {
         EasyMock.replay(requestMock);
         filter.doFilter(requestMock, responseMock, chainMock);
         EasyMock.verify();
-
     }
 
+    @Test
+    public void requestIdInvalidRerquestId() throws Exception{
+        String requestID = "TransactionIdUtils.getUUID()";
+        EasyMock.expect(requestMock.getHeader(TransactionIdUtils.REQUEST_ID_HEADER)).andReturn(requestID);
 
+        EasyMock.replay(requestMock);
+        filter.doFilter(requestMock, responseMock, chainMock);
+        EasyMock.verify();
+    }
 }
