@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 ZTE Corporation.
+ * Copyright 2017 - 2021 ZTE Corporation.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -92,7 +92,7 @@ public class AaiQuery {
 
     private String getResponse(String url) throws CorrelationException {
         try {
-            return new JerseyClient().headers(getHeaders()).get(url);
+            return JerseyClient.newInstance().headers(getHeaders()).get(url);
         } catch (Exception e) {
             throw new CorrelationException("Failed to get data from aai", e);
         }

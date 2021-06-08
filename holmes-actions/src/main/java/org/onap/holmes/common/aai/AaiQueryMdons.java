@@ -66,7 +66,7 @@ public class AaiQueryMdons {
 
     private String getResponse(String url) throws CorrelationException {
         try {
-            return new JerseyClient().headers(getHeaders()).get(url);
+            return JerseyClient.newInstance().headers(getHeaders()).get(url);
         } catch (Exception e) {
             throw new CorrelationException("Failed to get data from aai", e);
         }
@@ -174,7 +174,7 @@ public class AaiQueryMdons {
 
     private void put(String url, String content) throws CorrelationException {
         try {
-            new JerseyClient().headers(getHeaders()).put(url, Entity.json(content));
+            JerseyClient.newInstance().headers(getHeaders()).put(url, Entity.json(content));
         } catch (Exception e) {
             throw new CorrelationException("Failed to put data in AAI", e);
         }

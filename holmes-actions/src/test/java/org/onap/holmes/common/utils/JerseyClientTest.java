@@ -44,8 +44,9 @@ import static org.junit.Assert.assertThat;
 public class JerseyClientTest {
 
     private final String ERROR_MSG = "Status code: <404>. Message: Failed to get response from the server. Info: Error";
-    private JerseyClient jerseyClient = new JerseyClient();
+    private JerseyClient jerseyClient = JerseyClient.newInstance();
     private String url = "http://www.onap.org/holmes/test";
+
     @Rule
     private ExpectedException exception = ExpectedException.none();
 
@@ -62,7 +63,7 @@ public class JerseyClientTest {
         EasyMock.expect(mockedTarget.request()).andReturn(mockedBuilder);
         EasyMock.expect(mockedBuilder.header("Accept", MediaType.APPLICATION_JSON)).andReturn(mockedBuilder);
         EasyMock.expect(mockedBuilder.get()).andReturn(mockedResponse);
-        EasyMock.expect(mockedResponse.getStatus()).andReturn(200);
+        EasyMock.expect(mockedResponse.getStatusInfo()).andReturn(Response.Status.OK);
         EasyMock.expect(mockedResponse.readEntity(String.class)).andReturn("Normal");
 
         WhiteboxImpl.setInternalState(jerseyClient, "client", mockedClient);
@@ -88,7 +89,7 @@ public class JerseyClientTest {
         EasyMock.expect(mockedClient.target(url)).andReturn(mockedTarget);
         EasyMock.expect(mockedTarget.request()).andReturn(mockedBuilder);
         EasyMock.expect(mockedBuilder.get()).andReturn(mockedResponse);
-        EasyMock.expect(mockedResponse.getStatus()).andReturn(200);
+        EasyMock.expect(mockedResponse.getStatusInfo()).andReturn(Response.Status.OK);
         EasyMock.expect(mockedResponse.readEntity(String.class)).andReturn(GsonUtil.beanToJson(bean));
 
         WhiteboxImpl.setInternalState(jerseyClient, "client", mockedClient);
@@ -110,7 +111,7 @@ public class JerseyClientTest {
         EasyMock.expect(mockedClient.target(url)).andReturn(mockedTarget);
         EasyMock.expect(mockedTarget.request()).andReturn(mockedBuilder);
         EasyMock.expect(mockedBuilder.get()).andReturn(mockedResponse);
-        EasyMock.expect(mockedResponse.getStatus()).andReturn(200);
+        EasyMock.expect(mockedResponse.getStatusInfo()).andReturn(Response.Status.OK);
         EasyMock.expect(mockedResponse.readEntity(String.class)).andReturn("Normal");
 
         WhiteboxImpl.setInternalState(jerseyClient, "client", mockedClient);
@@ -133,6 +134,7 @@ public class JerseyClientTest {
         EasyMock.expect(mockedTarget.request()).andReturn(mockedBuilder);
         EasyMock.expect(mockedBuilder.get()).andReturn(mockedResponse);
         EasyMock.expect(mockedResponse.getStatus()).andReturn(404);
+        EasyMock.expect(mockedResponse.getStatusInfo()).andReturn(Response.Status.NOT_FOUND);
         EasyMock.expect(mockedResponse.readEntity(String.class)).andReturn("Error");
 
         WhiteboxImpl.setInternalState(jerseyClient, "client", mockedClient);
@@ -157,7 +159,7 @@ public class JerseyClientTest {
         EasyMock.expect(mockedClient.target(url)).andReturn(mockedTarget);
         EasyMock.expect(mockedTarget.request()).andReturn(mockedBuilder);
         EasyMock.expect(mockedBuilder.post(null)).andReturn(mockedResponse);
-        EasyMock.expect(mockedResponse.getStatus()).andReturn(200);
+        EasyMock.expect(mockedResponse.getStatusInfo()).andReturn(Response.Status.OK);
         EasyMock.expect(mockedResponse.readEntity(String.class)).andReturn("Normal");
 
         WhiteboxImpl.setInternalState(jerseyClient, "client", mockedClient);
@@ -180,6 +182,7 @@ public class JerseyClientTest {
         EasyMock.expect(mockedTarget.request()).andReturn(mockedBuilder);
         EasyMock.expect(mockedBuilder.post(null)).andReturn(mockedResponse);
         EasyMock.expect(mockedResponse.getStatus()).andReturn(404);
+        EasyMock.expect(mockedResponse.getStatusInfo()).andReturn(Response.Status.NOT_FOUND);
         EasyMock.expect(mockedResponse.readEntity(String.class)).andReturn("Error");
 
         WhiteboxImpl.setInternalState(jerseyClient, "client", mockedClient);
@@ -205,7 +208,7 @@ public class JerseyClientTest {
         EasyMock.expect(mockedClient.target(url)).andReturn(mockedTarget);
         EasyMock.expect(mockedTarget.request()).andReturn(mockedBuilder);
         EasyMock.expect(mockedBuilder.post(null)).andReturn(mockedResponse);
-        EasyMock.expect(mockedResponse.getStatus()).andReturn(200);
+        EasyMock.expect(mockedResponse.getStatusInfo()).andReturn(Response.Status.OK);
         EasyMock.expect(mockedResponse.readEntity(String.class)).andReturn(GsonUtil.beanToJson(bean));
 
         WhiteboxImpl.setInternalState(jerseyClient, "client", mockedClient);
@@ -228,7 +231,7 @@ public class JerseyClientTest {
         EasyMock.expect(mockedClient.target(url)).andReturn(mockedTarget);
         EasyMock.expect(mockedTarget.request()).andReturn(mockedBuilder);
         EasyMock.expect(mockedBuilder.put(null)).andReturn(mockedResponse);
-        EasyMock.expect(mockedResponse.getStatus()).andReturn(200);
+        EasyMock.expect(mockedResponse.getStatusInfo()).andReturn(Response.Status.OK);
         EasyMock.expect(mockedResponse.readEntity(String.class)).andReturn("Normal");
 
         WhiteboxImpl.setInternalState(jerseyClient, "client", mockedClient);
@@ -251,7 +254,7 @@ public class JerseyClientTest {
         EasyMock.expect(mockedClient.target(url)).andReturn(mockedTarget);
         EasyMock.expect(mockedTarget.request()).andReturn(mockedBuilder);
         EasyMock.expect(mockedBuilder.put(null)).andReturn(mockedResponse);
-        EasyMock.expect(mockedResponse.getStatus()).andReturn(200);
+        EasyMock.expect(mockedResponse.getStatusInfo()).andReturn(Response.Status.OK);
         EasyMock.expect(mockedResponse.readEntity(String.class)).andReturn(GsonUtil.beanToJson(bean));
 
         WhiteboxImpl.setInternalState(jerseyClient, "client", mockedClient);
@@ -274,7 +277,7 @@ public class JerseyClientTest {
         EasyMock.expect(mockedClient.target(url)).andReturn(mockedTarget);
         EasyMock.expect(mockedTarget.request()).andReturn(mockedBuilder);
         EasyMock.expect(mockedBuilder.put(null)).andReturn(mockedResponse);
-        EasyMock.expect(mockedResponse.getStatus()).andReturn(200);
+        EasyMock.expect(mockedResponse.getStatusInfo()).andReturn(Response.Status.OK);
         EasyMock.expect(mockedResponse.readEntity(String.class)).andReturn(GsonUtil.beanToJson(bean));
 
         WhiteboxImpl.setInternalState(jerseyClient, "client", mockedClient);
@@ -297,6 +300,7 @@ public class JerseyClientTest {
         EasyMock.expect(mockedTarget.request()).andReturn(mockedBuilder);
         EasyMock.expect(mockedBuilder.put(null)).andReturn(mockedResponse);
         EasyMock.expect(mockedResponse.getStatus()).andReturn(404);
+        EasyMock.expect(mockedResponse.getStatusInfo()).andReturn(Response.Status.NOT_FOUND);
         EasyMock.expect(mockedResponse.readEntity(String.class)).andReturn("Error");
 
         WhiteboxImpl.setInternalState(jerseyClient, "client", mockedClient);
@@ -322,7 +326,7 @@ public class JerseyClientTest {
         EasyMock.expect(mockedClient.target(url)).andReturn(mockedTarget);
         EasyMock.expect(mockedTarget.request()).andReturn(mockedBuilder);
         EasyMock.expect(mockedBuilder.delete()).andReturn(mockedResponse);
-        EasyMock.expect(mockedResponse.getStatus()).andReturn(200);
+        EasyMock.expect(mockedResponse.getStatusInfo()).andReturn(Response.Status.OK);
         EasyMock.expect(mockedResponse.readEntity(String.class)).andReturn("Normal");
 
         WhiteboxImpl.setInternalState(jerseyClient, "client", mockedClient);
@@ -345,7 +349,7 @@ public class JerseyClientTest {
         EasyMock.expect(mockedClient.target(url)).andReturn(mockedTarget);
         EasyMock.expect(mockedTarget.request()).andReturn(mockedBuilder);
         EasyMock.expect(mockedBuilder.delete()).andReturn(mockedResponse);
-        EasyMock.expect(mockedResponse.getStatus()).andReturn(200);
+        EasyMock.expect(mockedResponse.getStatusInfo()).andReturn(Response.Status.OK);
         EasyMock.expect(mockedResponse.readEntity(String.class)).andReturn(GsonUtil.beanToJson(bean));
 
         WhiteboxImpl.setInternalState(jerseyClient, "client", mockedClient);
@@ -367,7 +371,7 @@ public class JerseyClientTest {
         EasyMock.expect(mockedClient.target(url)).andReturn(mockedTarget);
         EasyMock.expect(mockedTarget.request()).andReturn(mockedBuilder);
         EasyMock.expect(mockedBuilder.delete()).andReturn(mockedResponse);
-        EasyMock.expect(mockedResponse.getStatus()).andReturn(200);
+        EasyMock.expect(mockedResponse.getStatusInfo()).andReturn(Response.Status.OK);
         EasyMock.expect(mockedResponse.readEntity(String.class)).andReturn("Normal");
 
         WhiteboxImpl.setInternalState(jerseyClient, "client", mockedClient);
@@ -390,6 +394,7 @@ public class JerseyClientTest {
         EasyMock.expect(mockedTarget.request()).andReturn(mockedBuilder);
         EasyMock.expect(mockedBuilder.delete()).andReturn(mockedResponse);
         EasyMock.expect(mockedResponse.getStatus()).andReturn(404);
+        EasyMock.expect(mockedResponse.getStatusInfo()).andReturn(Response.Status.NOT_FOUND);
         EasyMock.expect(mockedResponse.readEntity(String.class)).andReturn("Error");
 
         WhiteboxImpl.setInternalState(jerseyClient, "client", mockedClient);

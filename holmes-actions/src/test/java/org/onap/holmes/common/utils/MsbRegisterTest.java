@@ -35,7 +35,7 @@ import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.expect;
 import static org.powermock.api.easymock.PowerMock.createPartialMock;
 
-@PrepareForTest({MicroServiceConfig.class})
+@PrepareForTest({MicroServiceConfig.class, JerseyClient.class})
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"javax.net.ssl.*", "javax.security.*"})
 public class MsbRegisterTest {

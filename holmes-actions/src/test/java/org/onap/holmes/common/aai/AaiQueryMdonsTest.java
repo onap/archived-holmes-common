@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Fujitsu Limited.
+ * Copyright 2020 - 2021 Fujitsu, ZTE Limited.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -42,7 +42,7 @@ import static org.onap.holmes.common.config.MicroServiceConfig.MSB_ADDR;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore("javax.net.ssl.*")
-@PrepareForTest({AaiQueryMdons.class, MicroServiceConfig.class})
+@PrepareForTest({AaiQueryMdons.class, MicroServiceConfig.class, JerseyClient.class})
 public class AaiQueryMdonsTest {
 
     @Rule

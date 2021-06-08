@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class Publisher {
     private String url;
-    private JerseyClient client = new JerseyClient(TimeUnit.SECONDS.toMillis(30));
+    private JerseyClient client = JerseyClient.newInstance(TimeUnit.SECONDS.toMillis(30));
 
     public void publish(PolicyMsg msg) {
         client.post(url, Entity.json(msg));

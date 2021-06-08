@@ -36,7 +36,7 @@ import static org.onap.holmes.common.utils.JerseyClient.PROTOCOL_HTTPS;
 public class MsbRegister {
     private static final Logger log = LoggerFactory.getLogger(MsbRegister.class);
 
-    private JerseyClient client = new JerseyClient();
+    private JerseyClient client = JerseyClient.newInstance();
 
     public MsbRegister() {
     }

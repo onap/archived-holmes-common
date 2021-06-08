@@ -16,7 +16,6 @@
 
 package org.onap.holmes.common.utils;
 
-import org.eclipse.jetty.http.HttpStatus;
 import org.onap.holmes.common.exception.HttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,12 +62,19 @@ public class JerseyClient {
     private Map<String, Object> parameters = new HashMap();
     private List<String> paths = new ArrayList();
 
+    public static JerseyClient newInstance() {
+        return new JerseyClient();
+    }
 
-    public JerseyClient() {
+    public static JerseyClient newInstance(long timeout) {
+        return new JerseyClient(timeout);
+    }
+
+    private JerseyClient() {
         this(DEFAULT_TIMEOUT);
     }
 
-    public JerseyClient(long timeout) {
+    private JerseyClient(long timeout) {
         this.client = ClientBuilder.newBuilder()
                 .connectTimeout(timeout, TimeUnit.MILLISECONDS)
                 .readTimeout(timeout, TimeUnit.MILLISECONDS)
@@ -189,9 +195,8 @@ public class JerseyClient {
     }
 
     private boolean isSuccessful(Response response) {
-        int status = response.getStatus();
-        if (!HttpStatus.isSuccess(status)) {
-            throw new HttpException(status, String.format("Failed to get response from the server. Info: %s",
+        if (response.getStatusInfo().getFamily() != Response.Status.Family.SUCCESSFUL) {
+            throw new HttpException(response.getStatus(), String.format("Failed to get response from the server. Info: %s",
                     response.readEntity(String.class)));
         }
         return true;

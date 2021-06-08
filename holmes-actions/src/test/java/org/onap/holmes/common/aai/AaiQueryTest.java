@@ -43,7 +43,7 @@ import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 
 
-@PrepareForTest({AaiQuery.class, MicroServiceConfig.class})
+@PrepareForTest({AaiQuery.class, MicroServiceConfig.class, JerseyClient.class})
 @PowerMockIgnore("javax.net.ssl.*")
 @RunWith(PowerMockRunner.class)
 public class AaiQueryTest {
