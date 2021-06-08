@@ -122,7 +122,7 @@ public class JerseyClient {
 
         Response response = builder.get();
 
-        if (isSuccessful(response)) {
+        if (isSuccessful(response, url)) {
             return response2Target(response, clazz);
         }
 
@@ -147,7 +147,7 @@ public class JerseyClient {
 
         Response response = builder.post(entity);
 
-        if (isSuccessful(response)) {
+        if (isSuccessful(response, url)) {
             return response2Target(response, clazz);
         }
 
@@ -167,7 +167,7 @@ public class JerseyClient {
 
         Response response = builder.put(entity);
 
-        if (isSuccessful(response)) {
+        if (isSuccessful(response, url)) {
             return response2Target(response, clazz);
         }
 
@@ -187,17 +187,22 @@ public class JerseyClient {
 
         Response response = builder.delete();
 
-        if (isSuccessful(response)) {
+        if (isSuccessful(response, url)) {
             return response2Target(response, clazz);
         }
 
         return null;
     }
 
-    private boolean isSuccessful(Response response) {
-        if (response.getStatusInfo().getFamily() != Response.Status.Family.SUCCESSFUL) {
-            throw new HttpException(response.getStatus(), String.format("Failed to get response from the server. Info: %s",
-                    response.readEntity(String.class)));
+    private boolean isSuccessful(Response response, String url) {
+        Response.StatusType statusInfo = response.getStatusInfo();
+        if (statusInfo.getFamily() != Response.Status.Family.SUCCESSFUL) {
+            throw new HttpException(statusInfo.getStatusCode(),
+                    String.format("Failed to get response from the server. " +
+                                    "\nURL: %s\nCause: %s\nResponse body: %s",
+                            url,
+                            statusInfo.getReasonPhrase(),
+                            response.readEntity(String.class)));
         }
         return true;
     }

@@ -20,7 +20,6 @@
 
 package org.onap.holmes.common.aai;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -28,15 +27,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.jvnet.hk2.annotations.Service;
 import org.onap.holmes.common.aai.config.AaiConfig;
 import org.onap.holmes.common.config.MicroServiceConfig;
-import org.onap.holmes.common.exception.CorrelationException;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -58,25 +51,6 @@ public class AaiJsonParserUtil {
         }
 
         return ret;
-    }
-
-    public static Response get(String host, String path) throws CorrelationException {
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(host).path(path);
-        try {
-            Response response = target.request().headers(getAaiHeaders()).get();
-            if (response.getStatusInfo().getFamily() != Response.Status.Family.SUCCESSFUL) {
-                throw new CorrelationException("Failed to connect to AAI. \nCause: "
-                                                       + response.getStatusInfo().getReasonPhrase() + "\nDetails: \n"
-                                                       + getErrorMsg(String.format("%s%s", host, path), null, response));
-            }
-            return response;
-        } catch (CorrelationException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new CorrelationException(e.getMessage() + "More info: "
-                                                   + getErrorMsg(String.format("%s%s", host, path), null, null), e);
-        }
     }
 
     public static JsonObject getInfo(String response, String field) {
@@ -110,29 +84,5 @@ public class AaiJsonParserUtil {
 
     public static String getHostAddr() {
         return MicroServiceConfig.getMsbServerAddrWithHttpPrefix();
-    }
-
-    public static String getErrorMsg(String url, Map<String, Object> body, Response response) {
-        Gson gson = new Gson();
-        StringBuilder sb = new StringBuilder();
-        sb.append("Rerquest URL: ").append(url).append("\n");
-        sb.append("Request Header: ").append(gson.toJson(getAaiHeaders())).append("\n");
-        if (body != null) {
-            sb.append("Request Body: ").append(gson.toJson(body)).append("\n");
-        }
-        if (response != null) {
-            sb.append("Request Body: ").append(response.readEntity(String.class));
-        }
-        return sb.toString();
-    }
-
-    public static MultivaluedMap getAaiHeaders() {
-        MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
-        headers.add("X-TransactionId", AaiConfig.X_TRANSACTION_ID);
-        headers.add("X-FromAppId", AaiConfig.X_FROMAPP_ID);
-        headers.add("Authorization", AaiConfig.getAuthenticationCredentials());
-        headers.add("Accept", "application/json");
-        headers.add("Content-Type", "application/json");
-        return headers;
     }
 }

@@ -27,10 +27,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.jvnet.hk2.annotations.Service;
 import org.onap.holmes.common.aai.config.AaiConfig;
 import org.onap.holmes.common.exception.CorrelationException;
+import org.onap.holmes.common.utils.JerseyClient;
 
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,25 +40,27 @@ import static org.onap.holmes.common.aai.AaiJsonParserUtil.*;
 @Slf4j
 public class AaiQuery4Ccvpn2 {
 
-    private MultivaluedMap<String, Object> headers;
+    private Map<String, Object> headers;
 
     static public AaiQuery4Ccvpn2 newInstance() {
         return new AaiQuery4Ccvpn2();
     }
 
     private AaiQuery4Ccvpn2() {
-        headers = new MultivaluedHashMap<>();
-        headers.add("X-TransactionId", AaiConfig.X_TRANSACTION_ID);
-        headers.add("X-FromAppId", AaiConfig.X_FROMAPP_ID);
-        headers.add("Authorization", AaiConfig.getAuthenticationCredentials());
-        headers.add("Accept", "application/json");
-        headers.add("Content-Type", "application/json");
+        headers = new HashMap<>();
+        headers.put("X-TransactionId", AaiConfig.X_TRANSACTION_ID);
+        headers.put("X-FromAppId", AaiConfig.X_FROMAPP_ID);
+        headers.put("Authorization", AaiConfig.getAuthenticationCredentials());
+        headers.put("Accept", "application/json");
+        headers.put("Content-Type", "application/json");
     }
 
-    private String getSiteVNFId(String siteService) throws CorrelationException {
-        Response response = get(getHostAddr(), AaiConfig.MsbConsts.AAI_SITE_RESOURCES_QUERY);
-        String resStr = response.readEntity(String.class);
-        JsonObject resObj = JsonParser.parseString(resStr).getAsJsonObject();
+    private String getSiteVNFId(String siteService) {
+        String response = JerseyClient.newInstance()
+                .headers(headers)
+                .path(AaiConfig.MsbConsts.AAI_SITE_RESOURCES_QUERY)
+                .get(getHostAddr());
+        JsonObject resObj = JsonParser.parseString(response).getAsJsonObject();
         JsonArray siteResources = extractJsonArray(resObj, "site-resource");
         if (siteResources != null) {
             for (int i = 0; i < siteResources.size(); i++) {
@@ -81,27 +83,31 @@ public class AaiQuery4Ccvpn2 {
         return null;
     }
 
-    private JsonObject getServiceInstanceByVnfId(String vnfId) throws CorrelationException {
-        Response response = get(getHostAddr(), getPath(AaiConfig.MsbConsts.AAI_SITE_VNF_QUERY,
-                                                       "vnfId", vnfId));
-        String resStr = response.readEntity(String.class);
+    private JsonObject getServiceInstanceByVnfId(String vnfId) {
+        String resStr = JerseyClient.newInstance()
+                .headers(headers)
+                .path(getPath(AaiConfig.MsbConsts.AAI_SITE_VNF_QUERY,
+                "vnfId", vnfId))
+                .get(getHostAddr());
         return getInfo(resStr, "service-instance");
     }
 
-    public JsonObject getSiteServiceInstance(String siteService) throws CorrelationException {
+    public JsonObject getSiteServiceInstance(String siteService) {
         String vnfId = getSiteVNFId(siteService);
         if (vnfId == null) {
             return null;
         }
         JsonObject serviceInstanceInfo = getServiceInstanceByVnfId(vnfId);
         String serviceInstancePath = serviceInstanceInfo.get("related-link").getAsString();
-        Response response = get(getHostAddr(), getPath(serviceInstancePath));
-        String res = response.readEntity(String.class);
+        String res = JerseyClient.newInstance()
+                .headers(headers)
+                .path(getPath(serviceInstancePath))
+                .get(getHostAddr());
         JsonObject instance = JsonParser.parseString(res).getAsJsonObject();
         String[] params = new String[2];
         Pattern pattern = Pattern.compile("/aai/v\\d+/business/customers/customer/(.+)" +
-                                                  "/service-subscriptions/service-subscription/(.+)" +
-                                                  "/service-instances/service-instance/(.+)");
+                "/service-subscriptions/service-subscription/(.+)" +
+                "/service-instances/service-instance/(.+)");
         Matcher matcher = pattern.matcher(serviceInstancePath);
         if (matcher.find()) {
             params[0] = matcher.group(1);

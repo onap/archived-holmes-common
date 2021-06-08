@@ -43,7 +43,8 @@ import static org.junit.Assert.assertThat;
 @PowerMockIgnore({"javax.net.ssl.*", "javax.security.*"})
 public class JerseyClientTest {
 
-    private final String ERROR_MSG = "Status code: <404>. Message: Failed to get response from the server. Info: Error";
+    private final String ERROR_MSG = "Failed to get response from the server. \nURL: http://www.onap.org/holmes/test" +
+            "\nCause: Not Found\nResponse body: Error";
     private JerseyClient jerseyClient = JerseyClient.newInstance();
     private String url = "http://www.onap.org/holmes/test";
 
