@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 ZTE Corporation.
+ * Copyright 2017 - 2021 ZTE Corporation.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -25,6 +25,12 @@ public class AaiConfig {
 
     private static final String AAI_AUTHENTICATION_PWD = "AAI";
 
+    private static final String AAI_PNF_URL_SUF = "/network/pnfs/pnf/{pnfName}/p-interfaces/p-interface/nodeId-{pnfName}-ltpId-{ifName}";
+
+    private AaiConfig() {
+
+    }
+
     public static String getAuthenticationCredentials() {
         String userCredentials = AAI_AUTHENTICATION_USER + ":"
                 + AAI_AUTHENTICATION_PWD;
@@ -33,19 +39,23 @@ public class AaiConfig {
 
     public static class AaiConsts {
 
+        private AaiConsts() {
+
+        }
+
         private static final String AAI_PREF = "/aai/";
 
         public static final String AAI_VNF_ADDR = AAI_PREF + "v11/network/generic-vnfs/generic-vnf";
 
-        public static final String AAI_TP_UPDATE = AAI_PREF + AAI_API_VERSION + "/network/pnfs/pnf/{pnfName}/p-interfaces/p-interface/nodeId-{pnfName}-ltpId-{ifName}";
+        public static final String AAI_TP_UPDATE = AAI_PREF + AAI_API_VERSION + AAI_PNF_URL_SUF;
 
-        public static final String AAI_LINK_QUERY = AAI_PREF + AAI_API_VERSION + "/network/pnfs/pnf/{pnfName}/p-interfaces/p-interface/nodeId-{pnfName}-ltpId-{ifName}";
+        public static final String AAI_LINK_QUERY = AAI_PREF + AAI_API_VERSION + AAI_PNF_URL_SUF;
 
         public static final String AAI_LINK_UPDATE = AAI_PREF + AAI_API_VERSION + "/network/logical-links/logical-link/{linkName}";
 
         public static final String AAI_TP_ADDR = AAI_PREF + AAI_API_VERSION + "/network/pnfs/pnf/{node-Id}/p-interfaces/p-interface/{tp-id}";
 
-        public static final String AAI_VPN_ADDR = AAI_PREF + AAI_API_VERSION + "/network/pnfs/pnf/{pnfName}/p-interfaces/p-interface/nodeId-{pnfName}-ltpId-{ifName}";
+        public static final String AAI_VPN_ADDR = AAI_PREF + AAI_API_VERSION + AAI_PNF_URL_SUF;
 
         public static final String AAI_CONN_ADDR = AAI_PREF + AAI_API_VERSION + "/network/vpn-bindings/vpn-binding/{vpnId}";
 
@@ -67,6 +77,10 @@ public class AaiConfig {
 
     public static class MsbConsts {
 
+        private MsbConsts() {
+
+        }
+
         private static final String AAI_MSB_PREF = "/api";
 
         private static final String AAI_NETWORK = "/aai-network/";
@@ -77,15 +91,15 @@ public class AaiConfig {
 
         public static final String AAI_VNF_ADDR = AAI_NETWORK + AAI_API_VERSION + "/generic-vnfs/generic-vnf";
 
-        public static final String AAI_TP_UPDATE = AAI_NETWORK + AAI_API_VERSION + "/network/pnfs/pnf/{pnfName}/p-interfaces/p-interface/nodeId-{pnfName}-ltpId-{ifName}";
+        public static final String AAI_TP_UPDATE = AAI_NETWORK + AAI_API_VERSION + AAI_PNF_URL_SUF;
 
-        public static final String AAI_LINK_QUERY = AAI_NETWORK + AAI_API_VERSION + "/network/pnfs/pnf/{pnfName}/p-interfaces/p-interface/nodeId-{pnfName}-ltpId-{ifName}";
+        public static final String AAI_LINK_QUERY = AAI_NETWORK + AAI_API_VERSION + AAI_PNF_URL_SUF;
 
         public static final String AAI_LINK_UPDATE = AAI_NETWORK + AAI_API_VERSION + "/network/logical-links/logical-link/{linkName}";
 
         public static final String AAI_TP_ADDR = AAI_NETWORK + AAI_API_VERSION + "/pnfs/pnf/{node-Id}/p-interfaces/p-interface/{tp-id}";
 
-        public static final String AAI_VPN_ADDR = AAI_NETWORK + AAI_API_VERSION + "/network/pnfs/pnf/{pnfName}/p-interfaces/p-interface/nodeId-{pnfName}-ltpId-{ifName}";
+        public static final String AAI_VPN_ADDR = AAI_NETWORK + AAI_API_VERSION + AAI_PNF_URL_SUF;
 
         public static final String AAI_CONN_ADDR = AAI_NETWORK + AAI_API_VERSION + "/network/vpn-bindings/vpn-binding/{vpnId}";
 
