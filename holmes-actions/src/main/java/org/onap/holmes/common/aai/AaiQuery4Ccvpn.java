@@ -14,24 +14,16 @@
 
 package org.onap.holmes.common.aai;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.glassfish.jersey.client.HttpUrlConnectorProvider;
 import org.onap.holmes.common.aai.config.AaiConfig;
 import org.onap.holmes.common.config.MicroServiceConfig;
-import org.onap.holmes.common.exception.CorrelationException;
+import org.onap.holmes.common.utils.JerseyClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -41,7 +33,7 @@ public class AaiQuery4Ccvpn {
 
     private final Logger log = LoggerFactory.getLogger(AaiQuery4Ccvpn.class);
 
-    private MultivaluedMap<String, Object> headers;
+    private Map<String, Object> headers;
 
     public static AaiQuery4Ccvpn newInstance() {
         return new AaiQuery4Ccvpn();
@@ -52,12 +44,12 @@ public class AaiQuery4Ccvpn {
     private static final JsonObject EMPTY_JSON = new JsonObject();
 
     private AaiQuery4Ccvpn() {
-        headers = new MultivaluedHashMap<>();
-        headers.add("X-TransactionId", AaiConfig.X_TRANSACTION_ID);
-        headers.add("X-FromAppId", AaiConfig.X_FROMAPP_ID);
-        headers.add("Authorization", AaiConfig.getAuthenticationCredentials());
-        headers.add("Accept", "application/json");
-        headers.add("Content-Type", "application/json");
+        headers = new HashMap<>();
+        headers.put("X-TransactionId", AaiConfig.X_TRANSACTION_ID);
+        headers.put("X-FromAppId", AaiConfig.X_FROMAPP_ID);
+        headers.put("Authorization", AaiConfig.getAuthenticationCredentials());
+        headers.put("Accept", "application/json");
+        headers.put("Content-Type", "application/json");
     }
 
     /**
@@ -71,15 +63,18 @@ public class AaiQuery4Ccvpn {
      * @param status
      * @return the ID of the logic link
      */
-    public String getLogicLink(String networkId, String pnfName, String ifName, String status) throws CorrelationException {
+    public String getLogicLink(String networkId, String pnfName, String ifName, String status) {
         Map<String, String> params = new HashMap<>();
         params.put("networkId", networkId);
         params.put("pnfName", pnfName);
         params.put("ifName", ifName);
 
-        Response response = get(getHostAddr(), getPath(AaiConfig.MsbConsts.AAI_LINK_QUERY, params)
-                + (status == null ? "" : String.format("&operational-status=%s", status)));
-        JsonObject linkInfo = getInfo(response.readEntity(String.class), "p-interface", "logical-link");
+        String response = JerseyClient.newInstance()
+                .path(getPath(AaiConfig.MsbConsts.AAI_LINK_QUERY, params)
+                        + (status == null ? "" : String.format("&operational-status=%s", status)))
+                .headers(headers)
+                .get(getHostAddr());
+        JsonObject linkInfo = getInfo(response, "p-interface", "logical-link");
         if (linkInfo == null) {
             log.warn(String.format("Link information is missing from AAI. Method: [getLogicLink], " +
                     "params: [networkId - %s, pnfName - %s, ifName - %s].", networkId, pnfName, ifName));
@@ -102,103 +97,109 @@ public class AaiQuery4Ccvpn {
      * @return service instances in JSONObject format
      */
     public JsonObject getServiceInstance(String networkId, String pnfName, String ifName, String status) {
-        try {
-            JsonObject vpnBindingInfo = getVpnBindingInfo(networkId, pnfName, ifName, status);
-            if (vpnBindingInfo == null) {
-                log.warn(String.format("VPN binding information is missing from AAI. " +
-                        "Method: [getServiceInstance], params: [networkId - %s, pnfName - %s, " +
-                        "ifName - %s, status - %s].", networkId, pnfName, ifName, status));
-                return EMPTY_JSON;
-            }
-            String vpnBindingId = extractValueFromJsonArray(vpnBindingInfo.get("relationship-data").getAsJsonArray(),
-                    "vpn-binding.vpn-id");
-            JsonObject connectivityInfo = getConnectivityInfo(vpnBindingId);
-            if (connectivityInfo == null) {
-                log.warn(String.format("Connectivity information is missing from AAI. " +
-                        "Method: [getServiceInstance], params: [networkId - %s, pnfName - %s, " +
-                        "ifName - %s, status - %s].", networkId, pnfName, ifName, status));
-                return EMPTY_JSON;
-            }
-            String connectivityId = extractValueFromJsonArray(connectivityInfo.get("relationship-data").getAsJsonArray(),
-                    "connectivity.connectivity-id");
-            JsonObject serviceInstanceInfo = getServiceInstanceByConn(connectivityId);
-            if (serviceInstanceInfo == null) {
-                log.warn(String.format("Service instance information is missing from AAI. " +
-                        "Method: [getServiceInstance], params: [networkId - %s, pnfName - %s, " +
-                        "ifName - %s, status - %s].", networkId, pnfName, ifName, status));
-                return EMPTY_JSON;
-            }
-            String serviceInstancePath = serviceInstanceInfo.get("related-link").getAsString();
-
-            Response response = get(getHostAddr(), getPath(serviceInstancePath));
-            JsonObject instance = JsonParser.parseString(response.readEntity(String.class)).getAsJsonObject();
-
-            String[] params = new String[2];
-            Pattern pattern = Pattern.compile("/aai/v\\d+/business/customers/customer/(.+)" +
-                    "/service-subscriptions/service-subscription/(.+)" +
-                    "/service-instances/service-instance/(.+)");
-            Matcher matcher = pattern.matcher(serviceInstancePath);
-            if (matcher.find()) {
-                params[0] = matcher.group(1);
-                params[1] = matcher.group(2);
-            }
-            instance.addProperty("globalSubscriberId", params[0]);
-            instance.addProperty("serviceType", params[1]);
-            return instance;
-        } catch (CorrelationException e) {
-            throw new RuntimeException(e.getMessage(), e);
+        JsonObject vpnBindingInfo = getVpnBindingInfo(networkId, pnfName, ifName, status);
+        if (vpnBindingInfo == null) {
+            log.warn(String.format("VPN binding information is missing from AAI. " +
+                    "Method: [getServiceInstance], params: [networkId - %s, pnfName - %s, " +
+                    "ifName - %s, status - %s].", networkId, pnfName, ifName, status));
+            return EMPTY_JSON;
         }
+        String vpnBindingId = extractValueFromJsonArray(vpnBindingInfo.get("relationship-data").getAsJsonArray(),
+                "vpn-binding.vpn-id");
+        JsonObject connectivityInfo = getConnectivityInfo(vpnBindingId);
+        if (connectivityInfo == null) {
+            log.warn(String.format("Connectivity information is missing from AAI. " +
+                    "Method: [getServiceInstance], params: [networkId - %s, pnfName - %s, " +
+                    "ifName - %s, status - %s].", networkId, pnfName, ifName, status));
+            return EMPTY_JSON;
+        }
+        String connectivityId = extractValueFromJsonArray(connectivityInfo.get("relationship-data").getAsJsonArray(),
+                "connectivity.connectivity-id");
+        JsonObject serviceInstanceInfo = getServiceInstanceByConn(connectivityId);
+        if (serviceInstanceInfo == null) {
+            log.warn(String.format("Service instance information is missing from AAI. " +
+                    "Method: [getServiceInstance], params: [networkId - %s, pnfName - %s, " +
+                    "ifName - %s, status - %s].", networkId, pnfName, ifName, status));
+            return EMPTY_JSON;
+        }
+        String serviceInstancePath = serviceInstanceInfo.get("related-link").getAsString();
+
+        String response = JerseyClient.newInstance().path(serviceInstancePath).headers(headers).get(getHostAddr());
+        JsonObject instance = JsonParser.parseString(response).getAsJsonObject();
+
+        String[] params = new String[2];
+        Pattern pattern = Pattern.compile("/aai/v\\d+/business/customers/customer/(.+)" +
+                "/service-subscriptions/service-subscription/(.+)" +
+                "/service-instances/service-instance/(.+)");
+        Matcher matcher = pattern.matcher(serviceInstancePath);
+        if (matcher.find()) {
+            params[0] = matcher.group(1);
+            params[1] = matcher.group(2);
+        }
+        instance.addProperty("globalSubscriberId", params[0]);
+        instance.addProperty("serviceType", params[1]);
+        return instance;
     }
 
     public void updateTerminalPointStatus(String networkId, String pnfName, String ifName,
-                                          Map<String, Object> body) throws CorrelationException {
+                                          Map<String, Object> body) {
         Map<String, String> params = new HashMap<>();
         params.put("networkId", networkId);
         params.put("pnfName", pnfName);
         params.put("ifName", ifName);
-        Response r = get(getHostAddr(), getPath(AaiConfig.MsbConsts.AAI_TP_UPDATE, params));
-        JsonObject jsonObject = JsonParser.parseString(r.readEntity(String.class)).getAsJsonObject();
+        String r = JerseyClient.newInstance()
+                .path(getPath(AaiConfig.MsbConsts.AAI_TP_UPDATE, params))
+                .headers(headers)
+                .get(getHostAddr());
+        JsonObject jsonObject = JsonParser.parseString(r).getAsJsonObject();
         body.put("resource-version", jsonObject.get("resource-version").toString());
 
-        put(getHostAddr(), getPath(AaiConfig.MsbConsts.AAI_TP_UPDATE, params), body);
+        JerseyClient.newInstance().path(getPath(AaiConfig.MsbConsts.AAI_TP_UPDATE, params))
+                .headers(headers)
+                .put(getHostAddr(), Entity.json(body));
     }
 
-    public void updateLogicLinkStatus(String linkName, Map<String, Object> body) throws CorrelationException {
-        Response r = get(getHostAddr(), getPath(AaiConfig.MsbConsts.AAI_LINK_UPDATE, "linkName", linkName));
-        JsonObject jsonObject = JsonParser.parseString(r.readEntity(String.class)).getAsJsonObject();
+    public void updateLogicLinkStatus(String linkName, Map<String, Object> body) {
+        String r = JerseyClient.newInstance()
+                .path(getPath(AaiConfig.MsbConsts.AAI_LINK_UPDATE, "linkName", linkName))
+                .headers(headers)
+                .get(getHostAddr());
+        JsonObject jsonObject = JsonParser.parseString(r).getAsJsonObject();
         body.put("resource-version", jsonObject.get("resource-version").toString());
         body.put("link-type", jsonObject.get("link-type").toString());
-        put(getHostAddr(), getPath(AaiConfig.MsbConsts.AAI_LINK_UPDATE, "linkName", linkName), body);
+        JerseyClient.newInstance()
+                .path(getPath(AaiConfig.MsbConsts.AAI_LINK_UPDATE, "linkName", linkName))
+                .headers(headers)
+                .put(getHostAddr(), Entity.json(body));
     }
 
     private JsonObject getVpnBindingInfo(String networkId, String pnfName,
-                                         String ifName, String status) throws CorrelationException {
+                                         String ifName, String status) {
         Map<String, String> params = new HashMap();
         params.put("networkId", networkId);
         params.put("pnfName", pnfName);
         params.put("ifName", ifName);
         params.put("status", status);
-        Response response = get(getHostAddr(), getPath(AaiConfig.MsbConsts.AAI_VPN_ADDR, params));
-        return getInfo(response.readEntity(String.class), "p-interface", "vpn-binding");
+        String response = JerseyClient.newInstance().path(getPath(AaiConfig.MsbConsts.AAI_VPN_ADDR, params))
+                .headers(headers).get(getHostAddr());
+        return getInfo(response, "p-interface", "vpn-binding");
     }
 
-    private JsonObject getConnectivityInfo(String vpnId) throws CorrelationException {
-        Response response = get(getHostAddr(), getPath(AaiConfig.MsbConsts.AAI_CONN_ADDR, "vpnId", vpnId));
-        return getInfo(response.readEntity(String.class), "vpn-binding", "connectivity");
+    private JsonObject getConnectivityInfo(String vpnId) {
+        String response = JerseyClient.newInstance()
+                .path(getPath(AaiConfig.MsbConsts.AAI_CONN_ADDR, "vpnId", vpnId))
+                .headers(headers)
+                .get(getHostAddr());
+        return getInfo(response, "vpn-binding", "connectivity");
     }
 
-    private JsonObject getServiceInstanceByConn(String connectivityId) throws CorrelationException {
-        Response response = get(getHostAddr(), getPath(AaiConfig.MsbConsts.AAI_SERVICE_INSTANCE_ADDR_4_CCVPN,
-                "connectivityId", connectivityId));
-        return getInfo(response.readEntity(String.class), "connectivity", "service-instance");
-    }
-
-    private JsonObject getServiceInstance(String globalCustomerId, String serviceType) throws CorrelationException {
-        Map<String, String> params = new HashMap();
-        params.put("global-customer-id", globalCustomerId);
-        params.put("service-type", serviceType);
-        Response response = get(getHostAddr(), getPath(AaiConfig.MsbConsts.AAI_SERVICE_INSTANCES_ADDR_4_CCVPN, params));
-        return JsonParser.parseString(response.readEntity(String.class)).getAsJsonObject();
+    private JsonObject getServiceInstanceByConn(String connectivityId) {
+        String response = JerseyClient.newInstance()
+                .path(getPath(AaiConfig.MsbConsts.AAI_SERVICE_INSTANCE_ADDR_4_CCVPN,
+                        "connectivityId", connectivityId))
+                .headers(headers)
+                .get(getHostAddr());
+        return getInfo(response, "connectivity", "service-instance");
     }
 
     private String getPath(String urlTemplate, Map<String, String> pathParams) {
@@ -222,44 +223,6 @@ public class AaiQuery4Ccvpn {
         }
 
         return ret;
-    }
-
-    private Response get(String host, String path) throws CorrelationException {
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(host).path(path);
-        try {
-            Response response = target.request().headers(getAaiHeaders()).get();
-            if (response.getStatusInfo().getFamily() != Response.Status.Family.SUCCESSFUL) {
-                throw new CorrelationException("Failed to connect to AAI. \nCause: "
-                        + response.getStatusInfo().getReasonPhrase() + "\nDetails: \n"
-                        + getErrorMsg(String.format("%s%s", host, path), null, response));
-            }
-            return response;
-        } catch (CorrelationException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new CorrelationException(e.getMessage() + "More info: "
-                    + getErrorMsg(String.format("%s%s", host, path), null, null), e);
-        }
-    }
-
-    private void put(String host, String path, Map<String, Object> body) throws CorrelationException {
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(host).path(path);
-        try {
-            Response response = target.request().headers(getAaiHeaders()).build("PUT", Entity.json(body))
-                    .property(HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true).invoke();
-            if (response.getStatusInfo().getFamily() != Response.Status.Family.SUCCESSFUL) {
-                throw new CorrelationException("Failed to connect to AAI. \nCause: "
-                        + response.getStatusInfo().getReasonPhrase() + "\nDetails: \n"
-                        + getErrorMsg(String.format("%s%s", host, path), body, response));
-            }
-        } catch (CorrelationException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new CorrelationException(e.getMessage() + "More info: "
-                    + getErrorMsg(String.format("%s%s", host, path), body, null), e);
-        }
     }
 
     private JsonObject getInfo(String response, String pField, String field) {
@@ -295,10 +258,6 @@ public class AaiQuery4Ccvpn {
         return null;
     }
 
-    private MultivaluedMap getAaiHeaders() {
-        return headers;
-    }
-
     private String getHostAddr() {
         return MicroServiceConfig.getMsbServerAddrWithHttpPrefix();
     }
@@ -313,19 +272,5 @@ public class AaiQuery4Ccvpn {
             }
         }
         return null;
-    }
-
-    private String getErrorMsg(String url, Map<String, Object> body, Response response) {
-        Gson gson = new Gson();
-        StringBuilder sb = new StringBuilder();
-        sb.append("Rerquest URL: ").append(url).append("\n");
-        sb.append("Request Header: ").append(gson.toJson(headers)).append("\n");
-        if (body != null) {
-            sb.append("Request Body: ").append(gson.toJson(body)).append("\n");
-        }
-        if (response != null) {
-            sb.append("Request Body: ").append(response.readEntity(String.class));
-        }
-        return sb.toString();
     }
 }

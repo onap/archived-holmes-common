@@ -19,13 +19,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.onap.holmes.common.constant.AlarmConst;
+import org.onap.holmes.common.utils.JerseyClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.Response;
-import java.util.regex.Pattern;
 
 import static org.onap.holmes.common.utils.CommonUtils.getEnv;
 import static org.onap.holmes.common.utils.CommonUtils.isIpAddress;
@@ -37,7 +33,6 @@ public class MicroServiceConfig {
     final static public String HOSTNAME = "HOSTNAME";
     final static public String POD_IP = "POD_IP";
     final static public String CONFIG_BINDING_SERVICE = "CONFIG_BINDING_SERVICE";
-    final static public String DOCKER_HOST = "DOCKER_HOST";
     final static public String MSB_ADDR = "MSB_ADDR";
     final static public String MSB_IAG_SERVICE_HOST = "MSB_IAG_SERVICE_HOST";
     final static public String MSB_IAG_SERVICE_PORT = "MSB_IAG_SERVICE_PORT";
@@ -74,9 +69,7 @@ public class MicroServiceConfig {
     }
 
     private static String execQuery(String queryString) {
-        Client client = ClientBuilder.newBuilder().build();
-        Response response = client.target(queryString).request().get();
-        return response.readEntity(String.class);
+        return JerseyClient.newInstance().get(queryString);
     }
 
     public static String getServiceConfigInfoFromCBS(String hostname) {
@@ -123,7 +116,6 @@ public class MicroServiceConfig {
         }
         return serviceAddrInfo;
     }
-
 
 
     private static String[] split(String addr) {
