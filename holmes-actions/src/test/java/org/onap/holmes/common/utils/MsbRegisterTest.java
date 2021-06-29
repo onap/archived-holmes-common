@@ -27,40 +27,39 @@ import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.internal.WhiteboxImpl;
 
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
 
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.expect;
-import static org.powermock.api.easymock.PowerMock.createPartialMock;
+import static org.powermock.api.easymock.PowerMock.createMock;
+import static org.powermock.api.easymock.PowerMock.expectNew;
 
 @PrepareForTest({MicroServiceConfig.class, JerseyClient.class})
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"javax.net.ssl.*", "javax.security.*"})
 public class MsbRegisterTest {
 
-    private MsbRegister msbRegister;
     private JerseyClient mockedJerseyClient;
     private MicroServiceInfo msi;
 
     @Before
-    public void before() {
+    public void before() throws Exception {
         msi = new MicroServiceInfo();
         String[] msbAddrInfo = {"127.0.0.1", "80"};
 
         PowerMock.mockStatic(MicroServiceConfig.class);
         expect(MicroServiceConfig.getMsbIpAndPort()).andReturn(msbAddrInfo);
 
-        mockedJerseyClient = createPartialMock(JerseyClient.class,
-                "post", new Class[]{String.class, Entity.class, Class.class});
-
-        msbRegister = new MsbRegister();
-        WhiteboxImpl.setInternalState(msbRegister, "client", mockedJerseyClient);
+        mockedJerseyClient = createMock(JerseyClient.class);
+        expectNew(JerseyClient.class).andReturn(mockedJerseyClient);
     }
 
     @Test
     public void test_register2Msb_normal() {
+        expect(mockedJerseyClient.header("Accept", MediaType.APPLICATION_JSON)).andReturn(mockedJerseyClient);
+        expect(mockedJerseyClient.queryParam("createOrUpdate", true)).andReturn(mockedJerseyClient);
         expect(mockedJerseyClient.post(anyObject(String.class),
                 anyObject(Entity.class),
                 anyObject(Class.class)))
@@ -75,6 +74,7 @@ public class MsbRegisterTest {
 
         PowerMock.replayAll();
 
+        MsbRegister msbRegister = new MsbRegister();
         try {
             msbRegister.register2Msb(msi);
         } catch (CorrelationException e) {
@@ -86,6 +86,8 @@ public class MsbRegisterTest {
 
     @Test
     public void test_register2Msb_fail_once() {
+        expect(mockedJerseyClient.header("Accept", MediaType.APPLICATION_JSON)).andReturn(mockedJerseyClient).times(2);
+        expect(mockedJerseyClient.queryParam("createOrUpdate", true)).andReturn(mockedJerseyClient).times(2);
         expect(mockedJerseyClient.post(anyObject(String.class),
                 anyObject(Entity.class),
                 anyObject(Class.class)))
@@ -105,6 +107,7 @@ public class MsbRegisterTest {
 
         PowerMock.replayAll();
 
+        MsbRegister msbRegister = new MsbRegister();
         try {
             msbRegister.register2Msb(msi);
         } catch (CorrelationException e) {
