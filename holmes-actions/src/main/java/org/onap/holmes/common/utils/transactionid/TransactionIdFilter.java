@@ -59,8 +59,9 @@ public class TransactionIdFilter implements Filter {
 
         String requestID = ensureTransactionIdIsPresent(requestWithTransactionId);
         HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
-        if (TransactionIdUtils.validate(requestID)) {
-            httpServletResponse.setHeader(TransactionIdUtils.REQUEST_ID_HEADER, requestID);
+        String validatedRequestID = TransactionIdUtils.validate(requestID);
+        if (validatedRequestID != null) {
+            httpServletResponse.setHeader(TransactionIdUtils.REQUEST_ID_HEADER, validatedRequestID);
         } else {
             log.warn("A mal-formatted request ID has been detected: {}. It will be replaced by the default ID: {}",
                     requestID, DEFAULT_REQUEST_ID);
