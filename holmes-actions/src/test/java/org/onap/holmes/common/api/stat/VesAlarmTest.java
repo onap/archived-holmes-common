@@ -19,7 +19,9 @@ package org.onap.holmes.common.api.stat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.TimeZone;
 import org.junit.Test;
 
 public class VesAlarmTest {
@@ -69,16 +71,20 @@ public class VesAlarmTest {
         alarm.setSourceId("");
         alarm.setSourceName("");
         alarm.setStartEpochMicrosec(0L);
-        alarm.setVersion(0L);
-        alarm.setAlarmAdditionalInformation(new ArrayList<>());
-        alarm.setAlarmCondition("");
+        alarm.setVersion("0");
+        alarm.setAlarmAdditionalInformation(new HashMap<>());
+	alarm.setAlarmCondition("");
         alarm.setAlarmInterfaceA("");
         alarm.setEventCategory("");
         alarm.setEventSeverity("");
         alarm.setEventSourceType("");
-        alarm.setFaultFieldsVersion(0L);
+        alarm.setFaultFieldsVersion("0");
         alarm.setSpecificProblem("");
         alarm.setVfStatus("");
+        TimeZone offtime_zone = TimeZone.getTimeZone("Europe/Rome");
+	alarm.setTimeZoneOffset(offtime_zone);
+	alarm.setNfVendorName("");
+        alarm.setVesEventListenerVersion("0");
 
         alarm.getDomain();
         alarm.getEventId();

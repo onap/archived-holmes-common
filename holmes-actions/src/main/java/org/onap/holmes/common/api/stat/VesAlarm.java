@@ -17,8 +17,9 @@
 package org.onap.holmes.common.api.stat;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.TimeZone;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -41,20 +42,23 @@ public class VesAlarm implements Cloneable, Serializable{
     private String sourceId;
     private String sourceName;
     private Long startEpochMicrosec;
-    private Long version;
+    private String version;
 
-    private List<AlarmAdditionalField> alarmAdditionalInformation;
+    private Map<String, String> alarmAdditionalInformation;
     private String alarmCondition;
     private String alarmInterfaceA;
     private String eventCategory;
     private String eventSeverity;
     private String eventSourceType;
-    private Long faultFieldsVersion;
+    private String faultFieldsVersion;
     private String specificProblem;
     private String vfStatus;
     private String parentId;
     private int alarmIsCleared = 0;  //mark as 1 when alarm type is cleared, else mark as 0
     private int rootFlag = 0;        // mark as 1 when alarm is a root alarm , else mark as 0
+    private String nfVendorName;
+    private String vesEventListenerVersion;
+    private TimeZone timeZoneOffset;
 
     @Override
     public int hashCode() {
@@ -91,18 +95,13 @@ public class VesAlarm implements Cloneable, Serializable{
         vesAlarm.setSourceName(this.getSourceName());
         vesAlarm.setStartEpochMicrosec(this.getStartEpochMicrosec());
         vesAlarm.setVersion(this.getVersion());
-
         if (alarmAdditionalInformation != null) {
-            List<AlarmAdditionalField> alarmAdditionalFields = new ArrayList<>();
-            alarmAdditionalInformation.forEach(alarmAdditionalField -> {
-                AlarmAdditionalField alarmAdditionalField1 = new AlarmAdditionalField();
-                alarmAdditionalField1.setName(alarmAdditionalField.getName());
-                alarmAdditionalField1.setName(alarmAdditionalField.getValue());
-                alarmAdditionalFields.add(alarmAdditionalField1);
-            });
-            vesAlarm.setAlarmAdditionalInformation(alarmAdditionalFields);
+           Map<String, String> alarmAdditionalFields = new HashMap<String, String>();
+           for(String key: alarmAdditionalInformation.keySet()) {
+              alarmAdditionalFields.put(key, alarmAdditionalInformation.get(key));
+           }
+	   vesAlarm.setAlarmAdditionalInformation(alarmAdditionalFields);
         }
-
         vesAlarm.setAlarmCondition(this.getAlarmCondition());
         vesAlarm.setAlarmInterfaceA(this.getAlarmInterfaceA());
         vesAlarm.setEventCategory(this.getEventCategory());
@@ -113,6 +112,9 @@ public class VesAlarm implements Cloneable, Serializable{
         vesAlarm.setVfStatus(this.vfStatus);
         vesAlarm.setAlarmIsCleared(this.alarmIsCleared);
         vesAlarm.setRootFlag(this.rootFlag);
+	vesAlarm.setVesEventListenerVersion(this.vesEventListenerVersion);
+        vesAlarm.setNfVendorName(this.nfVendorName);
+        vesAlarm.setTimeZoneOffset(this.timeZoneOffset);
 
         return vesAlarm;
     }

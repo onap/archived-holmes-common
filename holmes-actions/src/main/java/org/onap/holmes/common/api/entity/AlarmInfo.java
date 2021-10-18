@@ -44,6 +44,9 @@ public class AlarmInfo {
     @SerializedName(value = "sourcename")
     private String sourceName;
 
+    @SerializedName(value = "sequence")
+    private int sequence;
+
     @SerializedName(value = "alarmiscleared")
     private int alarmIsCleared;
 
