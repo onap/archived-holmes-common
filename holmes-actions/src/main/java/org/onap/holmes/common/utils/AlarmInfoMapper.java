@@ -32,6 +32,7 @@ public class AlarmInfoMapper implements ResultSetMapper<AlarmInfo> {
         alarmInfo.setEventName(resultSet.getString("eventname"));
         alarmInfo.setSourceId(resultSet.getString("sourceid"));
         alarmInfo.setSourceName(resultSet.getString("sourcename"));
+	alarmInfo.setSequence(resultSet.getInt("sequence"));
         alarmInfo.setStartEpochMicroSec(resultSet.getLong("startepochmicrosec"));
         alarmInfo.setLastEpochMicroSec(resultSet.getLong("lastepochmicrosec"));
         return alarmInfo;

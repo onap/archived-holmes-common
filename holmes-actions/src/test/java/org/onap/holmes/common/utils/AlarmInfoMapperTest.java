@@ -33,6 +33,7 @@ public class AlarmInfoMapperTest {
         expect(resultSet.getString("eventname")).andReturn("");
         expect(resultSet.getString("sourceid")).andReturn("");
         expect(resultSet.getString("sourcename")).andReturn("");
+	expect(resultSet.getInt("sequence")).andReturn(0);
         expect(resultSet.getLong("startepochmicrosec")).andReturn(0L);
         expect(resultSet.getLong("lastepochmicrosec")).andReturn(0L);
         expect(resultSet.getInt("alarmiscleared")).andReturn(0);
