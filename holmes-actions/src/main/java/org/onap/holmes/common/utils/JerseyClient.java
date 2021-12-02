@@ -197,12 +197,14 @@ public class JerseyClient {
     private boolean isSuccessful(Response response, String url) {
         Response.StatusType statusInfo = response.getStatusInfo();
         if (statusInfo.getFamily() != Response.Status.Family.SUCCESSFUL) {
-            throw new HttpException(statusInfo.getStatusCode(),
-                    String.format("Failed to get response from the server. " +
+            logger.error(
+                    String.format("Failed to get response from the server <%d>. " +
                                     "\nURL: %s\nCause: %s\nResponse body: %s",
+                            statusInfo.getStatusCode(),
                             url,
                             statusInfo.getReasonPhrase(),
                             response.readEntity(String.class)));
+            return false;
         }
         return true;
     }

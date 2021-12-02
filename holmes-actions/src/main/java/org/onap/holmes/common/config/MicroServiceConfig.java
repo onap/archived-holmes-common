@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.onap.holmes.common.utils.CommonUtils.getEnv;
-import static org.onap.holmes.common.utils.CommonUtils.isIpAddress;
 
 public class MicroServiceConfig {
 
@@ -97,21 +96,13 @@ public class MicroServiceConfig {
     }
 
     public static String[] getMicroServiceIpAndPort() {
-        String[] serviceAddrInfo = null;
-        String info = getServiceAddrInfoFromDcaeConsulByHostName(getEnv(HOSTNAME));
-        log.info("Got the service information of \"" + getEnv(HOSTNAME) + "\" from Consul. The response is " + info + ".");
-
-        if (info != null && !info.isEmpty()) {
-            if (!isIpAddress(info)) {
-                info = getEnv(POD_IP);
-            }
-            serviceAddrInfo = split(info);
+        String info = getEnv(POD_IP);
+        if (info != null) {
+            return split(info);
         } else {
-            serviceAddrInfo = split(getEnv(HOSTNAME));
+            return split(getEnv(HOSTNAME));
         }
-        return serviceAddrInfo;
     }
-
 
     private static String[] split(String addr) {
         String ip;

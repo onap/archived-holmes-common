@@ -74,8 +74,6 @@ public class MicroServiceConfigTest {
 
     @Test
     public void getServiceIpTest() {
-        mockGet(null);
-
         String ip = StringUtils.isEmpty(ACTUAL_HOSTNAME) ? "10.74.5.8" : ACTUAL_HOSTNAME;
         String hostname = String.format("http://%s", ip);
         System.setProperty(HOSTNAME, hostname);
@@ -98,7 +96,7 @@ public class MicroServiceConfigTest {
     }
 
     @Test
-    public void getConfigBindingServiceAddrInfoTest_consul_not_exist() throws Exception {
+    public void getConfigBindingServiceAddrInfoTest_consul_not_exist() {
         System.setProperty(CONFIG_BINDING_SERVICE, "config_binding_service");
 
         mockGet(null);
@@ -113,7 +111,7 @@ public class MicroServiceConfigTest {
     }
 
     @Test
-    public void getServiceAddrInfoFromDcaeConsulByHostName_consul_exists() throws Exception {
+    public void getServiceAddrInfoFromDcaeConsulByHostName_consul_exists() {
         System.setProperty(CONFIG_BINDING_SERVICE, "config_binding_service");
         mockGet("[{\"ServiceAddress\": \"127.0.0.2\", \"ServicePort\": \"8080\"}]");
         System.setProperty(CONSUL_HOST, "127.0.0.1");
@@ -130,7 +128,7 @@ public class MicroServiceConfigTest {
     }
 
     @Test
-    public void getConfigBindingServiceAddrInfoTest_consul_return_empty_array() throws Exception {
+    public void getConfigBindingServiceAddrInfoTest_consul_return_empty_array() {
         System.setProperty(CONFIG_BINDING_SERVICE, "config_binding_service");
         System.setProperty(CONSUL_HOST, "127.0.0.1");
 
@@ -148,7 +146,7 @@ public class MicroServiceConfigTest {
     }
 
     @Test
-    public void getConfigBindingServiceAddrInfoTest_consul_exists_property_not_exist() throws Exception {
+    public void getConfigBindingServiceAddrInfoTest_consul_exists_property_not_exist() {
         System.setProperty(CONFIG_BINDING_SERVICE, "config_binding_service");
         System.setProperty(CONSUL_HOST, "127.0.0.1");
 
@@ -178,7 +176,7 @@ public class MicroServiceConfigTest {
     }
 
     @Test
-    public void getServiceAddrInfoFromDcaeConsulByHostName_consul_exists_service_not_exist() throws Exception {
+    public void getServiceAddrInfoFromDcaeConsulByHostName_consul_exists_service_not_exist() {
         mockGet("[]");
 
         PowerMock.replayAll();
@@ -189,7 +187,7 @@ public class MicroServiceConfigTest {
     }
 
     @Ignore
-    public void getMsbAddrInfo_msb_registered() throws Exception {
+    public void getMsbAddrInfo_msb_registered() {
         System.setProperty(MSB_IAG_SERVICE_HOST, "10.74.5.8");
         System.setProperty(MSB_IAG_SERVICE_PORT, "1545");
         System.setProperty(HOSTNAME, "rule-mgmt");
@@ -210,7 +208,7 @@ public class MicroServiceConfigTest {
     }
 
     @Ignore
-    public void getMsbAddrInfo_msb_not_registered() throws Exception {
+    public void getMsbAddrInfo_msb_not_registered() {
         System.setProperty(MSB_IAG_SERVICE_HOST, "10.74.5.8");
         System.setProperty(MSB_IAG_SERVICE_PORT, "1545");
         System.setProperty(HOSTNAME, "rule-mgmt");
@@ -231,29 +229,11 @@ public class MicroServiceConfigTest {
     }
 
     @Test
-    public void getMicroServiceIpAndPort_service_registered_to_consul() throws Exception {
-        System.setProperty(HOSTNAME, "rule-mgmt");
-
-        mockGet("[{\"ServiceAddress\": \"127.0.0.3\", \"ServicePort\": \"5432\"}]");
-
-        PowerMock.replayAll();
-        String[] msbInfo = getMicroServiceIpAndPort();
-        PowerMock.verifyAll();
-
-        assertThat(msbInfo[0], equalTo("127.0.0.3"));
-        assertThat(msbInfo[1], equalTo("5432"));
-
-        System.clearProperty(HOSTNAME);
-    }
-
-    @Test
-    public void getMicroServiceIpAndPort_service_not_registered_to_consul() throws Exception {
+    public void getMicroServiceIpAndPort_full_addr() {
         String ip = StringUtils.isEmpty(ACTUAL_HOSTNAME) ? "10.74.5.8" : ACTUAL_HOSTNAME;
         String port = StringUtils.isEmpty(ACTUAL_HOSTNAME) ? "1545" : "80";
         String hostname = String.format("http://%s:%s", ip, port);
         System.setProperty(HOSTNAME, hostname);
-
-        mockGet("[]");
 
         PowerMock.replayAll();
         String[] msbInfo = getMicroServiceIpAndPort();
@@ -266,31 +246,10 @@ public class MicroServiceConfigTest {
     }
 
     @Test
-    public void getMicroServiceIpAndPort_service_not_registered_full_addr() throws Exception {
-        String ip = StringUtils.isEmpty(ACTUAL_HOSTNAME) ? "10.74.5.8" : ACTUAL_HOSTNAME;
-        String port = StringUtils.isEmpty(ACTUAL_HOSTNAME) ? "1545" : "80";
-        String hostname = String.format("http://%s:%s", ip, port);
-        System.setProperty(HOSTNAME, hostname);
-
-        mockGet("{}");
-
-        PowerMock.replayAll();
-        String[] msbInfo = getMicroServiceIpAndPort();
-        PowerMock.verifyAll();
-
-        assertThat(msbInfo[0], equalTo(ip));
-        assertThat(msbInfo[1], equalTo(port));
-
-        System.clearProperty(HOSTNAME);
-    }
-
-    @Test
-    public void getMicroServiceIpAndPort_service_not_registered_no_port() throws Exception {
+    public void getMicroServiceIpAndPort_no_port() {
         String ip = StringUtils.isEmpty(ACTUAL_HOSTNAME) ? "10.74.5.8" : ACTUAL_HOSTNAME;
         String hostname = String.format("http://%s", ip);
         System.setProperty(HOSTNAME, hostname);
-
-        mockGet("{}");
 
         PowerMock.replayAll();
         String[] msbInfo = getMicroServiceIpAndPort();
@@ -303,31 +262,11 @@ public class MicroServiceConfigTest {
     }
 
     @Test
-    public void getMicroServiceIpAndPort_service_not_registered_only_ip() throws Exception {
-        String ip = StringUtils.isEmpty(ACTUAL_HOSTNAME) ? "10.74.5.8" : ACTUAL_HOSTNAME;
-        String hostname = String.format("http://%s", ip);
-        System.setProperty(HOSTNAME, hostname);
-
-        mockGet("{}");
-
-        PowerMock.replayAll();
-        String[] msbInfo = getMicroServiceIpAndPort();
-        PowerMock.verifyAll();
-
-        assertThat(msbInfo[0], equalTo(ip));
-        assertThat(msbInfo[1], equalTo("80"));
-
-        System.clearProperty(HOSTNAME);
-    }
-
-    @Test
-    public void getMicroServiceIpAndPort_service_not_registered_full_addr_https() throws Exception {
+    public void getMicroServiceIpAndPort_full_addr_https() {
         String ip = StringUtils.isEmpty(ACTUAL_HOSTNAME) ? "10.74.5.8" : ACTUAL_HOSTNAME;
         String port = StringUtils.isEmpty(ACTUAL_HOSTNAME) ? "1545" : "80";
         String hostname = String.format("http://%s:%s", ip, port);
         System.setProperty(HOSTNAME, hostname);
-
-        mockGet("[]");
 
         PowerMock.replayAll();
         String[] msbInfo = getMicroServiceIpAndPort();

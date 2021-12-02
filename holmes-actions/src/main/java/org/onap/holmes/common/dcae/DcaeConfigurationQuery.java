@@ -20,6 +20,7 @@ import org.onap.holmes.common.dcae.entity.DcaeConfigurations;
 import org.onap.holmes.common.dcae.utils.DcaeConfigurationParser;
 import org.onap.holmes.common.exception.CorrelationException;
 
+@Deprecated
 public class DcaeConfigurationQuery {
 
     public static DcaeConfigurations getDcaeConfigurations(String hostname)

@@ -37,19 +37,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"javax.net.ssl.*", "javax.security.*"})
 public class JerseyClientTest {
 
-    private final String ERROR_MSG = "Failed to get response from the server. \nURL: http://www.onap.org/holmes/test" +
-            "\nCause: Not Found\nResponse body: Error";
     private JerseyClient jerseyClient = JerseyClient.newInstance();
     private String url = "http://www.onap.org/holmes/test";
-
-    @Rule
-    private ExpectedException exception = ExpectedException.none();
 
     @Test
     public void get_normal() {
@@ -134,18 +130,14 @@ public class JerseyClientTest {
         EasyMock.expect(mockedClient.target(url)).andReturn(mockedTarget);
         EasyMock.expect(mockedTarget.request()).andReturn(mockedBuilder);
         EasyMock.expect(mockedBuilder.get()).andReturn(mockedResponse);
-        EasyMock.expect(mockedResponse.getStatus()).andReturn(404);
         EasyMock.expect(mockedResponse.getStatusInfo()).andReturn(Response.Status.NOT_FOUND);
         EasyMock.expect(mockedResponse.readEntity(String.class)).andReturn("Error");
 
         WhiteboxImpl.setInternalState(jerseyClient, "client", mockedClient);
 
-        exception.expect(HttpException.class);
-        exception.expectMessage(ERROR_MSG);
-
         PowerMock.replayAll();
 
-        jerseyClient.get(url);
+        assertThat(jerseyClient.get(url), nullValue());
 
         PowerMock.verifyAll();
     }
@@ -182,18 +174,14 @@ public class JerseyClientTest {
         EasyMock.expect(mockedClient.target(url)).andReturn(mockedTarget);
         EasyMock.expect(mockedTarget.request()).andReturn(mockedBuilder);
         EasyMock.expect(mockedBuilder.post(null)).andReturn(mockedResponse);
-        EasyMock.expect(mockedResponse.getStatus()).andReturn(404);
         EasyMock.expect(mockedResponse.getStatusInfo()).andReturn(Response.Status.NOT_FOUND);
         EasyMock.expect(mockedResponse.readEntity(String.class)).andReturn("Error");
 
         WhiteboxImpl.setInternalState(jerseyClient, "client", mockedClient);
 
-        exception.expect(HttpException.class);
-        exception.expectMessage(ERROR_MSG);
-
         PowerMock.replayAll();
 
-        jerseyClient.post(url);
+        assertThat(jerseyClient.post(url), nullValue());
 
         PowerMock.verifyAll();
     }
@@ -300,18 +288,14 @@ public class JerseyClientTest {
         EasyMock.expect(mockedClient.target(url)).andReturn(mockedTarget);
         EasyMock.expect(mockedTarget.request()).andReturn(mockedBuilder);
         EasyMock.expect(mockedBuilder.put(null)).andReturn(mockedResponse);
-        EasyMock.expect(mockedResponse.getStatus()).andReturn(404);
         EasyMock.expect(mockedResponse.getStatusInfo()).andReturn(Response.Status.NOT_FOUND);
         EasyMock.expect(mockedResponse.readEntity(String.class)).andReturn("Error");
 
         WhiteboxImpl.setInternalState(jerseyClient, "client", mockedClient);
 
-        exception.expect(HttpException.class);
-        exception.expectMessage(ERROR_MSG);
-
         PowerMock.replayAll();
 
-        jerseyClient.put(url, null, null);
+        assertThat(jerseyClient.put(url, null, null), nullValue());
 
         PowerMock.verifyAll();
     }
@@ -394,18 +378,14 @@ public class JerseyClientTest {
         EasyMock.expect(mockedClient.target(url)).andReturn(mockedTarget);
         EasyMock.expect(mockedTarget.request()).andReturn(mockedBuilder);
         EasyMock.expect(mockedBuilder.delete()).andReturn(mockedResponse);
-        EasyMock.expect(mockedResponse.getStatus()).andReturn(404);
         EasyMock.expect(mockedResponse.getStatusInfo()).andReturn(Response.Status.NOT_FOUND);
         EasyMock.expect(mockedResponse.readEntity(String.class)).andReturn("Error");
 
         WhiteboxImpl.setInternalState(jerseyClient, "client", mockedClient);
 
-        exception.expect(HttpException.class);
-        exception.expectMessage(ERROR_MSG);
-
         PowerMock.replayAll();
 
-        jerseyClient.delete(url);
+        assertThat(jerseyClient.delete(url), nullValue());
 
         PowerMock.verifyAll();
     }

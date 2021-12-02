@@ -27,6 +27,7 @@ import java.io.IOException;
 public class FileUtils {
 
     final static private Logger LOGGER = LoggerFactory.getLogger(FileUtils.class);
+    final static private String LINE_SEPARATOR = System.getProperty ("line.separator");
 
     static public String readTextFile(String path) {
         try {
@@ -34,9 +35,9 @@ public class FileUtils {
             StringBuilder sb = new StringBuilder();
             String line;
             while ((line = br.readLine()) != null) {
-                sb.append(line);
+                sb.append(line).append(LINE_SEPARATOR);
             }
-            return sb.toString();
+            return sb.substring(0, sb.length() - 1);
         } catch (FileNotFoundException e) {
             LOGGER.warn("No file found: {}", path);
         } catch (IOException e) {
