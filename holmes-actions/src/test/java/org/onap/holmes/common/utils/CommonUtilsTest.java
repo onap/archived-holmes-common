@@ -22,73 +22,73 @@ import static org.junit.Assert.assertThat;
 
 public class CommonUtilsTest {
     @Test
-    public void isHttpsEnabled_normal_true() throws Exception {
+    public void isHttpsEnabled_normal_true() {
         System.setProperty("ENABLE_ENCRYPT", "true");
         assertThat(CommonUtils.isHttpsEnabled(), is(true));
     }
 
     @Test
-    public void isHttpsEnabled_normal_false() throws Exception {
+    public void isHttpsEnabled_normal_false() {
         System.setProperty("ENABLE_ENCRYPT", "false");
         assertThat(CommonUtils.isHttpsEnabled(), is(false));
     }
 
     @Test
-    public void isHttpsEnabled_invalid_input() throws Exception {
+    public void isHttpsEnabled_invalid_input() {
         System.setProperty("ENABLE_ENCRYPT", "whatever");
         assertThat(CommonUtils.isHttpsEnabled(), is(false));
     }
 
     @Test
-    public void getEnv() throws Exception {
+    public void getEnv() {
         System.setProperty("TEST", "COMMON_UTILS");
         assertThat(CommonUtils.getEnv("TEST"), equalTo("COMMON_UTILS"));
     }
 
     @Test
-    public void isValidIpAddress_with_port() throws Exception {
+    public void isValidIpAddress_with_port() {
         boolean res = CommonUtils.isIpAddress("10.75.13.21:90");
         assertThat(res, is(true));
     }
 
     @Test
-    public void isValidIpAddress_without_port() throws Exception {
+    public void isValidIpAddress_without_port() {
         boolean res = CommonUtils.isIpAddress("10.75.13.21");
         assertThat(res, is(true));
     }
 
     @Test
-    public void isValidIpAddress_with_port_with_http_prefix() throws Exception {
+    public void isValidIpAddress_with_port_with_http_prefix() {
         boolean res = CommonUtils.isIpAddress("http://10.75.13.21:90");
         assertThat(res, is(true));
     }
 
     @Test
-    public void isValidIpAddress_without_port_with_https_prefix() throws Exception {
+    public void isValidIpAddress_without_port_with_https_prefix() {
         boolean res = CommonUtils.isIpAddress("https://10.75.13.21");
         assertThat(res, is(true));
     }
 
     @Test
-    public void isValidIpAddress_invalid_ip_without_port() throws Exception {
+    public void isValidIpAddress_invalid_ip_without_port() {
         boolean res = CommonUtils.isIpAddress("holmes-rule-mgmt");
         assertThat(res, is(false));
     }
 
     @Test
-    public void isValidIpAddress_invalid_ip_with_port() throws Exception {
+    public void isValidIpAddress_invalid_ip_with_port() {
         boolean res = CommonUtils.isIpAddress("holmes-rule-mgmt:443");
         assertThat(res, is(false));
     }
 
     @Test
-    public void isValidIpAddress_invalid_ip_without_port_with_http_prefix() throws Exception {
+    public void isValidIpAddress_invalid_ip_without_port_with_http_prefix() {
         boolean res = CommonUtils.isIpAddress("http://holmes-rule-mgmt");
         assertThat(res, is(false));
     }
 
     @Test
-    public void isValidIpAddress_invalid_ip_with_port_with_https_prefix() throws Exception {
+    public void isValidIpAddress_invalid_ip_with_port_with_https_prefix() {
         boolean res = CommonUtils.isIpAddress("https://holmes-rule-mgmt:443");
         assertThat(res, is(false));
     }
