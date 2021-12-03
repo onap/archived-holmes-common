@@ -16,11 +16,11 @@
 
 package org.onap.holmes.common.utils;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -30,9 +30,16 @@ import static org.junit.Assert.assertThat;
 
 public class GsonUtilTest {
 
-    private final TestBean bean1 = new TestBean("onap1", 10, 10f, 10d);
-    private final TestBean bean2 = new TestBean("onap2", 20, 20f, 20d);
-    private final Gson gson = new Gson();
+    private final TestBean bean1;
+    private final TestBean bean2;
+    private final Gson gson = buildGson();
+    private Date date;
+
+    public GsonUtilTest() {
+        date = new Date();
+        bean1 = new TestBean("onap1", 10, 10f, 10d, date);
+        bean2 = new TestBean("onap2", 20, 20f, 20d, date);
+    }
 
     @Test
     public void beanToJson() {
@@ -49,6 +56,7 @@ public class GsonUtilTest {
         assertThat(expected.getInteger(), equalTo(actual.getInteger()));
         assertThat(expected.getaDouble(), equalTo(actual.getaDouble()));
         assertThat(expected.getaFloat(), equalTo(actual.getaFloat()));
+        assertThat(expected.getaDate(), equalTo(actual.getaDate()));
     }
 
     @Test
@@ -64,19 +72,20 @@ public class GsonUtilTest {
 
     @Test
     public void jsonToListMaps() {
+        long timestamp = date.getTime();
         List<Map<String, TestBean>> actual = GsonUtil.jsonToListMaps(
-                "[{\"onap1\":{\"string\":\"onap1\",\"integer\":10,\"aFloat\":10.0,\"aDouble\":10.0}},"
-                 + "{\"onap2\":{\"string\":\"onap2\",\"integer\":20,\"aFloat\":20.0,\"aDouble\":20.0}}]", TestBean.class);
+                String.format("[{\"onap1\":{\"string\":\"onap1\",\"integer\":10,\"aFloat\":10.0,\"aDouble\":10.0,\"aDate\": %d}},", timestamp)
+                 + String.format("{\"onap2\":{\"string\":\"onap2\",\"integer\":20,\"aFloat\":20.0,\"aDouble\":20.0,\"aDate\": \"%s\"}}]", timestamp), TestBean.class);
 
-        assertThat(actual.get(0).get("onap1"), equalTo(new TestBean("onap1", 10, 10f, 10d)));
-        assertThat(actual.get(1).get("onap2"), equalTo(new TestBean("onap2", 20, 20f, 20d)));
+        assertThat(actual.get(0).get("onap1"), equalTo(new TestBean("onap1", 10, 10f, 10d, date)));
+        assertThat(actual.get(1).get("onap2"), equalTo(new TestBean("onap2", 20, 20f, 20d, date)));
     }
 
     @Test
     public void jsonToMap() {
         Map<String, TestBean> actual = GsonUtil
-                .jsonToMap("{\"onap1\":{\"string\":\"onap1\",\"integer\":10,\"aFloat\":10.0,\"aDouble\":10.0}}", TestBean.class);
-        assertThat(actual.get("onap1"), equalTo(new TestBean("onap1", 10, 10f, 10d)));
+                .jsonToMap(String.format("{\"onap1\":{\"string\":\"onap1\",\"integer\":10,\"aFloat\":10.0,\"aDouble\":10.0,\"aDate\":%d}}",date.getTime()), TestBean.class);
+        assertThat(actual.get("onap1"), equalTo(new TestBean("onap1", 10, 10f, 10d, date)));
     }
 
     @Test
@@ -96,6 +105,27 @@ public class GsonUtilTest {
         assertThat(10,
                 is(GsonUtil.getAsInt(JsonParser.parseString(GsonUtil.beanToJson(bean1)).getAsJsonObject(),"integer")));
     }
+
+    private Gson buildGson() {
+        return new GsonBuilder()
+                .registerTypeAdapter(Integer.class, (JsonDeserializer<Integer>) (json, typeOfT, context) -> {
+                    try {
+                        return json.getAsInt();
+                    } catch (NumberFormatException e) {
+                        return 0;
+                    }
+                })
+                .registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (jsonElement, type, jsonDeserializationContext) -> {
+                    try {
+                        return jsonElement == null ? null : new Date(jsonElement.getAsLong());
+                    } catch (NumberFormatException e) {
+                        return null;
+                    }
+                })
+                .registerTypeAdapter(Date.class, (JsonSerializer<Date>) (date, type, jsonSerializationContext)
+                        -> date == null ? null : new JsonPrimitive(date.getTime()))
+                .create();
+    }
 }
 
 class TestBean {
@@ -103,12 +133,14 @@ class TestBean {
     private int integer;
     private float aFloat;
     private double aDouble;
+    private Date aDate;
 
-    public TestBean(String string, int integer, float aFloat, double aDouble) {
+    public TestBean(String string, int integer, float aFloat, double aDouble, Date aDate) {
         this.string = string;
         this.integer = integer;
         this.aFloat = aFloat;
         this.aDouble = aDouble;
+        this.aDate = aDate;
     }
 
     public String getString() {
@@ -127,6 +159,8 @@ class TestBean {
         return aDouble;
     }
 
+    public Date getaDate(){ return aDate;}
+
     @Override
     public boolean equals(Object o) {
         if (o == null || ! (o instanceof TestBean)) {
@@ -136,7 +170,8 @@ class TestBean {
         return  string.equals(((TestBean) o).string)
                 && integer == ((TestBean) o).integer
                 && aDouble == ((TestBean) o).aDouble
-                && aFloat == ((TestBean) o).aFloat;
+                && aFloat == ((TestBean) o).aFloat
+                && ((aDate == null && ((TestBean)o).aDate == null) || aDate.equals(((TestBean)o).aDate));
     }
 
     @Override

@@ -1,12 +1,12 @@
 /**
- * Copyright 2018-2020 ZTE Corporation.
- *
+ * Copyright 2018-2021 ZTE Corporation.
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,13 +15,11 @@
  */
 package org.onap.holmes.common.utils;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -38,6 +36,15 @@ public class GsonUtil {
                             return 0;
                         }
                     })
+                    .registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (jsonElement, type, jsonDeserializationContext) -> {
+                        try {
+                            return jsonElement == null ? null : new Date(jsonElement.getAsLong());
+                        } catch (NumberFormatException e) {
+                            return null;
+                        }
+                    })
+                    .registerTypeAdapter(Date.class, (JsonSerializer<Date>) (date, type, jsonSerializationContext)
+                            -> date == null ? null : new JsonPrimitive(date.getTime()))
                     .create();
         }
     }
@@ -74,9 +81,9 @@ public class GsonUtil {
         List<Map<String, T>> list = null;
         if (gson != null) {
             list = gson.fromJson(gsonString,
-                TypeToken.getParameterized(List.class,
-                    TypeToken.getParameterized(Map.class, String.class, cls).getType()
-                ).getType()
+                    TypeToken.getParameterized(List.class,
+                            TypeToken.getParameterized(Map.class, String.class, cls).getType()
+                    ).getType()
             );
         }
         return list;
