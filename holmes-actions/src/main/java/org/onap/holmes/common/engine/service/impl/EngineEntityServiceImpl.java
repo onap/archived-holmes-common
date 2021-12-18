@@ -16,13 +16,13 @@
 
 package org.onap.holmes.common.engine.service.impl;
 
-import org.jvnet.hk2.annotations.Service;
+import org.onap.holmes.common.database.DbDaoUtil;
 import org.onap.holmes.common.engine.dao.EngineEntityDao;
 import org.onap.holmes.common.engine.entity.EngineEntity;
 import org.onap.holmes.common.engine.service.EngineEntityService;
-import org.onap.holmes.common.utils.DbDaoUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import java.util.List;
 
 @Service
@@ -30,7 +30,7 @@ public class EngineEntityServiceImpl implements EngineEntityService {
 
     private EngineEntityDao engineEntityDao;
 
-    @Inject
+    @Autowired
     public EngineEntityServiceImpl(DbDaoUtil dbDaoUtil){
         engineEntityDao = dbDaoUtil.getJdbiDaoByOnDemand(EngineEntityDao.class);
     }

@@ -18,7 +18,6 @@ package org.onap.holmes.common.aai;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.jvnet.hk2.annotations.Service;
 import org.onap.holmes.common.aai.entity.RelationshipList;
 import org.onap.holmes.common.aai.entity.RelationshipList.RelatedToProperty;
 import org.onap.holmes.common.aai.entity.RelationshipList.Relationship;
@@ -26,6 +25,7 @@ import org.onap.holmes.common.aai.entity.RelationshipList.RelationshipData;
 import org.onap.holmes.common.aai.entity.VmEntity;
 import org.onap.holmes.common.aai.entity.VmResourceLink;
 import org.onap.holmes.common.aai.entity.VnfEntity;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -1,37 +1,40 @@
-/*
- * Copyright 2017 ZTE Corporation.
- *
+/**
+ * Copyright 2017-2021 ZTE Corporation.
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.onap.holmes.common.dmaap;
+package org.onap.holmes.common.database;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.onap.holmes.common.dmaap.entity.PolicyMsg;
-import org.onap.holmes.common.utils.JerseyClient;
+import org.jdbi.v3.core.Handle;
+import org.jdbi.v3.core.Jdbi;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.ws.rs.client.Entity;
-import java.util.concurrent.TimeUnit;
-
-@Getter
-@Setter
 @Service
-public class Publisher {
-    private String url;
-    private JerseyClient client = JerseyClient.newInstance(TimeUnit.SECONDS.toMillis(30));
+public class DbDaoUtil {
+    private Jdbi jdbi;
 
-    public void publish(PolicyMsg msg) {
-        client.post(url, Entity.json(msg));
+    @Autowired
+    public DbDaoUtil(Jdbi jdbi) {
+        this.jdbi = jdbi;
+    }
+
+    public <T> T getJdbiDaoByOnDemand(Class<T> daoClazz) {
+        return jdbi.onDemand(daoClazz);
+    }
+
+    @Deprecated
+    public Handle getHandle() {
+        return jdbi.open();
     }
 }

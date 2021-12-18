@@ -14,14 +14,14 @@
 package org.onap.holmes.common.aai;
 
 import lombok.extern.slf4j.Slf4j;
-import org.jvnet.hk2.annotations.Service;
 import org.onap.holmes.common.aai.config.AaiConfig;
 import org.onap.holmes.common.aai.entity.VmEntity;
 import org.onap.holmes.common.aai.entity.VnfEntity;
 import org.onap.holmes.common.exception.CorrelationException;
 import org.onap.holmes.common.utils.JerseyClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +30,7 @@ import java.util.Map;
 @Slf4j
 public class AaiQuery {
 
-    @Inject
+    @Autowired
     private AaiResponseUtil aaiResponseUtil;
 
     public VnfEntity getAaiVnfData(String vnfId, String vnfName) throws CorrelationException {

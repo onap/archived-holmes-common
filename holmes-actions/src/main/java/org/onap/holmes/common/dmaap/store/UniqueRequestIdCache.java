@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 ZTE Corporation.
+ * Copyright 2020-2021 ZTE Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,14 @@
  */
 package org.onap.holmes.common.dmaap.store;
 
-import org.jvnet.hk2.annotations.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import javax.inject.Singleton;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Service
+@Component
 @Singleton
 public class UniqueRequestIdCache extends ConcurrentHashMap<String, String> {
 

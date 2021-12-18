@@ -15,7 +15,6 @@
  */
 package org.onap.holmes.common.dmaap;
 
-import org.jvnet.hk2.annotations.Service;
 import org.onap.holmes.common.aai.AaiQuery;
 import org.onap.holmes.common.aai.entity.RelationshipList.Relationship;
 import org.onap.holmes.common.aai.entity.VmEntity;
@@ -30,8 +29,9 @@ import org.onap.holmes.common.exception.CorrelationException;
 import org.onap.holmes.common.utils.GsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
@@ -45,17 +45,17 @@ public class DmaapService {
     private ClosedLoopControlNameCache closedLoopControlNameCache;
     private UniqueRequestIdCache uniqueRequestIdCache;
 
-    @Inject
+    @Autowired
     public void setAaiQuery(AaiQuery aaiQuery) {
         this.aaiQuery = aaiQuery;
     }
 
-    @Inject
+    @Autowired
     public void setClosedLoopControlNameCache(ClosedLoopControlNameCache closedLoopControlNameCache) {
         this.closedLoopControlNameCache = closedLoopControlNameCache;
     }
 
-    @Inject
+    @Autowired
     public void setUniqueRequestIdCache(UniqueRequestIdCache uniqueRequestIdCache) {
         this.uniqueRequestIdCache = uniqueRequestIdCache;
     }

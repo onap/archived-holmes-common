@@ -14,11 +14,12 @@
 
 package org.onap.holmes.common.utils;
 
-import org.jvnet.hk2.annotations.Service;
+
+import org.springframework.stereotype.Component;
 
 import java.util.regex.Pattern;
 
-@Service
+@Component
 public class CommonUtils {
 
     final static public String IP_REG = "(http(s)?://)?(\\d+\\.\\d+\\.\\d+\\.\\d+)(:(\\d+))?";

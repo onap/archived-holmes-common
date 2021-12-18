@@ -1,5 +1,5 @@
 /**
- * Copyright 2018 - 2021 ZTE Corporation.
+ * Copyright 2018-2021 ZTE Corporation.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,20 +17,22 @@ package org.onap.holmes.common.utils.transactionid;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.jvnet.hk2.annotations.Service;
 import org.slf4j.MDC;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
+import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.UUID;
 
 
-@Service
 @Slf4j
+@Component
+@WebFilter(urlPatterns = {"/*"})
 public class TransactionIdFilter implements Filter {
 
     public static final Marker INVOKE_SYNCHRONOUS;

@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 ZTE Corporation.
+ * Copyright 2017-2021 ZTE Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -13,13 +13,14 @@
  */
 package org.onap.holmes.common.aai;
 
-import java.util.List;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.onap.holmes.common.aai.entity.RelationshipList.Relationship;
 import org.onap.holmes.common.aai.entity.VmEntity;
-import org.onap.holmes.common.dropwizard.ioc.utils.ServiceLocatorHolder;
 import org.onap.holmes.common.exception.CorrelationException;
+import org.onap.holmes.common.utils.SpringContextUtil;
+
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 public class CorrelationUtil {
@@ -33,7 +34,7 @@ public class CorrelationUtil {
 
     public static final CorrelationUtil getInstance() {
         if (aaiQuery == null) {
-            aaiQuery = ServiceLocatorHolder.getLocator().getService(AaiQuery.class);
+            aaiQuery = SpringContextUtil.getBean(AaiQuery.class);
         }
         return LazyHolder.INSTANCE;
     }

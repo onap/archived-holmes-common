@@ -16,7 +16,6 @@
 
 package org.onap.holmes.common.utils;
 
-import org.onap.holmes.common.exception.HttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

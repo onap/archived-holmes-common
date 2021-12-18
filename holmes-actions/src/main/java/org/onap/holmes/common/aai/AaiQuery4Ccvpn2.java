@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.holmes.common.aai
  * ================================================================================
- * Copyright (C) 2018-2020 Huawei. All rights reserved.
+ * Copyright (C) 2018-2021 Huawei, ZTE. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.extern.slf4j.Slf4j;
-import org.jvnet.hk2.annotations.Service;
 import org.onap.holmes.common.aai.config.AaiConfig;
-import org.onap.holmes.common.exception.CorrelationException;
 import org.onap.holmes.common.utils.JerseyClient;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,8 +35,8 @@ import java.util.regex.Pattern;
 
 import static org.onap.holmes.common.aai.AaiJsonParserUtil.*;
 
-@Service
 @Slf4j
+@Service
 public class AaiQuery4Ccvpn2 {
 
     private Map<String, Object> headers;

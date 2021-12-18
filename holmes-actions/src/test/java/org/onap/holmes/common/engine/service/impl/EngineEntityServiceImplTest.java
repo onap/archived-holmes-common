@@ -16,23 +16,21 @@
 
 package org.onap.holmes.common.engine.service.impl;
 
-import com.google.common.base.CharMatcher;
-import org.junit.Before;
+import org.jdbi.v3.core.Jdbi;
 import org.junit.Test;
 import org.onap.holmes.common.engine.dao.EngineEntityDao;
 import org.onap.holmes.common.engine.entity.EngineEntity;
 import org.onap.holmes.common.engine.service.EngineEntityService;
-import org.onap.holmes.common.utils.DbDaoUtil;
+import org.onap.holmes.common.database.DbDaoUtil;
 
 import java.util.*;
 
-import static com.google.common.base.Predicates.notNull;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.*;
 
 public class EngineEntityServiceImplTest {
-    private EngineEntityService service = new EngineEntityServiceImpl(new DbDaoUtilStub());
+    private EngineEntityService service = new EngineEntityServiceImpl(new DbDaoUtilStub(null));
 
     @Test
     public void getLegacyEngines() {
@@ -77,6 +75,10 @@ public class EngineEntityServiceImplTest {
 
 class DbDaoUtilStub extends DbDaoUtil {
     private EngineEntityDao dao = new EngineEntityDaoStub();
+
+    public DbDaoUtilStub(Jdbi jdbi) {
+        super(jdbi);
+    }
 
     @Override
     public <T> T getJdbiDaoByOnDemand(Class<T> daoClazz) {

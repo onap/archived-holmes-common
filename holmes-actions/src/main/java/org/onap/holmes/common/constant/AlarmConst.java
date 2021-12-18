@@ -16,15 +16,6 @@
 package org.onap.holmes.common.constant;
 
 public interface AlarmConst {
-
-    String MQ_TOPIC_NAME_ALARMS_CORRELATION = "topic://voss/fm/alarms_correlation";
-
-    String MQ_TOPIC_NAME_ALARM = "topic://voss/fm/alarm";
-
-    String NFVO_PATH = "/api/umc/v1/fm/curalarms/findAll";
-
-    int NFVO_STATUS_OK = 200;
-
     String I18N_EN = "en";
 
     String I18N_ZH = "zh";
@@ -32,10 +23,6 @@ public interface AlarmConst {
     String ZH_CN = "zh_CN";
 
     String ADMIN = "admin";
-
-    int MICRO_SERVICE_STATUS_SUCCESS = 201;
-
-    int MICRO_SERVICE_PORT = 8086;
 
     String HTTP = "http://";
 

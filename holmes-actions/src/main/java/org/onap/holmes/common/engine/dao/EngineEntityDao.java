@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 ZTE Corporation.
+ * Copyright 2020-2021 ZTE Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,16 @@
 
 package org.onap.holmes.common.engine.dao;
 
+import org.jdbi.v3.sqlobject.config.RegisterRowMapper;
+import org.jdbi.v3.sqlobject.customizer.Bind;
+import org.jdbi.v3.sqlobject.customizer.BindBean;
+import org.jdbi.v3.sqlobject.statement.SqlQuery;
+import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 import org.onap.holmes.common.engine.entity.EngineEntity;
-import org.skife.jdbi.v2.sqlobject.Bind;
-import org.skife.jdbi.v2.sqlobject.BindBean;
-import org.skife.jdbi.v2.sqlobject.SqlQuery;
-import org.skife.jdbi.v2.sqlobject.SqlUpdate;
-import org.skife.jdbi.v2.sqlobject.customizers.RegisterMapper;
 
 import java.util.List;
 
-@RegisterMapper(EngineEntityMapper.class)
+@RegisterRowMapper(EngineEntityMapper.class)
 public interface EngineEntityDao {
     @SqlQuery("SELECT * FROM ENGINE_ENTITY WHERE ID = :id")
     EngineEntity getEntity(@Bind("id") String id);

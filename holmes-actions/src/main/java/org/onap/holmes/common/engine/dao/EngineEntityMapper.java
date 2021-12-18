@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 ZTE Corporation.
+ * Copyright 2020-2021 ZTE Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,20 @@
 
 package org.onap.holmes.common.engine.dao;
 
+import org.jdbi.v3.core.mapper.RowMapper;
+import org.jdbi.v3.core.statement.StatementContext;
 import org.onap.holmes.common.engine.entity.EngineEntity;
-import org.skife.jdbi.v2.StatementContext;
-import org.skife.jdbi.v2.tweak.ResultSetMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class EngineEntityMapper implements ResultSetMapper<EngineEntity> {
+public class EngineEntityMapper implements RowMapper<EngineEntity> {
     @Override
-    public EngineEntity map(int i, ResultSet resultSet, StatementContext statementContext) throws SQLException {
+    public EngineEntity map(ResultSet rs, StatementContext ctx) throws SQLException {
         EngineEntity entity = new EngineEntity();
-        entity.setIp(resultSet.getString("ip"));
-        entity.setPort(resultSet.getInt("port"));
-        entity.setLastModified(resultSet.getLong("lastmodified"));
+        entity.setIp(rs.getString("ip"));
+        entity.setPort(rs.getInt("port"));
+        entity.setLastModified(rs.getLong("lastmodified"));
         return entity;
     }
 }

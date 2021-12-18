@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 ZTE Corporation.
+ * Copyright 2017-2021 ZTE Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,18 @@
 
 package org.onap.holmes.common.utils;
 
+import org.jdbi.v3.core.mapper.RowMapper;
+import org.jdbi.v3.core.statement.StatementContext;
+import org.onap.holmes.common.api.entity.CorrelationRule;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
-import org.onap.holmes.common.api.entity.CorrelationRule;
-import org.skife.jdbi.v2.StatementContext;
-import org.skife.jdbi.v2.tweak.ResultSetMapper;
 
-public class CorrelationRuleMapper implements ResultSetMapper<CorrelationRule> {
+public class CorrelationRuleMapper implements RowMapper<CorrelationRule> {
 
     @Override
-    public CorrelationRule map(int i, ResultSet resultSet, StatementContext statementContext) throws SQLException {
+    public CorrelationRule map(ResultSet resultSet, StatementContext statementContext) throws SQLException {
         CorrelationRule correlationRule = new CorrelationRule();
         correlationRule.setName(resultSet.getString("name"));
         correlationRule.setRid(resultSet.getString("rid"));

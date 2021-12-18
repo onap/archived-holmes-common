@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 ZTE Corporation.
+ * Copyright 2020-2021 ZTE Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,10 @@
 
 package org.onap.holmes.common.engine.service;
 
-import org.jvnet.hk2.annotations.Contract;
 import org.onap.holmes.common.engine.entity.EngineEntity;
 
 import java.util.List;
 
-@Contract
 public interface EngineEntityService {
     EngineEntity getEntity(String id);
     List<EngineEntity> getAllEntities();

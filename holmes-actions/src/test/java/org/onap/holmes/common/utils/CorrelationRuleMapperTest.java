@@ -49,7 +49,7 @@ public class CorrelationRuleMapperTest {
         expect(resultSet.getString("ctrlloop")).andReturn("");
         expect(resultSet.getString("engineinstance")).andReturn("");
         PowerMock.replay(resultSet);
-        mapper.map(0, resultSet, null);
+        mapper.map(resultSet, null);
         PowerMock.verify(resultSet);
     }
 }

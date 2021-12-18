@@ -44,7 +44,7 @@ public class EngineEntityMapperTest {
 
         PowerMock.replay(rsMock);
 
-        EngineEntity entity = mapper.map(0, rsMock, null);
+        EngineEntity entity = mapper.map( rsMock, null);
 
         PowerMock.verify(rsMock);
 

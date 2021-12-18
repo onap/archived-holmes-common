@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 ZTE Corporation.
+ * Copyright 2017-2021 ZTE Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,17 @@
  */
 package org.onap.holmes.common.utils;
 
+import org.jdbi.v3.core.mapper.RowMapper;
+import org.jdbi.v3.core.statement.StatementContext;
 import org.onap.holmes.common.api.entity.AlarmInfo;
-import org.skife.jdbi.v2.StatementContext;
-import org.skife.jdbi.v2.tweak.ResultSetMapper;
+
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class AlarmInfoMapper implements ResultSetMapper<AlarmInfo> {
+public class AlarmInfoMapper implements RowMapper<AlarmInfo> {
     @Override
-    public AlarmInfo map(int i, ResultSet resultSet, StatementContext statementContext) throws SQLException {
+    public AlarmInfo map(ResultSet resultSet, StatementContext statementContext) throws SQLException {
         AlarmInfo alarmInfo = new AlarmInfo();
         alarmInfo.setAlarmIsCleared(resultSet.getInt("alarmiscleared"));
         alarmInfo.setRootFlag(resultSet.getInt("rootflag"));
