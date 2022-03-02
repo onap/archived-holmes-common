@@ -39,11 +39,12 @@
         <powermock.version>2.0.7</powermock.version>
 
         <dropwizard.version>2.0.9</dropwizard.version>
-        <swagger.version>1.6.1</swagger.version>
+        <swagger.version>1.6.4</swagger.version>
         <lombok.version>1.18.4</lombok.version>
-        <jersey.version>2.34</jersey.version>
+        <jersey.version>2.31</jersey.version>
         <slf4j.version>1.7.25</slf4j.version>
         <jacoco.version>0.8.5</jacoco.version>
+        <jackson.version>2.13.0</jackson.version>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.reporting.outputDirectory}/jacoco-ut/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
@@ -103,6 +104,22 @@
                 <groupId>io.swagger</groupId>
                 <artifactId>swagger-jersey2-jaxrs</artifactId>
                 <version>${swagger.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                        <artifactId>jackson-databind</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.projectlombok</groupId>
