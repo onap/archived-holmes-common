@@ -41,7 +41,7 @@
         <dropwizard.version>2.0.9</dropwizard.version>
         <swagger.version>1.6.4</swagger.version>
         <lombok.version>1.18.4</lombok.version>
-        <jersey.version>2.31</jersey.version>
+        <jersey.version>3.0.4</jersey.version>
         <slf4j.version>1.7.25</slf4j.version>
         <jacoco.version>0.8.5</jacoco.version>
         <jackson.version>2.13.0</jackson.version>
