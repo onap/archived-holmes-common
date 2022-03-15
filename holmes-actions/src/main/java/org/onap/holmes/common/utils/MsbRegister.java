@@ -53,23 +53,27 @@ public class MsbRegister {
         int retry = 0;
         int interval = 5;
         while (null == microServiceFullInfo && retry < 20) {
-            log.info("Holmes Service Registration. Retry: " + retry++);
+            try {
+                log.info("Holmes Service Registration. Retry: " + retry++);
 
-            microServiceFullInfo = client
-                    .header("Accept", MediaType.APPLICATION_JSON)
-                    .queryParam("createOrUpdate", true)
-                    .post(String.format("%s://%s:%s/api/microservices/v1/services",
-                            isHttpsEnabled ? PROTOCOL_HTTPS : PROTOCOL_HTTP, msbAddrInfo[0], msbAddrInfo[1]),
-                            Entity.entity(msinfo, MediaType.APPLICATION_JSON),
-                            MicroServiceFullInfo.class);
+                microServiceFullInfo = client
+                        .header("Accept", MediaType.APPLICATION_JSON)
+                        .queryParam("createOrUpdate", true)
+                        .post(String.format("%s://%s:%s/api/microservices/v1/services",
+                                isHttpsEnabled ? PROTOCOL_HTTPS : PROTOCOL_HTTP, msbAddrInfo[0], msbAddrInfo[1]),
+                                Entity.entity(msinfo, MediaType.APPLICATION_JSON),
+                                MicroServiceFullInfo.class);
 
-            if (null == microServiceFullInfo) {
-                log.warn(String.format("Failed to register the service to MSB. Sleep %ds and try again.", interval));
-                threadSleep(TimeUnit.SECONDS.toSeconds(interval));
-                interval += 5;
-            } else {
-                log.info("Registration succeeded!");
-                break;
+                if (null == microServiceFullInfo) {
+                    log.warn(String.format("Failed to register the service to MSB. Sleep %ds and try again.", interval));
+                    threadSleep(TimeUnit.SECONDS.toSeconds(interval));
+                    interval += 5;
+                } else {
+                    log.info("Registration succeeded!");
+                    break;
+                }
+            } catch (Exception e) {
+                log.warn("Unexpected exception: " + e.getMessage(), e);
             }
         }
 
