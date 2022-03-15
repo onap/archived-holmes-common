@@ -48,6 +48,7 @@ public class MsbRegister {
                 && msbAddrInfo[1].equals("443");
 
         log.info("Start to register Holmes Service to MSB...");
+        log.info("Registration information: {}", GsonUtil.beanToJson(msinfo));
 
         MicroServiceFullInfo microServiceFullInfo = null;
         int retry = 0;
