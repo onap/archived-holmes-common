@@ -1,5 +1,5 @@
 /**
- * Copyright 2017-2020 ZTE Corporation.
+ * Copyright 2017-2022 ZTE Corporation.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,13 +85,14 @@ public class MsbRegisterTest {
     }
 
     @Test
-    public void test_register2Msb_fail_once() {
-        expect(mockedJerseyClient.header("Accept", MediaType.APPLICATION_JSON)).andReturn(mockedJerseyClient).times(2);
-        expect(mockedJerseyClient.queryParam("createOrUpdate", true)).andReturn(mockedJerseyClient).times(2);
+    public void test_register2Msb_fail_n_times() {
+        int requestTimes = 3;
+        expect(mockedJerseyClient.header("Accept", MediaType.APPLICATION_JSON)).andReturn(mockedJerseyClient).times(requestTimes);
+        expect(mockedJerseyClient.queryParam("createOrUpdate", true)).andReturn(mockedJerseyClient).times(requestTimes);
         expect(mockedJerseyClient.post(anyObject(String.class),
                 anyObject(Entity.class),
                 anyObject(Class.class)))
-                .andReturn(null);
+                .andReturn(null).times(requestTimes - 1);
 
         expect(mockedJerseyClient.post(anyObject(String.class),
                 anyObject(Entity.class),
@@ -108,6 +109,7 @@ public class MsbRegisterTest {
         PowerMock.replayAll();
 
         MsbRegister msbRegister = new MsbRegister();
+        msbRegister.setInterval(1);
         try {
             msbRegister.register2Msb(msi);
         } catch (CorrelationException e) {
