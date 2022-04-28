@@ -1,5 +1,5 @@
 /**
- * Copyright 2017-2020 ZTE Corporation.
+ * Copyright 2017-2022 ZTE Corporation.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.onap.holmes.common.utils;
 
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.jvnet.hk2.annotations.Service;
 import org.onap.holmes.common.config.MicroServiceConfig;
@@ -38,6 +39,12 @@ public class MsbRegister {
 
     private JerseyClient client = JerseyClient.newInstance();
 
+    @Setter
+    private int totalRetryTimes = 20;
+
+    @Setter
+    private int interval = 20;
+
     public MsbRegister() {
     }
 
@@ -52,11 +59,10 @@ public class MsbRegister {
 
         MicroServiceFullInfo microServiceFullInfo = null;
         int retry = 0;
-        int interval = 5;
-        while (null == microServiceFullInfo && retry < 20) {
+        while (null == microServiceFullInfo && retry < totalRetryTimes) {
             try {
-                log.info("Holmes Service Registration. Retry: " + retry++);
-
+                log.info("Holmes Service Registration. Times: " + ++retry);
+                int time  = interval * retry;
                 microServiceFullInfo = client
                         .header("Accept", MediaType.APPLICATION_JSON)
                         .queryParam("createOrUpdate", true)
@@ -66,9 +72,8 @@ public class MsbRegister {
                                 MicroServiceFullInfo.class);
 
                 if (null == microServiceFullInfo) {
-                    log.warn(String.format("Failed to register the service to MSB. Sleep %ds and try again.", interval));
-                    threadSleep(TimeUnit.SECONDS.toSeconds(interval));
-                    interval += 5;
+                    log.warn(String.format("Failed to register the service to MSB. Sleep %ds and try again.", time));
+                    threadSleep(TimeUnit.SECONDS.toSeconds(time));
                 } else {
                     log.info("Registration succeeded!");
                     break;
