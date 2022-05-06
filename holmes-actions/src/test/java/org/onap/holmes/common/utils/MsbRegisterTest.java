@@ -118,4 +118,39 @@ public class MsbRegisterTest {
 
         PowerMock.verifyAll();
     }
+
+    @Test
+    public void test_register2Msb_fail_n_times_due_to_exception() {
+        int requestTimes = 3;
+        expect(mockedJerseyClient.header("Accept", MediaType.APPLICATION_JSON)).andReturn(mockedJerseyClient).times(requestTimes);
+        expect(mockedJerseyClient.queryParam("createOrUpdate", true)).andReturn(mockedJerseyClient).times(requestTimes);
+        expect(mockedJerseyClient.post(anyObject(String.class),
+                anyObject(Entity.class),
+                anyObject(Class.class)))
+                .andThrow(new RuntimeException("Failure!")).times(requestTimes - 1);
+
+        expect(mockedJerseyClient.post(anyObject(String.class),
+                anyObject(Entity.class),
+                anyObject(Class.class)))
+                .andReturn(GsonUtil.jsonToBean("{\"serviceName\":\"holmes-engine-mgmt\"," +
+                                "\"version\":\"v1\",\"url\":\"/api/holmes-engine-mgmt/v1\",\"protocol\":\"REST\"," +
+                                "\"visualRange\":\"0|1\",\"lb_policy\":\"\",\"publish_port\":\"\",\"namespace\":\"\"," +
+                                "\"network_plane_type\":\"\",\"host\":\"\",\"path\":\"/api/holmes-engine-mgmt/v1\"," +
+                                "\"enable_ssl\":true,\"nodes\":[{\"ip\":\"127.0.0.1\",\"port\":\"9102\",\"checkType\":\"\"," +
+                                "\"checkUrl\":\"\",\"tls_skip_verify\":true,\"ha_role\":\"\",\"nodeId\":\"_v1_holmes-engine-mgmt_127.0.0.1_9102\"," +
+                                "\"status\":\"passing\"}],\"metadata\":[],\"labels\":[],\"status\":\"1\",\"is_manual\":false}",
+                        MicroServiceFullInfo.class));
+
+        PowerMock.replayAll();
+
+        MsbRegister msbRegister = new MsbRegister();
+        msbRegister.setInterval(1);
+        try {
+            msbRegister.register2Msb(msi);
+        } catch (CorrelationException e) {
+            // Do nothing
+        }
+
+        PowerMock.verifyAll();
+    }
 }
