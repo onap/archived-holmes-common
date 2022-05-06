@@ -60,9 +60,9 @@ public class MsbRegister {
         MicroServiceFullInfo microServiceFullInfo = null;
         int retry = 0;
         while (null == microServiceFullInfo && retry < totalRetryTimes) {
+            int time  = interval * ++retry;
             try {
-                log.info("Holmes Service Registration. Times: " + ++retry);
-                int time  = interval * retry;
+                log.info("Holmes Service Registration. Times: " + retry);
                 microServiceFullInfo = client
                         .header("Accept", MediaType.APPLICATION_JSON)
                         .queryParam("createOrUpdate", true)
@@ -72,14 +72,14 @@ public class MsbRegister {
                                 MicroServiceFullInfo.class);
 
                 if (null == microServiceFullInfo) {
-                    log.warn(String.format("Failed to register the service to MSB. Sleep %ds and try again.", time));
-                    threadSleep(TimeUnit.SECONDS.toSeconds(time));
+                    retry(time);
                 } else {
                     log.info("Registration succeeded!");
                     break;
                 }
             } catch (Exception e) {
                 log.warn("Unexpected exception: " + e.getMessage(), e);
+                retry(time);
             }
         }
 
@@ -88,6 +88,11 @@ public class MsbRegister {
         }
 
         log.info("Service registration completed.");
+    }
+
+    private void retry(int intervalInSecond) {
+        log.warn(String.format("Failed to register the service to MSB. Sleep %ds and try again.", intervalInSecond));
+        threadSleep(TimeUnit.SECONDS.toSeconds(intervalInSecond));
     }
 
     private void threadSleep(long second) {
