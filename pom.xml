@@ -44,7 +44,7 @@
         <jersey.version>2.31</jersey.version>
         <slf4j.version>1.7.25</slf4j.version>
         <jacoco.version>0.8.5</jacoco.version>
-        <jackson.version>2.13.0</jackson.version>
+        <jackson.version>2.13.3</jackson.version>
         <sonar.coverage.jacoco.xmlReportPaths>
             ${project.reporting.outputDirectory}/jacoco-ut/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
