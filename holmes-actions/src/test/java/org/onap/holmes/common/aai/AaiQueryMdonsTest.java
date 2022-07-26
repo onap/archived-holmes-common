@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 - 2021 Fujitsu, ZTE Limited.
+ * Copyright 2020 - 2022 Fujitsu Limited, ZTE Corporation.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -16,6 +16,9 @@ package org.onap.holmes.common.aai;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 import org.easymock.EasyMock;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
@@ -29,9 +32,6 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;

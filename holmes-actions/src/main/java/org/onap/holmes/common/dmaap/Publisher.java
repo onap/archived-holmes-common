@@ -21,7 +21,7 @@ import org.onap.holmes.common.dmaap.entity.PolicyMsg;
 import org.onap.holmes.common.utils.JerseyClient;
 import org.springframework.stereotype.Service;
 
-import javax.ws.rs.client.Entity;
+import jakarta.ws.rs.client.Entity;
 import java.util.concurrent.TimeUnit;
 
 @Getter

@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.holmes.common.aai
  * ================================================================================
- * Copyright (C) 2018-2021 Huawei, ZTE. All rights reserved.
+ * Copyright (C) 2018-2022 Huawei, ZTE. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ package org.onap.holmes.common.aai;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import jakarta.ws.rs.core.Response;
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
@@ -36,7 +37,6 @@ import org.powermock.core.classloader.annotations.SuppressStaticInitializationFo
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
-import javax.ws.rs.core.Response;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;

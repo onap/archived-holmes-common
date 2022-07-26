@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2020 ZTE Corporation.
+ * Copyright 2018-2022 ZTE Corporation.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -23,7 +23,7 @@ import org.onap.holmes.common.utils.JerseyClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.client.Entity;
+import jakarta.ws.rs.client.Entity;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
