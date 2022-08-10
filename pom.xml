@@ -20,7 +20,7 @@
     <artifactId>holmes-common-parent</artifactId>
     <packaging>pom</packaging>
 
-    <version>1.4.2-SNAPSHOT</version>
+    <version>1.4.3-SNAPSHOT</version>
     <name>holmes-common</name>
     <modules>
         <module>holmes-actions</module>
@@ -45,6 +45,7 @@
         <swagger.version>1.6.4</swagger.version>
         <lombok.version>1.18.4</lombok.version>
         <jersey.version>3.0.5</jersey.version>
+        <jersey.scope>compile</jersey.scope>
         <jakarta.ws.rs.version>3.1.0</jakarta.ws.rs.version>
         <slf4j.version>1.7.25</slf4j.version>
         <jacoco.version>0.8.5</jacoco.version>
@@ -84,25 +85,9 @@
                 <version>${jdbi.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.jdbi</groupId>
-                <artifactId>jdbi3-spring4</artifactId>
-                <version>${jdbi.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>javax.servlet-api</artifactId>
                 <version>4.0.1</version>
-            </dependency>
-            <dependency>
-                <groupId>org.postgresql</groupId>
-                <artifactId>postgresql</artifactId>
-                <version>42.2.13</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-classic</artifactId>
-                <version>1.2.10</version>
             </dependency>
             <dependency>
                 <groupId>org.onap.msb.java-sdk</groupId>
@@ -119,6 +104,7 @@
                 <groupId>org.glassfish.jersey.containers</groupId>
                 <artifactId>jersey-container-servlet-core</artifactId>
                 <version>${jersey.version}</version>
+                <scope>${jersey.scope}</scope>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.core</groupId>
@@ -129,27 +115,6 @@
                 <groupId>org.glassfish.jersey.core</groupId>
                 <artifactId>jersey-client</artifactId>
                 <version>${jersey.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.swagger</groupId>
-                <artifactId>swagger-jersey2-jaxrs</artifactId>
-                <version>${swagger.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.fasterxml.jackson.core</groupId>
-                        <artifactId>jackson-databind</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-core</artifactId>
-                <version>${jackson.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.projectlombok</groupId>
@@ -187,26 +152,9 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.powermock</groupId>
-                <artifactId>powermock-module-junit4-rule</artifactId>
-                <version>${powermock.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.powermock</groupId>
-                <artifactId>powermock-classloading-xstream</artifactId>
-                <version>${powermock.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>29.0-jre</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-codec</groupId>
-                <artifactId>commons-codec</artifactId>
-                <version>1.14</version>
             </dependency>
             <dependency>
                 <groupId>com.google.code.gson</groupId>
