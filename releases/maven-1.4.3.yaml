@@ -1,0 +1,5 @@
+---
+distribution_type: 'maven'
+version: '1.4.3'
+project: 'holmes-common'
+log_dir: 'holmes-common-maven-stage-master/1221/'
