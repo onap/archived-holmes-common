@@ -16,49 +16,39 @@
 package org.onap.holmes.common.database;
 
 import org.jdbi.v3.core.Jdbi;
-import org.jdbi.v3.core.mapper.RowMapper;
-import org.jdbi.v3.core.spi.JdbiPlugin;
 import org.jdbi.v3.postgres.PostgresPlugin;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
-import java.util.List;
 
 @Configuration
 public class DatabaseConfiguration {
-//
-//    @Value("${spring.datasource.url}")
-//    private String url;
-//
-//    @Value("${spring.datasource.username}")
-//    private String username;
-//
-//    @Value("${spring.datasource.password}")
-//    private String pwd;
-//
-//    @Value("${spring.datasource.dirver-class-name}")
-//    private String driverClass;
-//
-//    @Bean
-//    public DataSource driverManagerDataSource() {
-//        System.out.println("======================================: " + driverClass);
-//        DriverManagerDataSource ds = new DriverManagerDataSource();
-//        ds.setDriverClassName(driverClass);
-//        ds.setUrl(url);
-//        ds.setUsername(username);
-//        ds.setPassword(pwd);
-//        return ds;
-//    }
 
-//    @Bean
-//    public DataSourceTransactionManager dataSourceTransactionManager(DataSource dataSource) {
-//        DataSourceTransactionManager dataSourceTransactionManager = new DataSourceTransactionManager();
-//        dataSourceTransactionManager.setDataSource(dataSource);
-//        return dataSourceTransactionManager;
-//    }
+    @Value("${spring.datasource.url}")
+    private String url;
+
+    @Value("${spring.datasource.username}")
+    private String username;
+
+    @Value("${spring.datasource.password}")
+    private String pwd;
+
+    @Value("${spring.datasource.dirver-class-name}")
+    private String driverClass;
+
+    @Bean
+    public DataSource driverManagerDataSource() {
+        DriverManagerDataSource ds = new DriverManagerDataSource();
+        ds.setDriverClassName(driverClass);
+        ds.setUrl(url);
+        ds.setUsername(username);
+        ds.setPassword(pwd);
+        return ds;
+    }
 
     @Bean
     public Jdbi jdbi(DataSource dataSource) {
@@ -66,13 +56,4 @@ public class DatabaseConfiguration {
                 .installPlugin(new SqlObjectPlugin())
                 .installPlugin(new PostgresPlugin());
     }
-
-//    @Bean
-//    public Jdbi jdbi(DataSource ds, List<JdbiPlugin> jdbiPlugins, List<RowMapper<?>> rowMappers) {
-//        TransactionAwareDataSourceProxy proxy = new TransactionAwareDataSourceProxy(ds);
-//        Jdbi jdbi = Jdbi.create(proxy);
-//        jdbiPlugins.forEach(plugin -> jdbi.installPlugin(plugin));
-//        rowMappers.forEach(mapper -> jdbi.registerRowMapper(mapper));
-//        return jdbi;
-//    }
 }

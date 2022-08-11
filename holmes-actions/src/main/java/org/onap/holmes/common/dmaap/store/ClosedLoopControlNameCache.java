@@ -33,7 +33,7 @@ public class ClosedLoopControlNameCache extends ConcurrentHashMap<String, String
     }
 
     public String remove(String packageName) {
-        log.info(String.format("<%s> was removed into ClosedLoopControlNameCache.", packageName));
+        log.info(String.format("<%s> was removed from ClosedLoopControlNameCache.", packageName));
         return super.remove(packageName);
     }
 }

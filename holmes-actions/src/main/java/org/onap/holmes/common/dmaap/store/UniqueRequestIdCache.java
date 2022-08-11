@@ -35,7 +35,7 @@ public class UniqueRequestIdCache extends ConcurrentHashMap<String, String> {
     }
 
     public String remove(String alarmId) {
-        log.info(String.format("<%s> was removed into UniqueRequestIdCache.", alarmId));
+        log.info(String.format("<%s> was removed from UniqueRequestIdCache.", alarmId));
         return super.remove(alarmId);
     }
 }
