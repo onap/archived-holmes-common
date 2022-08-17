@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 ZTE Corporation.
+ * Copyright 2017-2022 ZTE Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,16 @@
 
 package org.onap.holmes.common.utils;
 
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
-
-import javax.servlet.http.HttpServletRequest;
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.powermock.api.easymock.PowerMock;
+
+import javax.servlet.http.HttpServletRequest;
+
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertThat;
 public class UserUtilTest {
 
     private HttpServletRequest request;
@@ -39,29 +40,25 @@ public class UserUtilTest {
     }
 
     @Test
-    public void getUserName_header_name_empty() throws Exception {
+    public void getUserName_header_name_empty() {
         EasyMock.expect(request.getHeader("username")).andReturn(null);
 
         PowerMock.replayAll();
 
-        String userName = UserUtil.getUserName(request);
+        assertThat("admin", equalTo(UserUtil.getUserName(request)));
 
         PowerMock.verifyAll();
-
-        assertThat("admin", equalTo(userName));
     }
 
     @Test
-    public void getUserName_normal() throws Exception {
-        EasyMock.expect(request.getHeader("username")).andReturn("name1");
+    public void getUserName_normal() {
+        EasyMock.expect(request.getHeader("username")).andReturn("Name").times(2);
 
         PowerMock.replayAll();
 
-        String userName = UserUtil.getUserName(request);
+        assertThat("Name", equalTo(UserUtil.getUserName(request)));
 
         PowerMock.verifyAll();
-
-        assertThat("name1", equalTo(userName));
     }
 
 } 

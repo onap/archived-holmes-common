@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 ZTE Corporation.
+ * Copyright 2017-2022 ZTE Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,9 @@
  */
 package org.onap.holmes.common.utils;
 
-import javax.servlet.http.HttpServletRequest;
 import org.onap.holmes.common.constant.AlarmConst;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class UserUtil {
 
@@ -25,11 +26,7 @@ public class UserUtil {
     }
 
     public static String getUserName(HttpServletRequest request) {
-        String userName = AlarmConst.ADMIN;
-        String sessionName = request.getHeader("username");
-        if (sessionName != null) {
-            userName = sessionName.toLowerCase();
-        }
-        return userName;
+        return request.getHeader("username") == null ?
+                AlarmConst.ADMIN : request.getHeader("username");
     }
 }

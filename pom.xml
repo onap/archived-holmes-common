@@ -20,7 +20,7 @@
     <artifactId>holmes-common-parent</artifactId>
     <packaging>pom</packaging>
 
-    <version>1.4.3-SNAPSHOT</version>
+    <version>1.4.4-SNAPSHOT</version>
     <name>holmes-common</name>
     <modules>
         <module>holmes-actions</module>
