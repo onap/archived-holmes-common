@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 - 2022 ZTE Corporation.
+ * Copyright 2021 - 2023 ZTE Corporation.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,11 @@
 
 package org.onap.holmes.common.utils;
 
+import jakarta.ws.rs.WebApplicationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import jakarta.ws.rs.WebApplicationException;
 
 @RestControllerAdvice
 public class RestExceptionHandler {

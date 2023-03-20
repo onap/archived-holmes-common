@@ -18,6 +18,7 @@ package org.onap.holmes.common.config;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.apache.commons.lang3.StringUtils;
 import org.onap.holmes.common.constant.AlarmConst;
 import org.onap.holmes.common.utils.JerseyClient;
 import org.slf4j.Logger;
@@ -35,8 +36,14 @@ public class MicroServiceConfig {
     final static public String MSB_ADDR = "MSB_ADDR";
     final static public String MSB_IAG_SERVICE_HOST = "MSB_IAG_SERVICE_HOST";
     final static public String MSB_IAG_SERVICE_PORT = "MSB_IAG_SERVICE_PORT";
-
-    final static public String AAI_HOSTNAME = "aai.onap";
+    final static public String BASE_URL = "BASE_URL";
+    final static public String PRE_ADDR = "PRE_ADDR";
+    final static public String POST_ADDR = "POST_ADDR";
+    final static public String AAI_ADDR = "AAI_BASEADDR";
+    final static public String PROTOCOL_HTTP = "http";
+    final static public String PROTOCOL_HTTPS = "https";
+    final static public int PLAIN_PORT = 80;
+    final static public int TLS_PORT = 443;
 
     final static public Logger log = LoggerFactory.getLogger(MicroServiceConfig.class);
 
@@ -88,7 +95,15 @@ public class MicroServiceConfig {
     }
 
     public static String getAaiAddr() {
-        return AlarmConst.HTTPS + AAI_HOSTNAME + ":8443";
+        boolean tlsEnabled = Boolean.valueOf(getEnv("ENABLE_ENCRYPT"));
+
+        return String.format("%s://%s%s%s.%s:%d",
+                tlsEnabled ? PROTOCOL_HTTPS : PROTOCOL_HTTP,
+                nullToEmptyString(getEnv(PRE_ADDR)),
+                nullToEmptyString(getEnv(AAI_ADDR)),
+                nullToEmptyString(getEnv(POST_ADDR)),
+                nullToEmptyString(getEnv(BASE_URL)),
+                tlsEnabled ? TLS_PORT : PLAIN_PORT);
     }
 
     public static String[] getMsbIpAndPort() {
@@ -116,6 +131,10 @@ public class MicroServiceConfig {
             port = addr.substring(addr.lastIndexOf(":") + 1);
         }
         return new String[]{ip, port};
+    }
+
+    private static String nullToEmptyString(String input) {
+        return input == null ? StringUtils.EMPTY : input;
     }
 
 }

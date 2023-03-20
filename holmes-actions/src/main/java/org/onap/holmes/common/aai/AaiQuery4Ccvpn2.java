@@ -25,6 +25,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.extern.slf4j.Slf4j;
 import org.onap.holmes.common.aai.config.AaiConfig;
+import org.onap.holmes.common.config.MicroServiceConfig;
 import org.onap.holmes.common.utils.JerseyClient;
 import org.springframework.stereotype.Service;
 
@@ -57,8 +58,8 @@ public class AaiQuery4Ccvpn2 {
     private String getSiteVNFId(String siteService) {
         String response = JerseyClient.newInstance()
                 .headers(headers)
-                .path(AaiConfig.MsbConsts.AAI_SITE_RESOURCES_QUERY)
-                .get(getHostAddr());
+                .path(AaiConfig.AaiConsts.AAI_SITE_RESOURCES_QUERY)
+                .get(MicroServiceConfig.getAaiAddr());
         JsonObject resObj = JsonParser.parseString(response).getAsJsonObject();
         JsonArray siteResources = extractJsonArray(resObj, "site-resource");
         if (siteResources != null) {
@@ -85,9 +86,9 @@ public class AaiQuery4Ccvpn2 {
     private JsonObject getServiceInstanceByVnfId(String vnfId) {
         String resStr = JerseyClient.newInstance()
                 .headers(headers)
-                .path(getPath(AaiConfig.MsbConsts.AAI_SITE_VNF_QUERY,
+                .path(getPath(AaiConfig.AaiConsts.AAI_SITE_VNF_QUERY,
                 "vnfId", vnfId))
-                .get(getHostAddr());
+                .get(MicroServiceConfig.getAaiAddr());
         return getInfo(resStr, "service-instance");
     }
 
@@ -101,7 +102,7 @@ public class AaiQuery4Ccvpn2 {
         String res = JerseyClient.newInstance()
                 .headers(headers)
                 .path(getPath(serviceInstancePath))
-                .get(getHostAddr());
+                .get(MicroServiceConfig.getAaiAddr());
         JsonObject instance = JsonParser.parseString(res).getAsJsonObject();
         String[] params = new String[2];
         Pattern pattern = Pattern.compile("/aai/v\\d+/business/customers/customer/(.+)" +

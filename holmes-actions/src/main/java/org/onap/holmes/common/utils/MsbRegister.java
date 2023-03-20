@@ -1,5 +1,5 @@
 /**
- * Copyright 2017-2022 ZTE Corporation.
+ * Copyright 2017-2023 ZTE Corporation.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.onap.holmes.common.utils;
 
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MediaType;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.onap.holmes.common.config.MicroServiceConfig;
@@ -26,8 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import jakarta.ws.rs.client.Entity;
-import jakarta.ws.rs.core.MediaType;
 import java.util.concurrent.TimeUnit;
 
 import static org.onap.holmes.common.utils.JerseyClient.PROTOCOL_HTTP;

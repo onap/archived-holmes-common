@@ -1,5 +1,5 @@
 /**
- * Copyright 2018 ZTE Corporation.
+ * Copyright 2018-2023 ZTE Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,10 @@
  */
 package org.onap.holmes.common.utils.transactionid;
 
-import java.util.HashMap;
-import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AddHeadersHttpServletRequestWrapper extends HttpServletRequestWrapper {
     final private Map<String, String> additionalHeaders = new HashMap<>();

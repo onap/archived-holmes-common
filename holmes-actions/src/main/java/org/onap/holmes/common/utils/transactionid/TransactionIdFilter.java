@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2021 ZTE Corporation.
+ * Copyright 2018-2022 ZTE Corporation.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,9 +36,6 @@ import java.util.UUID;
 public class TransactionIdFilter implements Filter {
 
     public static final Marker INVOKE_SYNCHRONOUS;
-    public static final Marker ENTRY = MarkerFactory.getMarker("ENTRY");
-    public static final Marker EXIT = MarkerFactory.getMarker("EXIT");
-
     private static final String DEFAULT_REQUEST_ID = UUID.randomUUID().toString();
 
     static {
@@ -57,7 +54,6 @@ public class TransactionIdFilter implements Filter {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         AddHeadersHttpServletRequestWrapper requestWithTransactionId = new AddHeadersHttpServletRequestWrapper(
                 httpServletRequest);
-        log.warn(ENTRY, "Entering.");
 
         String requestID = ensureTransactionIdIsPresent(requestWithTransactionId);
         HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
@@ -76,11 +72,9 @@ public class TransactionIdFilter implements Filter {
         MDC.put("RequestID", requestID);
         MDC.put("InvocationID", invocationID);
 
-        log.warn(INVOKE_SYNCHRONOUS, "Invoking synchronously ... ");
         try {
             filterChain.doFilter(requestWithTransactionId, httpServletResponse);
         } finally {
-            log.debug(EXIT, "Exiting.");
             MDC.remove("RequestID");
             MDC.remove("InvocationID");
         }
@@ -97,7 +91,6 @@ public class TransactionIdFilter implements Filter {
 
         if (StringUtils.isBlank(requestId)) {
             requestId = TransactionIdUtils.getUUID();
-            log.info(INVOKE_SYNCHRONOUS, "This warning has a 'MY_MARKER' annotation.");
             log.info("Request ID ({} header) not exist. It was generated: {}",
                     TransactionIdUtils.REQUEST_ID_HEADER, requestId);
             request.addHeader(TransactionIdUtils.REQUEST_ID_HEADER, requestId);

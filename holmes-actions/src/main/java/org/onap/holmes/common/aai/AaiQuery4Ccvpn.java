@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2022 ZTE Corporation.
+ * Copyright 2018-2023 ZTE Corporation.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -17,13 +17,13 @@ package org.onap.holmes.common.aai;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import jakarta.ws.rs.client.Entity;
 import org.onap.holmes.common.aai.config.AaiConfig;
 import org.onap.holmes.common.config.MicroServiceConfig;
 import org.onap.holmes.common.utils.JerseyClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.ws.rs.client.Entity;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -69,7 +69,7 @@ public class AaiQuery4Ccvpn {
         params.put("pnfName", pnfName);
         params.put("ifName", ifName);
 
-        String response = get(getPath(AaiConfig.MsbConsts.AAI_LINK_QUERY, params)
+        String response = get(getPath(AaiConfig.AaiConsts.AAI_LINK_QUERY, params)
                 + (status == null ? "" : String.format("&operational-status=%s", status)));
 
         JsonObject linkInfo = getInfo(response, "p-interface", "logical-link");
@@ -147,20 +147,20 @@ public class AaiQuery4Ccvpn {
         params.put("networkId", networkId);
         params.put("pnfName", pnfName);
         params.put("ifName", ifName);
-        String r = get(getPath(AaiConfig.MsbConsts.AAI_TP_UPDATE, params));
+        String r = get(getPath(AaiConfig.AaiConsts.AAI_TP_UPDATE, params));
         JsonObject jsonObject = JsonParser.parseString(r).getAsJsonObject();
         body.put("resource-version", jsonObject.get("resource-version").toString());
 
-        put(getPath(AaiConfig.MsbConsts.AAI_TP_UPDATE, params), body);
+        put(getPath(AaiConfig.AaiConsts.AAI_TP_UPDATE, params), body);
     }
 
 
     public void updateLogicLinkStatus(String linkName, Map<String, Object> body) {
-        String r = get(getPath(AaiConfig.MsbConsts.AAI_LINK_UPDATE, "linkName", linkName));
+        String r = get(getPath(AaiConfig.AaiConsts.AAI_LINK_UPDATE, "linkName", linkName));
         JsonObject jsonObject = JsonParser.parseString(r).getAsJsonObject();
         body.put("resource-version", jsonObject.get("resource-version").toString());
         body.put("link-type", jsonObject.get("link-type").toString());
-        put(getPath(AaiConfig.MsbConsts.AAI_LINK_UPDATE, "linkName", linkName), body);
+        put(getPath(AaiConfig.AaiConsts.AAI_LINK_UPDATE, "linkName", linkName), body);
     }
 
     private JsonObject getVpnBindingInfo(String networkId, String pnfName,
@@ -170,17 +170,17 @@ public class AaiQuery4Ccvpn {
         params.put("pnfName", pnfName);
         params.put("ifName", ifName);
         params.put("status", status);
-        String response = get(getPath(AaiConfig.MsbConsts.AAI_VPN_ADDR, params));
+        String response = get(getPath(AaiConfig.AaiConsts.AAI_VPN_ADDR, params));
         return getInfo(response, "p-interface", "vpn-binding");
     }
 
     private JsonObject getConnectivityInfo(String vpnId) {
-        String response = get(getPath(AaiConfig.MsbConsts.AAI_CONN_ADDR, "vpnId", vpnId));
+        String response = get(getPath(AaiConfig.AaiConsts.AAI_CONN_ADDR, "vpnId", vpnId));
         return getInfo(response, "vpn-binding", "connectivity");
     }
 
     private JsonObject getServiceInstanceByConn(String connectivityId) {
-        String response = get(getPath(AaiConfig.MsbConsts.AAI_SERVICE_INSTANCE_ADDR_4_CCVPN,
+        String response = get(getPath(AaiConfig.AaiConsts.AAI_SERVICE_INSTANCE_ADDR_4_CCVPN,
                 "connectivityId", connectivityId));
         return getInfo(response, "connectivity", "service-instance");
     }
@@ -241,10 +241,6 @@ public class AaiQuery4Ccvpn {
         return null;
     }
 
-    private String getHostAddr() {
-        return MicroServiceConfig.getMsbServerAddrWithHttpPrefix();
-    }
-
     private String extractValueFromJsonArray(JsonArray relationshipData, String keyName) {
         if (relationshipData != null) {
             for (int i = 0; i < relationshipData.size(); ++i) {
@@ -258,10 +254,10 @@ public class AaiQuery4Ccvpn {
     }
 
     private String get(String path) {
-        return JerseyClient.newInstance().path(path).headers(headers).get(getHostAddr());
+        return JerseyClient.newInstance().path(path).headers(headers).get(MicroServiceConfig.getAaiAddr());
     }
 
     private String put(String path, Map<String, Object> body) {
-        return JerseyClient.newInstance().path(path).headers(headers).put(getHostAddr(), Entity.json(body));
+        return JerseyClient.newInstance().path(path).headers(headers).put(MicroServiceConfig.getAaiAddr(), Entity.json(body));
     }
 }

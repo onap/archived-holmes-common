@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 ZTE Corporation.
+ * Copyright 2017-2023 ZTE Corporation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,10 @@
  */
 package org.onap.holmes.common.utils;
 
-import java.util.Locale;
-import javax.servlet.http.HttpServletRequest;
 import org.onap.holmes.common.constant.AlarmConst;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Locale;
 
 public class LanguageUtil {
 

@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.holmes.common.aai
  * ================================================================================
- * Copyright (C) 2018-2021 Huawei, ZTE. All rights reserved.
+ * Copyright (C) 2018-2023 Huawei, ZTE. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.extern.slf4j.Slf4j;
-import org.onap.holmes.common.config.MicroServiceConfig;
 import org.springframework.stereotype.Component;
 
 import java.util.regex.Matcher;
@@ -77,9 +76,5 @@ public class AaiJsonParserUtil {
             return obj.get(key).getAsJsonArray();
         }
         return null;
-    }
-
-    public static String getHostAddr() {
-        return MicroServiceConfig.getMsbServerAddrWithHttpPrefix();
     }
 }

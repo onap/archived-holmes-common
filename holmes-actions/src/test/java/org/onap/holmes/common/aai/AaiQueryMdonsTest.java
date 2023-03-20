@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 - 2022 Fujitsu Limited, ZTE Corporation.
+ * Copyright 2020 - 2023 Fujitsu Limited, ZTE Corporation.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -53,12 +53,14 @@ public class AaiQueryMdonsTest {
 
     private static JsonObject data;
 
-    private static final String AAI_ADDR = "https://aai.onap:8443/aai/v19/";
+    private static final String AAI_ADDR = "https://aai.onap:443/aai/v19/";
 
     @BeforeClass
     public static void beforeClass() {
         System.setProperty(MSB_ADDR, "127.0.0.1:80");
         System.setProperty("ENABLE_ENCRYPT", "true");
+        System.setProperty(MicroServiceConfig.AAI_ADDR, "aai");
+        System.setProperty(MicroServiceConfig.BASE_URL, "onap");
 
         File file = new File(AaiQueryMdonsTest.class.getClassLoader().getResource("./aai-mdons.json").getFile());
         BufferedReader reader = null;
