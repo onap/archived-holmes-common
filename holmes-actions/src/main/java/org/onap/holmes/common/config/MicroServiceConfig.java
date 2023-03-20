@@ -39,7 +39,7 @@ public class MicroServiceConfig {
     final static public String BASE_URL = "BASE_URL";
     final static public String PRE_ADDR = "PRE_ADDR";
     final static public String POST_ADDR = "POST_ADDR";
-    final static public String AAI_ADDR = "AAI_BASEADDR";
+    final static public String AAI_ADDR = "AAI_ADDR";
     final static public String PROTOCOL_HTTP = "http";
     final static public String PROTOCOL_HTTPS = "https";
     final static public int PLAIN_PORT = 80;
