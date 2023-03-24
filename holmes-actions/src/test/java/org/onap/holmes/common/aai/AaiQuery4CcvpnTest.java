@@ -36,8 +36,6 @@ import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.anyString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.onap.holmes.common.config.MicroServiceConfig.MSB_ADDR;
-
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(JerseyClient.class)
@@ -56,8 +54,6 @@ public class AaiQuery4CcvpnTest {
 
     @BeforeClass
     static public void beforeClass() {
-        System.setProperty(MSB_ADDR, "127.0.0.1:80");
-
         File file = new File(AaiQuery4CcvpnTest.class.getClassLoader().getResource("./ccvpn.data.json").getFile());
         BufferedReader reader = null;
         try {

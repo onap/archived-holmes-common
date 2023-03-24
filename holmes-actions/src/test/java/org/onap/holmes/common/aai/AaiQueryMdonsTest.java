@@ -38,7 +38,6 @@ import java.util.Map;
 
 import static org.easymock.EasyMock.anyObject;
 import static org.junit.Assert.assertEquals;
-import static org.onap.holmes.common.config.MicroServiceConfig.MSB_ADDR;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore("javax.net.ssl.*")
@@ -57,10 +56,9 @@ public class AaiQueryMdonsTest {
 
     @BeforeClass
     public static void beforeClass() {
-        System.setProperty(MSB_ADDR, "127.0.0.1:80");
         System.setProperty("ENABLE_ENCRYPT", "true");
         System.setProperty(MicroServiceConfig.AAI_ADDR, "aai");
-        System.setProperty(MicroServiceConfig.BASE_URL, "onap");
+        System.setProperty(MicroServiceConfig.NAMESPACE, "onap");
 
         File file = new File(AaiQueryMdonsTest.class.getClassLoader().getResource("./aai-mdons.json").getFile());
         BufferedReader reader = null;

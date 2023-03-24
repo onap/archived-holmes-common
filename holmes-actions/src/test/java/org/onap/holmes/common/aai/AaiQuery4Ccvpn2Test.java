@@ -44,8 +44,6 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
-import static org.onap.holmes.common.config.MicroServiceConfig.MSB_ADDR;
-
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({JerseyClient.class})
@@ -61,7 +59,6 @@ public class AaiQuery4Ccvpn2Test {
 
     @BeforeClass
     static public void beforeClass() {
-        System.setProperty(MSB_ADDR, "127.0.0.1:80");
 
         File file = new File(AaiQuery4Ccvpn2Test.class.getClassLoader().getResource("./ccvpn2.data.json").getFile());
         BufferedReader reader = null;

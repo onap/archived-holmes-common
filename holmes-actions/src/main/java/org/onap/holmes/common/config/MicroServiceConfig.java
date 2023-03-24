@@ -33,13 +33,10 @@ public class MicroServiceConfig {
     final static public String HOSTNAME = "HOSTNAME";
     final static public String POD_IP = "POD_IP";
     final static public String CONFIG_BINDING_SERVICE = "CONFIG_BINDING_SERVICE";
-    final static public String MSB_ADDR = "MSB_ADDR";
     final static public String MSB_IAG_SERVICE_HOST = "MSB_IAG_SERVICE_HOST";
     final static public String MSB_IAG_SERVICE_PORT = "MSB_IAG_SERVICE_PORT";
-    final static public String BASE_URL = "BASE_URL";
-    final static public String PRE_ADDR = "PRE_ADDR";
-    final static public String POST_ADDR = "POST_ADDR";
     final static public String AAI_ADDR = "AAI_ADDR";
+    final static public String NAMESPACE = "NAMESPACE";
     final static public String PROTOCOL_HTTP = "http";
     final static public String PROTOCOL_HTTPS = "https";
     final static public int PLAIN_PORT = 80;
@@ -97,12 +94,10 @@ public class MicroServiceConfig {
     public static String getAaiAddr() {
         boolean tlsEnabled = Boolean.valueOf(getEnv("ENABLE_ENCRYPT"));
 
-        return String.format("%s://%s%s%s.%s:%d",
+        return String.format("%s://%s.%s:%d",
                 tlsEnabled ? PROTOCOL_HTTPS : PROTOCOL_HTTP,
-                nullToEmptyString(getEnv(PRE_ADDR)),
                 nullToEmptyString(getEnv(AAI_ADDR)),
-                nullToEmptyString(getEnv(POST_ADDR)),
-                nullToEmptyString(getEnv(BASE_URL)),
+                nullToEmptyString(getEnv(NAMESPACE)),
                 tlsEnabled ? TLS_PORT : PLAIN_PORT);
     }
 
