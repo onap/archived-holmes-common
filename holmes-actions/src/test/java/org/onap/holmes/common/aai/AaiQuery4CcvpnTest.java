@@ -1,5 +1,5 @@
 /**
- * Copyright 2018-2021 ZTE Corporation.
+ * Copyright 2018-2023 ZTE Corporation.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -25,6 +25,7 @@ import org.onap.holmes.common.exception.CorrelationException;
 import org.onap.holmes.common.utils.JerseyClient;
 import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.core.classloader.annotations.SuppressStaticInitializationFor;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
@@ -39,6 +40,7 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(JerseyClient.class)
+@SuppressStaticInitializationFor("org.onap.holmes.common.utils.JerseyClient")
 public class AaiQuery4CcvpnTest {
 
     @Rule

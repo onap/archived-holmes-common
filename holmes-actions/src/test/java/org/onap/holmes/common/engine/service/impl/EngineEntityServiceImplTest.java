@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 ZTE Corporation.
+ * Copyright 2020 - 2023 ZTE Corporation.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -118,6 +118,7 @@ class EngineEntityDaoStub implements EngineEntityDao {
 
     @Override
     public void updateEntity(EngineEntity entity) {
+        entitySet.remove(entity);
         entitySet.add(entity);
     }
 
