@@ -118,6 +118,7 @@ class EngineEntityDaoStub implements EngineEntityDao {
 
     @Override
     public void updateEntity(EngineEntity entity) {
+        entitySet.remove(entity);
         entitySet.add(entity);
     }
 

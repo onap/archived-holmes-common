@@ -8,19 +8,14 @@
 	the specific language governing permissions and limitations under the License. -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.onap.oparent</groupId>
-        <artifactId>oparent</artifactId>
-        <version>3.0.0</version>
-    </parent>
 
     <groupId>org.onap.holmes.common</groupId>
     <artifactId>holmes-common-parent</artifactId>
     <packaging>pom</packaging>
 
-    <version>1.4.6-SNAPSHOT</version>
+    <version>1.4.7-SNAPSHOT</version>
     <name>holmes-common</name>
     <modules>
         <module>holmes-actions</module>
@@ -43,16 +38,22 @@
 
         <dropwizard.version>2.0.9</dropwizard.version>
         <swagger.version>1.6.4</swagger.version>
-        <lombok.version>1.18.4</lombok.version>
+        <lombok.version>1.18.28</lombok.version>
         <jersey.version>3.0.5</jersey.version>
         <jersey.scope>compile</jersey.scope>
         <jakarta.ws.rs.version>3.1.0</jakarta.ws.rs.version>
         <slf4j.version>1.7.25</slf4j.version>
         <jacoco.version>0.8.5</jacoco.version>
         <jackson.version>2.13.3</jackson.version>
-        <sonar.coverage.jacoco.xmlReportPaths>
-            ${project.reporting.outputDirectory}/jacoco-ut/jacoco.xml
+
+        <jacoco.version>0.8.5</jacoco.version>
+        <sonar-jacoco-listeners.version>3.2</sonar-jacoco-listeners.version>
+        <sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
+        <sonar.coverage.jacoco.xmlReportPaths>${project.reporting.outputDirectory}/jacoco-ut/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.exclusions>**/gen/**,**/generated-sources/**,**/yang-gen**,**/pax/**</sonar.exclusions>
+        <swagger-properties>${basedir}/src/main/resources/swagger.properties</swagger-properties>
+        <swagger-json>${basedir}/src/main/resources/swagger.json</swagger-json>
     </properties>
 
     <dependencyManagement>
@@ -124,7 +125,7 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.8.2</version>
+                <version>4.13.2</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -154,7 +155,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>29.0-jre</version>
+                <version>30.0-jre</version>
             </dependency>
             <dependency>
                 <groupId>com.google.code.gson</groupId>
