@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.onap.holmes.common.utils;
+package org.onap.holmes.common.msb;
 
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.MediaType;
@@ -22,8 +22,10 @@ import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.onap.holmes.common.config.MicroServiceConfig;
 import org.onap.holmes.common.exception.CorrelationException;
-import org.onap.msb.sdk.discovery.entity.MicroServiceFullInfo;
-import org.onap.msb.sdk.discovery.entity.MicroServiceInfo;
+import org.onap.holmes.common.msb.entity.MicroServiceFullInfo;
+import org.onap.holmes.common.msb.entity.MicroServiceInfo;
+import org.onap.holmes.common.utils.GsonUtil;
+import org.onap.holmes.common.utils.JerseyClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -60,14 +62,14 @@ public class MsbRegister {
         MicroServiceFullInfo microServiceFullInfo = null;
         int retry = 0;
         while (null == microServiceFullInfo && retry < totalRetryTimes) {
-            int time  = interval * ++retry;
+            int time = interval * ++retry;
             try {
                 log.info("Holmes Service Registration. Times: " + retry);
                 microServiceFullInfo = client
                         .header("Accept", MediaType.APPLICATION_JSON)
                         .queryParam("createOrUpdate", true)
                         .post(String.format("%s://%s:%s/api/microservices/v1/services",
-                                isHttpsEnabled ? PROTOCOL_HTTPS : PROTOCOL_HTTP, msbAddrInfo[0], msbAddrInfo[1]),
+                                        isHttpsEnabled ? PROTOCOL_HTTPS : PROTOCOL_HTTP, msbAddrInfo[0], msbAddrInfo[1]),
                                 Entity.entity(msinfo, MediaType.APPLICATION_JSON),
                                 MicroServiceFullInfo.class);
 

@@ -1,5 +1,5 @@
 /**
- * Copyright 2017-2022 ZTE Corporation.
+ * Copyright 2017-2023 ZTE Corporation.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-package org.onap.holmes.common.utils;
+package org.onap.holmes.common.msb;
 
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MediaType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.onap.holmes.common.config.MicroServiceConfig;
 import org.onap.holmes.common.exception.CorrelationException;
-import org.onap.msb.sdk.discovery.entity.MicroServiceFullInfo;
-import org.onap.msb.sdk.discovery.entity.MicroServiceInfo;
+import org.onap.holmes.common.msb.entity.MicroServiceFullInfo;
+import org.onap.holmes.common.msb.entity.MicroServiceInfo;
+import org.onap.holmes.common.utils.GsonUtil;
+import org.onap.holmes.common.utils.JerseyClient;
 import org.powermock.api.easymock.PowerMock;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
-import jakarta.ws.rs.client.Entity;
-import jakarta.ws.rs.core.MediaType;
 
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.expect;
