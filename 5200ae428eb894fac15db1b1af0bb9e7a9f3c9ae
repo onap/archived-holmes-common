@@ -1,0 +1,8 @@
+Verified+1: ONAP Required GHA <releng+onap.required.gha@linuxfoundation.org>
+Code-Review+2: tang peng <tang.peng5@zte.com.cn>
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Submitted-by: tang peng <tang.peng5@zte.com.cn>
+Submitted-at: Tue, 24 Oct 2023 11:56:27 +0000
+Reviewed-on: https://gerrit.onap.org/r/c/holmes/common/+/136187
+Project: holmes/common
+Branch: refs/heads/master
