@@ -19,11 +19,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Singleton;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-@Singleton
 public class UniqueRequestIdCache extends ConcurrentHashMap<String, String> {
 
     private static final Logger log = LoggerFactory.getLogger(UniqueRequestIdCache.class);
