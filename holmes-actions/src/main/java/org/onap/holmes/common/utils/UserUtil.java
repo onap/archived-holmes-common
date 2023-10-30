@@ -17,7 +17,7 @@ package org.onap.holmes.common.utils;
 
 import org.onap.holmes.common.constant.AlarmConst;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 public class UserUtil {
 

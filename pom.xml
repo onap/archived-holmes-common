@@ -42,7 +42,7 @@
         <jersey.version>3.0.5</jersey.version>
         <jersey.scope>compile</jersey.scope>
         <jakarta.ws.rs.version>3.1.0</jakarta.ws.rs.version>
-        <slf4j.version>1.7.25</slf4j.version>
+        <slf4j.version>2.0.9</slf4j.version>
         <jacoco.version>0.8.5</jacoco.version>
         <jackson.version>2.15.2</jackson.version>
 
@@ -155,6 +155,12 @@
                 <groupId>jakarta.ws.rs</groupId>
                 <artifactId>jakarta.ws.rs-api</artifactId>
                 <version>${jakarta.ws.rs.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.servlet</groupId>
+                <artifactId>jakarta.servlet-api</artifactId>
+                <version>6.0.0</version>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>

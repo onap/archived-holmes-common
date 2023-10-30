@@ -21,7 +21,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 
 import java.util.Locale;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
